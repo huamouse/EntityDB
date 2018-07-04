@@ -11,7 +11,7 @@ dotnet Way.EJServer.dll 6060
 
 # 运行客户端
 
-运行EJClient\bin\Debug\EJClient.exe程序,连接到服务器6060工作空间
-server url:https://localhost:6060
-user name: sa
+运行EJClient\bin\Debug\EJClient.exe程序,连接到服务器6060工作空间  
+server url:https://localhost:6060  
+user name: sa  
 password:  1

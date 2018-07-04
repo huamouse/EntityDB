@@ -491,6 +491,7 @@ create table __action (
             using (EJDB db = new EJDB())
             {
                 db.Delete(db.Databases.Where(m => m.id == databaseid));
+                db.Database.ExecSqlString("delete from __action where databaseid=" + databaseid);
             }
         }
         [RemotingMethod]

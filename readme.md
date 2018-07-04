@@ -1,4 +1,4 @@
-
+﻿
 # 启动服务器
 
 在Way.EJServer\bin\Debug\netcoreapp2.0文件夹里面，创一个run.bat批处理文件，内容如下：
@@ -14,4 +14,13 @@ dotnet Way.EJServer.dll 6060
 运行EJClient\bin\Debug\EJClient.exe程序,连接到服务器6060工作空间  
 server url:https://localhost:6060  
 user name: sa  
-password:  1
+password:  1  
+
+# 目前支持的数据库
+
+SqlServer  
+Sqlite  
+MySql  
+PostgreSql  
+
+由于MySQL表结构修改，不支持事务，所以不推荐使用MySQL

@@ -109,7 +109,7 @@ namespace Way.EJServer
             else if (e.DataItem is EJ.Databases)
             {
                 var databaseid = ((EJ.Databases)e.DataItem).id.GetValueOrDefault();
-                db.Database.ExecSqlString("delete from __action where databaseid=" + databaseid);
+                
             }
         }
 

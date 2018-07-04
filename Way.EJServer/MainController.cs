@@ -51,6 +51,24 @@ namespace Way.EJServer
                     saUser.Password = "1";
                     saUser.Role = EJ.User_RoleEnum.管理员;
                     db.Insert(saUser);
+
+                    //创建action表
+                    try
+                    {
+                        db.Database.ExecSqlString("select id from __action limit 0,1");
+                    }
+                    catch
+                    {
+                        //没有__action
+                        db.Database.ExecSqlString(@"
+create table __action (
+    [id]            integer PRIMARY KEY autoincrement,
+    [type]          varchar (100),
+    [content]         text,
+    [databaseid]      int 
+)
+");
+                    }
                 }
                 var user = db.User.FirstOrDefault(m => m.Name == name);
                 if (user == null || user.Password != pwd)

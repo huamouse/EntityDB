@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 
 namespace Way.EntityDB.Test
-{
+{ 
     [TestClass]
     public class UnitTest1
     {

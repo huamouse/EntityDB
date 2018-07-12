@@ -433,7 +433,27 @@ namespace Way.EntityDB
             ((DataItem)newObj).ChangedProperties.Clear();
             return newObj;
         }
+        /// <summary>
+        /// 回滚当前对象的所有更改
+        /// </summary>
+        public void Rollback()
+        {
+            m_notSendPropertyChanged = true;
+            try
+            {
+                Type thisType = this.GetType();
+                foreach (var changeItem in this.ChangedProperties)
+                {
+                    thisType.GetProperty(changeItem.Key).SetValue(this, changeItem.Value.OriginalValue);
+                }
+                this.ChangedProperties.Clear();
+            }
+            catch
+            {
 
+            }
+            m_notSendPropertyChanged = false;
+        }
     }
 
     class FieldValue

@@ -10,12 +10,22 @@ using System;
 using Way.EntityDB.Design.Services;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Way.EntityDB.Test
 { 
     [TestClass]
     public class UnitTest1
     {
+        [TestMethod]
+        public void ConnectionString_Check()
+        {
+            var db = new EJ.DB.easyjob("server=ETHAN-20171016H;uid=sa;pwd=123;Database=TestDB", Way.EntityDB.DatabaseType.SqlServer);
+            System.Data.SqlClient.SqlConnectionStringBuilder conStrBuilder = new System.Data.SqlClient.SqlConnectionStringBuilder("server=ETHAN-20171016H;uid=sa;pwd=123;Database=TestDB");
+            conStrBuilder.InitialCatalog = "master";
+            var constr = conStrBuilder.ToString();
+        }
+
         [TestMethod]
         public void UpgradeData_Check()
         {

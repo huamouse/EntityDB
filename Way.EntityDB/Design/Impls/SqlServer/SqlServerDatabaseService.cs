@@ -16,20 +16,22 @@ namespace Way.EntityDB.Design.Database.SqlServer
     {
         public void Drop(EJ.Databases database)
         {
-            string constr = database.conStr;
-            constr = Regex.Replace(database.conStr, @"database=(\w)+", "database=master", RegexOptions.IgnoreCase);
-            //throw new Exception(constr);
-            var db = EntityDB.DBContext.CreateDatabaseService(constr, EntityDB.DatabaseType.SqlServer);
+            System.Data.SqlClient.SqlConnectionStringBuilder conStrBuilder = new System.Data.SqlClient.SqlConnectionStringBuilder(database.conStr);
+            var mydbName = conStrBuilder.InitialCatalog;
+            conStrBuilder.InitialCatalog = "master";
 
-            db.ExecSqlString("if exists(select [dbid] from sysdatabases where [name]='" + database.Name.ToLower() + "') drop database " + database.Name.ToLower() );
+            var db = EntityDB.DBContext.CreateDatabaseService(conStrBuilder.ToString(), EntityDB.DatabaseType.SqlServer);
+
+            db.ExecSqlString("if exists(select [dbid] from sysdatabases where [name]='" + mydbName.ToLower() + "') drop database " + mydbName.ToLower() );
 
         }
         public void Create(EJ.Databases database)
         {
-            string constr = database.conStr;
-            constr = Regex.Replace(database.conStr, @"database=(\w)+", "database=master" , RegexOptions.IgnoreCase);
-            //throw new Exception(constr);
-            var db = EntityDB.DBContext.CreateDatabaseService(constr, EntityDB.DatabaseType.SqlServer);
+            System.Data.SqlClient.SqlConnectionStringBuilder conStrBuilder = new System.Data.SqlClient.SqlConnectionStringBuilder(database.conStr);
+            var mydbName = conStrBuilder.InitialCatalog;
+            conStrBuilder.InitialCatalog = "master";
+
+            var db = EntityDB.DBContext.CreateDatabaseService(conStrBuilder.ToString(), EntityDB.DatabaseType.SqlServer);
 
             /*
              COLLATE Chinese_PRC_CI_AS ，如果没有这句，linux的sql server中文会乱码
@@ -39,7 +41,7 @@ namespace Way.EntityDB.Design.Database.SqlServer
                 AS指定区分重音，同样如果不需要区分重音，则改为AI
                 COLLATE可以针对整个数据库更改排序规则，也可以单独修改某一个表或者某一个字段的排序规则，指定排序规则很有用，比如用户管理表，需要验证输入的用户名和密码的正确性，一般是要区分大小写的。
              */
-            db.ExecSqlString("if not exists(select [dbid] from sysdatabases where [name]='" + database.Name.ToLower() + "') create database " + database.Name.ToLower() + " COLLATE Chinese_PRC_CI_AS");
+            db.ExecSqlString("if not exists(select [dbid] from sysdatabases where [name]='" + mydbName.ToLower() + "') create database " + mydbName.ToLower() + " COLLATE Chinese_PRC_CI_AS");
 
             db = EntityDB.DBContext.CreateDatabaseService(database.conStr, EntityDB.DatabaseType.SqlServer);
             CreateEasyJobTable(db);

@@ -37,7 +37,7 @@ namespace Way.EntityDB.Design.Impls.PostgreSQL
         }
         public void Create(Databases database)
         {
-
+            
             var dbnameMatch = System.Text.RegularExpressions.Regex.Match(database.conStr, @"database=(?<dname>(\w)+)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
             if (dbnameMatch == null)
             {

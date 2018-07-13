@@ -17,6 +17,9 @@ namespace Way.EntityDB.Test
     [TestClass]
     public class UnitTest1
     {
+        const string SqlServerConstr = "server=192.168.136.137;uid=sa;pwd=Sql12345678;Database=TestDB";
+        const string PostgreSqlConStr = "Server=192.168.136.137;Port=5432;UserId=postgres;Password=123456;Database=TestDB;";
+        const string MySqlConStr = "server=192.168.136.137;User Id=user1;password=User.123456;Database=TestDB";
         [TestMethod]
         public void ConnectionString_Check()
         {
@@ -36,11 +39,11 @@ namespace Way.EntityDB.Test
             //server=;User Id=;password=;Database=
         }
         [TestMethod]
-        public void Insert_Check()
+        public void SqlServer_Insert_Check()
         {
 
-            var db = new MyDB.DB.TestDB("server=192.168.136.137;uid=sa;pwd=Sql12345678;Database=TestDB", Way.EntityDB.DatabaseType.SqlServer);
-
+            var db = new MyDB.DB.TestDB(SqlServerConstr, Way.EntityDB.DatabaseType.SqlServer);
+            db.BeginTransaction();
             //插入数据
             var user = new MyDB.UserInfo()
             {
@@ -48,6 +51,23 @@ namespace Way.EntityDB.Test
                 Password = "123"
             };
             db.Update(user);
+            db.RollbackTransaction();
+        }
+
+        [TestMethod]
+        public void PostgreSql_Insert_Check()
+        {
+            var db = new MyDB.DB.TestDB(PostgreSqlConStr, Way.EntityDB.DatabaseType.PostgreSql);
+            db.BeginTransaction();
+            
+            //插入数据
+            var user = new MyDB.UserInfo()
+            {
+                UserName = "Jack",
+                Password = "123"
+            };
+            db.Update(user);
+            db.RollbackTransaction();
         }
         [TestMethod]
         public void UpgradeData_Check()
@@ -197,14 +217,12 @@ namespace Way.EntityDB.Test
         {
             IDatabaseDesignService dbservice;
             IDatabaseService db;
-            string dbServerIp = "192.168.136.137";
-
 
 
             Test(new EJ.Databases()
             {
                 conStr = "data source=d:\\test\\test.db",
-                Name = "testingdb",
+                Name = "TestingDb",
                 dbType = EJ.Databases_dbTypeEnum.Sqlite,
             });
             dbservice = EntityDB.Design.DBHelper.CreateDatabaseDesignService(DatabaseType.Sqlite);
@@ -215,35 +233,29 @@ namespace Way.EntityDB.Test
 
             Test(new EJ.Databases()
             {
-                conStr = "Server=" + dbServerIp + ";uid=sa;pwd=Sql12345678;database=testingdb",
+                conStr = new System.Data.SqlClient.SqlConnectionStringBuilder(SqlServerConstr) { InitialCatalog = "TestingDb" }.ToString(),
                 Name = "testingdb",
                 dbType = EJ.Databases_dbTypeEnum.SqlServer,
             });
             dbservice = EntityDB.Design.DBHelper.CreateDatabaseDesignService(DatabaseType.SqlServer);
-            db = EntityDB.DBContext.CreateDatabaseService("Server=" + dbServerIp + ";uid=sa;pwd=Sql12345678;database=testingdb", EntityDB.DatabaseType.SqlServer);
+            db = EntityDB.DBContext.CreateDatabaseService(new System.Data.SqlClient.SqlConnectionStringBuilder(SqlServerConstr) { InitialCatalog = "TestingDb" }.ToString(), EntityDB.DatabaseType.SqlServer);
             dbservice.GetCurrentTableNames(db);
             dbservice.GetCurrentColumns(db, "test3");
             dbservice.GetCurrentIndexes(db, "test3");
 
             Test(new EJ.Databases()
             {
-                conStr = "Server=" + dbServerIp + ";Port=5432;UserId=postgres;Password=123456;Database=testingdb;",
+                conStr = new Npgsql.NpgsqlConnectionStringBuilder(PostgreSqlConStr) { Database = "TestingDb" }.ToString(),
                 Name = "testingdb",
                 dbType = EJ.Databases_dbTypeEnum.PostgreSql,
             });
             dbservice = EntityDB.Design.DBHelper.CreateDatabaseDesignService(DatabaseType.PostgreSql);
-            db = EntityDB.DBContext.CreateDatabaseService("Server=" + dbServerIp + ";Port=5432;UserId=postgres;Password=123456;Database=testingdb;", EntityDB.DatabaseType.PostgreSql);
+            db = EntityDB.DBContext.CreateDatabaseService(new Npgsql.NpgsqlConnectionStringBuilder(PostgreSqlConStr) { Database = "TestingDb" }.ToString(), EntityDB.DatabaseType.PostgreSql);
             object result = dbservice.GetCurrentTableNames(db);
             result = dbservice.GetCurrentColumns(db, "test3");
             result = dbservice.GetCurrentIndexes(db, "test3");
 
-            Test(new EJ.Databases()
-            {
-                conStr = "server=" + dbServerIp + ";User Id=user1;password=User.123456;Database=testingdb",
-                Name = "testingdb",
-                dbType = EJ.Databases_dbTypeEnum.MySql,
-            });
-            
+           
         }
 
         static void Test(EJ.Databases dbconfig)

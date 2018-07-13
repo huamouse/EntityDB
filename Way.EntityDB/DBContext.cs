@@ -701,16 +701,18 @@ namespace Way.EntityDB
         {
             this.Dispose();
         }
-        public DBContext(string connectionString, DatabaseType dbType = DatabaseType.SqlServer)
+        public DBContext(string conStr, DatabaseType dbType = DatabaseType.SqlServer)
         {
             this.DatabaseType = dbType;
-            this.ConnectionString = connectionString;
+           
 
             Type type = DatabaseServiceTypes[this.DatabaseType];
             _databaseService = (IDatabaseService)Activator.CreateInstance(type, new object[] { this });
 
+            this.ConnectionString = _databaseService.ConvertConnectionString(conStr);
+
             var thisType = this.GetType() ;
-            var dictKey = thisType + "," + connectionString;
+            var dictKey = thisType + "," + this.ConnectionString;
             if (thisType != typeof(EntityDB.DBContext))
             {
                 if (upgradedDatabase.ContainsKey(dictKey) == false || !upgradedDatabase[dictKey])

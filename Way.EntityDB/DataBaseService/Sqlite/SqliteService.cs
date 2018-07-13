@@ -552,7 +552,10 @@ namespace Way.EntityDB
             }
         }
 
-       
+        public virtual string ConvertConnectionString(string conStr)
+        {
+            return conStr;
+        }
 
         public DBContext DBContext
         {

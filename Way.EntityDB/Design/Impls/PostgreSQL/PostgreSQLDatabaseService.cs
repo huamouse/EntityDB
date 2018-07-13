@@ -46,8 +46,9 @@ namespace Way.EntityDB.Design.Impls.PostgreSQL
                 db.ExecSqlString("CREATE DATABASE " + database.Name.ToLower() + " ENCODING='UTF-8'");
             }
 
+            conStrBuilder.Database = database.Name.ToLower();
             //创建必须表
-            db = EntityDB.DBContext.CreateDatabaseService(database.conStr, EntityDB.DatabaseType.PostgreSql);
+            db = EntityDB.DBContext.CreateDatabaseService(conStrBuilder.ToString(), EntityDB.DatabaseType.PostgreSql);
             db.DBContext.BeginTransaction();
             try
             {

@@ -21,6 +21,7 @@ namespace Way.EntityDB
         {
             get;
         }
+        string ConvertConnectionString(string conStr);
         void OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder optionsBuilder);
         //System.Data.Common.DbConnection CreateConnection(string connectString);
         void Insert(DataItem dataitem);

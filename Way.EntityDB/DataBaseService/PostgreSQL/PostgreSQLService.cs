@@ -109,7 +109,16 @@ namespace Way.EntityDB
             throw new RepeatValueException(keys, captions, "此" + output + "已存在");
         }
 
-
+        public override string ConvertConnectionString(string conStr)
+        {
+            Npgsql.NpgsqlConnectionStringBuilder builder = new NpgsqlConnectionStringBuilder(conStr);
+            if(builder.Database != null)
+            {
+                builder.Database = builder.Database.ToLower();
+            }
+           
+            return builder.ToString();
+        }
 
     }
 }

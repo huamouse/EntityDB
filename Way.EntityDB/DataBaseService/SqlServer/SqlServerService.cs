@@ -50,7 +50,11 @@ namespace Way.EntityDB
         {
             return "select Scope_Identity()";
         }
-       
+        protected override bool GetInsertIDValueSqlStringInOneSql()
+        {
+            return true;
+        }
+
         protected override void ThrowSqlException(Type tableType, Exception ex)
         {
             if (!(ex is System.Data.SqlClient.SqlException))

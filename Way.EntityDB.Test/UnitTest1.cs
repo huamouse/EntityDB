@@ -20,12 +20,35 @@ namespace Way.EntityDB.Test
         [TestMethod]
         public void ConnectionString_Check()
         {
-            var db = new EJ.DB.easyjob("server=ETHAN-20171016H;uid=sa;pwd=123;Database=TestDB", Way.EntityDB.DatabaseType.SqlServer);
             System.Data.SqlClient.SqlConnectionStringBuilder conStrBuilder = new System.Data.SqlClient.SqlConnectionStringBuilder("server=ETHAN-20171016H;uid=sa;pwd=123;Database=TestDB");
             conStrBuilder.InitialCatalog = "master";
             var constr = conStrBuilder.ToString();
-        }
 
+            //Server=;Port=5432;UserId=;Password=;Database=;
+            Npgsql.NpgsqlConnectionStringBuilder conStrBuilder2 = new Npgsql.NpgsqlConnectionStringBuilder("Server=localhost;Port=5432;UserId=sa;Password=1;Database=testDB;");
+            conStrBuilder2.Database = null;
+            constr = conStrBuilder2.ToString();
+
+            Pomelo.Data.MySql.MySqlConnectionStringBuilder conStrBuilder3 = new Pomelo.Data.MySql.MySqlConnectionStringBuilder("server=locahost;User Id=sa;password=12;Database=testDB");
+            conStrBuilder3.Database = null;
+            constr = conStrBuilder3.ToString();
+
+            //server=;User Id=;password=;Database=
+        }
+        [TestMethod]
+        public void Insert_Check()
+        {
+
+            var db = new MyDB.DB.TestDB("server=192.168.136.137;uid=sa;pwd=Sql12345678;Database=TestDB", Way.EntityDB.DatabaseType.SqlServer);
+
+            //插入数据
+            var user = new MyDB.UserInfo()
+            {
+                UserName = "Jack",
+                Password = "123"
+            };
+            db.Update(user);
+        }
         [TestMethod]
         public void UpgradeData_Check()
         {

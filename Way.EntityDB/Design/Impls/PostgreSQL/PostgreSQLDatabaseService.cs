@@ -24,32 +24,22 @@ namespace Way.EntityDB.Design.Impls.PostgreSQL
         }
         public void Drop(Databases database)
         {
+            Npgsql.NpgsqlConnectionStringBuilder conStrBuilder = new Npgsql.NpgsqlConnectionStringBuilder(database.conStr);
 
-            var dbnameMatch = System.Text.RegularExpressions.Regex.Match(database.conStr, @"database=(?<dname>(\w)+)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            if (dbnameMatch == null)
-            {
-                throw new Exception("连接字符串必须采用以下形式Server=;Port=5432;UserId=;Password=;Database=;");
-            }
+            conStrBuilder.Database = null;
 
-            var db = EntityDB.DBContext.CreateDatabaseService(database.conStr.Replace(dbnameMatch.Value, ""), EntityDB.DatabaseType.PostgreSql);
+              var db = EntityDB.DBContext.CreateDatabaseService(conStrBuilder.ToString(), EntityDB.DatabaseType.PostgreSql);
             db.ExecSqlString("DROP DATABASE if exists " + database.Name.ToLower() + "");
             db.DBContext.Dispose();
         }
         public void Create(Databases database)
         {
-            
-            var dbnameMatch = System.Text.RegularExpressions.Regex.Match(database.conStr, @"database=(?<dname>(\w)+)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            if (dbnameMatch == null)
-            {
-                throw new Exception("连接字符串必须采用以下形式Server=;Port=5432;UserId=;Password=;Database=;");
-            }
-            else
-            {
-                database.conStr = database.conStr.Replace(dbnameMatch.Value, "database=" + dbnameMatch.Groups["dname"].Value.ToLower());
-                dbnameMatch = System.Text.RegularExpressions.Regex.Match(database.conStr, @"database=(?<dname>(\w)+)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            }
-            database.Name = dbnameMatch.Groups["dname"].Value;
-            var db = EntityDB.DBContext.CreateDatabaseService(database.conStr.Replace(dbnameMatch.Value, ""), EntityDB.DatabaseType.PostgreSql);
+            Npgsql.NpgsqlConnectionStringBuilder conStrBuilder = new Npgsql.NpgsqlConnectionStringBuilder(database.conStr);
+
+            database.Name = conStrBuilder.Database;
+            conStrBuilder.Database = null;
+
+            var db = EntityDB.DBContext.CreateDatabaseService(conStrBuilder.ToString(), EntityDB.DatabaseType.PostgreSql);
             object flag = db.ExecSqlString("select count(*) from pg_catalog.pg_database where datname=@p0", database.Name.ToLower());
             if (Convert.ToInt32(flag)== 0)
             {

@@ -1,5 +1,8 @@
 ﻿使用教程：https://www.cnblogs.com/IWings/p/9304874.html  
 
+本组件，在数据查询方面，除了禁用了数据跟踪，其他与EF Core原版一致，所以，如果发现查询方面的问题，请在EF Core源码处提问，https://github.com/aspnet/EntityFrameworkCore  
+
+
 # 启动服务器
 
 在Way.EJServer\bin\Debug\netcoreapp2.0文件夹里面，创一个run.bat批处理文件，内容如下：

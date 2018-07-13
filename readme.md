@@ -1,4 +1,5 @@
-﻿
+﻿使用教程：https://www.cnblogs.com/IWings/p/9304874.html  
+
 # 启动服务器
 
 在Way.EJServer\bin\Debug\netcoreapp2.0文件夹里面，创一个run.bat批处理文件，内容如下：

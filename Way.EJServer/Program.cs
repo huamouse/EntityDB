@@ -32,7 +32,7 @@ namespace Way.EJServer
                 ScriptRemotingServer.RegisterHandler(new DownloadTableDataHandler());
                 ScriptRemotingServer.RegisterHandler(new ImportDataHandler());
 
-                ScriptRemotingServer.UseHttps(new X509Certificate(Way.Lib.PlatformHelper.GetAppDirectory() + "EJServerCert.pfx", "123456"));
+                ScriptRemotingServer.UseHttps(new X509Certificate2(Way.Lib.PlatformHelper.GetAppDirectory() + "EJServerCert.pfx", "123456"));
                 Console.WriteLine($"use ssl EJServerCert.pfx");
                 Console.WriteLine($"server starting at port:{port}...");
                 var webroot = $"{Way.Lib.PlatformHelper.GetAppDirectory()}Port{port}";

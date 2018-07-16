@@ -6,6 +6,10 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <FileVersion>1.0.2.2</FileVersion>
     <AssemblyVersion>1.0.2.2</AssemblyVersion>
+    <PackageProjectUrl>https://github.com/simpleway2016/EntityDB</PackageProjectUrl>
+    <Description>Way.EntityDB是一个基于EF Core的数据层框架，它取消了EF Core的Migration机制，因为Migration并不是通用的，比如说sql server生成的migration，如果换成sqlite，运行时会报错的，也就是数据库不能更换。
+Way.EntityDB内置建模工具，通过图形化建表，生成Model对象代码，并且它会把表结构的修改过程，全部记录下来，涵盖在Model代码里面，所以，在新的代码运行时，数据库也会自动更新到最新结构。</Description>
+    <Authors>Jack</Authors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

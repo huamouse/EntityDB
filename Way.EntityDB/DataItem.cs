@@ -341,6 +341,15 @@ namespace Way.EntityDB
                     if (columnDefine == null)
                         continue;
 
+                    if(columnDefine.IsDbGenerated)
+                    {
+                        //如果是自增长字段
+                        if(changeItem.Value.OriginalValue == null)
+                        {
+                            //如果主键原来是null，表示不是刻意更新这个字段，给id赋值，只是为了让数据库知道当前更新哪条记录
+                            continue;
+                        }
+                    }
 
                     object value = pinfo.GetValue(this);
 

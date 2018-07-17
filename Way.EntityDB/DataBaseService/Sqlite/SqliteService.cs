@@ -61,6 +61,11 @@ namespace Way.EntityDB
         {
             return false;
         }
+        /// <summary>
+        /// 返回获取自增长字段值的sql语句
+        /// </summary>
+        /// <param name="pkColumnName"></param>
+        /// <returns></returns>
         protected virtual string GetInsertIDValueSqlString(string pkColumnName)
         {
             return "select last_insert_rowid()";

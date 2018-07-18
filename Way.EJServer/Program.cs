@@ -52,7 +52,7 @@ namespace Way.EJServer
                 server.UseHttps(new X509Certificate2(Way.Lib.PlatformHelper.GetAppDirectory() + "EJServerCert.pfx", "123456"));
                 Console.WriteLine($"use ssl EJServerCert.pfx");
 
-                SessionState.Timeout = 60 * 24;
+                server.SessionTimeout = 60 * 24;
 
                 server.Start();
             }

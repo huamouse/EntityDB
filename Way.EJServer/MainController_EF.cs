@@ -518,23 +518,14 @@ namespace Way.EJServer
                         lastid = action.Save(db, database.id.GetValueOrDefault());
                     }
 
-
-                    string conStr = string.Format(database.conStr, $"{WebRoot}/");
-                    if (conStr.ToLower() == db.Database.ConnectionString.ToLower())
-                    {
-                        invokingDB = db.Database;
-                    }
-                    else
-                    {
-                        invokingDB = DBHelper.CreateInvokeDatabase(database);
-                    }
+                    invokingDB = DBHelper.CreateInvokeDatabase(database);
 
                     if (lastid != null)
                         SetLastUpdateID(lastid, database.Guid, invokingDB);
                     db.CommitTransaction();
                 }
                 catch (Exception ex)
-                {
+                {                   
                     db.RollbackTransaction();
                     throw ex;
                 }
@@ -878,16 +869,8 @@ namespace Way.EJServer
                         }
                     }
 
-                    string conStr = string.Format(database.conStr, $"{WebRoot}/");
-                    if (conStr.ToLower() == db.Database.ConnectionString.ToLower())
-                    {
-                        invokingDB = db.Database;
-                    }
-                    else
-                    {
-                        invokingDB = DBHelper.CreateInvokeDatabase(database);
-                        invokingDB.DBContext.BeginTransaction();
-                    }
+                    invokingDB = DBHelper.CreateInvokeDatabase(database);
+                    invokingDB.DBContext.BeginTransaction();
 
                     List<EJ.IDXIndex> submitedIndexes = new List<EJ.IDXIndex>();
                     foreach (var config in idxConfigs)
@@ -1139,19 +1122,8 @@ namespace Way.EJServer
                     database.iLock++;
                     db.Update(database);
 
-                    string conStr = string.Format(database.conStr, $"{WebRoot}/");
-                    if (conStr.ToLower() == db.Database.ConnectionString.ToLower())
-                    {
-                        invokingDB = db.Database;
-                    }
-                    else
-                    {
-                        invokingDB = DBHelper.CreateInvokeDatabase(database);
-                        invokingDB.DBContext.BeginTransaction();
-                    }
-
-
-
+                    invokingDB = DBHelper.CreateInvokeDatabase(database);
+                    invokingDB.DBContext.BeginTransaction();
 
                     EJ.DBTable table = db.DBTable.FirstOrDefault(m => m.DatabaseID == databaseID && m.Name == tableName);
                     EJ.IDXIndex[] indexes = db.IDXIndex.Where(m => m.TableID == table.id).ToArray();
@@ -1222,16 +1194,10 @@ namespace Way.EJServer
                     EJ.Databases database = db.Databases.Where(m => m.id == databaseid).FirstOrDefault();
                     database.iLock++;
                     db.Update(database);
-                    string conStr = string.Format(database.conStr, $"{WebRoot}/");
-                    if (conStr.ToLower() == db.Database.ConnectionString.ToLower())
-                    {
-                        invokingDB = db.Database;
-                    }
-                    else
-                    {
-                        invokingDB = DBHelper.CreateInvokeDatabase(database);
-                        invokingDB.DBContext.BeginTransaction();
-                    }
+
+                    invokingDB = DBHelper.CreateInvokeDatabase(database);
+                    invokingDB.DBContext.BeginTransaction();
+
                     object lastActionID = null;
                     foreach (var tableinfo in tableinfos)
                     {
@@ -1320,18 +1286,8 @@ namespace Way.EJServer
                     database.iLock++;
                     db.Update(database);
 
-
-                    string conStr = string.Format(database.conStr, $"{WebRoot}/");
-                    if (conStr.ToLower() == db.Database.ConnectionString.ToLower())
-                    {
-                        invokingDB = db.Database;
-                    }
-                    else
-                    {
-                        invokingDB = DBHelper.CreateInvokeDatabase(database);
-                        invokingDB.DBContext.BeginTransaction();
-                    }
-
+                    invokingDB = DBHelper.CreateInvokeDatabase(database);
+                    invokingDB.DBContext.BeginTransaction();
 
                     if (db.DBTable.Where(m => m.DatabaseID == table.DatabaseID && m.Name == table.Name).Any())
                         throw new Exception("数据表名称重复");
@@ -1944,7 +1900,7 @@ namespace Way.EJServer
         [RemotingMethod]
         public FileInfo[] GetUpdateFileList()
         {
-            string folder = $"{WebRoot}/updates";
+            string folder = $"{RemotingContext.Current.WebRoot}updates";
             if (System.IO.Directory.Exists(folder) == false)
                 return new FileInfo[0];
             List<FileInfo> fileinfos = new List<FileInfo>();
@@ -1977,7 +1933,7 @@ namespace Way.EJServer
             savepath = savepath.Replace("\\", "/");
             while (savepath.StartsWith("/"))
                 savepath = savepath.Substring(1);
-            return Convert.ToBase64String(System.IO.File.ReadAllBytes($"{WebRoot}/updates/{savepath}"));
+            return Convert.ToBase64String(System.IO.File.ReadAllBytes($"{RemotingContext.Current.WebRoot}updates/{savepath}"));
         }
     }
     public class TableInfo

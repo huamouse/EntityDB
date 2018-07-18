@@ -542,15 +542,7 @@ create table __action (
                     }
 
 
-                    string conStr = string.Format(database.conStr, $"{WebRoot}/");
-                    if (conStr.ToLower() == db.Database.ConnectionString.ToLower())
-                    {
-                        invokingDB = db.Database;
-                    }
-                    else
-                    {
-                        invokingDB = DBHelper.CreateInvokeDatabase(database);
-                    }
+                    invokingDB = DBHelper.CreateInvokeDatabase(database);
 
                     if (lastid != null)
                         SetLastUpdateID(lastid, database.Guid, invokingDB);
@@ -912,17 +904,8 @@ create table __action (
                         }
                     }
 
-                    string conStr = string.Format(database.conStr, $"{WebRoot}/");
-                    if (conStr.ToLower() == db.Database.ConnectionString.ToLower())
-                    {
-                        invokingDB = db.Database;
-                    }
-                    else
-                    {
-                        invokingDB = DBHelper.CreateInvokeDatabase(database);
-                        invokingDB.DBContext.BeginTransaction();
-                    }
-
+                    invokingDB = DBHelper.CreateInvokeDatabase(database);
+                    invokingDB.DBContext.BeginTransaction();
 
 
                     ChangeTableAction action = new ChangeTableAction(oldtable.Name, newtable.Name,
@@ -1125,17 +1108,8 @@ create table __action (
                     database.iLock++;
                     db.Update(database);
 
-                    string conStr = string.Format(database.conStr, $"{WebRoot}/");
-                    if (conStr.ToLower() == db.Database.ConnectionString.ToLower())
-                    {
-                        invokingDB = db.Database;
-                    }
-                    else
-                    {
-                        invokingDB = DBHelper.CreateInvokeDatabase(database);
-                        invokingDB.DBContext.BeginTransaction();
-                    }
-
+                    invokingDB = DBHelper.CreateInvokeDatabase(database);
+                    invokingDB.DBContext.BeginTransaction();
 
                     var action = new DeleteTableAction(tableName);
                     action.Invoke(invokingDB);
@@ -1205,16 +1179,10 @@ create table __action (
                     EJ.Databases database = db.Databases.Where(m => m.id == databaseid).FirstOrDefault();
                     database.iLock++;
                     db.Update(database);
-                    string conStr = string.Format(database.conStr, $"{WebRoot}/");
-                    if (conStr.ToLower() == db.Database.ConnectionString.ToLower())
-                    {
-                        invokingDB = db.Database;
-                    }
-                    else
-                    {
-                        invokingDB = DBHelper.CreateInvokeDatabase(database);
-                        invokingDB.DBContext.BeginTransaction();
-                    }
+
+                    invokingDB = DBHelper.CreateInvokeDatabase(database);
+                    invokingDB.DBContext.BeginTransaction();
+
                     object lastActionID = null;
                     foreach (var tableinfo in tableinfos)
                     {
@@ -1303,17 +1271,8 @@ create table __action (
                     db.Update(database);
 
 
-                    string conStr = string.Format(database.conStr, $"{WebRoot}/");
-                    if (conStr.ToLower() == db.Database.ConnectionString.ToLower())
-                    {
-                        invokingDB = db.Database;
-                    }
-                    else
-                    {
-                        invokingDB = DBHelper.CreateInvokeDatabase(database);
-                        invokingDB.DBContext.BeginTransaction();
-                    }
-
+                    invokingDB = DBHelper.CreateInvokeDatabase(database);
+                    invokingDB.DBContext.BeginTransaction();
 
                     if (db.DBTable.Where(m => m.DatabaseID == table.DatabaseID && m.Name == table.Name).Any())
                         throw new Exception("数据表名称重复");
@@ -1933,7 +1892,7 @@ create table __action (
         [RemotingMethod]
         public FileInfo[] GetUpdateFileList()
         {
-            string folder = $"{WebRoot}/updates";
+            string folder = $"{RemotingContext.Current.WebRoot}updates";
             if (System.IO.Directory.Exists(folder) == false)
                 return new FileInfo[0];
             List<FileInfo> fileinfos = new List<FileInfo>();
@@ -1966,7 +1925,7 @@ create table __action (
             savepath = savepath.Replace("\\", "/");
             while (savepath.StartsWith("/"))
                 savepath = savepath.Substring(1);
-            return Convert.ToBase64String( System.IO.File.ReadAllBytes($"{WebRoot}/updates/{savepath}"));
+            return Convert.ToBase64String( System.IO.File.ReadAllBytes($"{RemotingContext.Current.WebRoot}updates/{savepath}"));
         }
     }
    

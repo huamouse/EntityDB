@@ -17,6 +17,7 @@ namespace Way.EJServer
       
         public static void Main(string[] args)
         {
+            HttpServer server = null;
             try
             {
                 Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -26,14 +27,7 @@ namespace Way.EJServer
                 {
                     port = Convert.ToInt32(args[0]);
                 }
-
-                ScriptRemotingServer.RegisterHandler(new DownLoadCodeHandler());
-                ScriptRemotingServer.RegisterHandler(new DownLoadSimpleCodeHandler());
-                ScriptRemotingServer.RegisterHandler(new DownloadTableDataHandler());
-                ScriptRemotingServer.RegisterHandler(new ImportDataHandler());
-
-                ScriptRemotingServer.UseHttps(new X509Certificate2(Way.Lib.PlatformHelper.GetAppDirectory() + "EJServerCert.pfx", "123456"));
-                Console.WriteLine($"use ssl EJServerCert.pfx");
+                
                 Console.WriteLine($"server starting at port:{port}...");
                 var webroot = $"{Way.Lib.PlatformHelper.GetAppDirectory()}Port{port}";
 
@@ -46,11 +40,21 @@ namespace Way.EJServer
                 {
                     System.IO.File.WriteAllText($"{webroot}/main.html", "<html><body controller=\"Way.EJServer.MainController\"></body></html>");
                 }
-                Console.WriteLine($"path:{webroot}");
+
+                server = new HttpServer(new int[] { port }, webroot);
+                Console.WriteLine($"Root:{server.Root}");
+
+                server.RegisterHandler(new DownLoadCodeHandler());
+                server.RegisterHandler(new DownLoadSimpleCodeHandler());
+                server.RegisterHandler(new DownloadTableDataHandler());
+                server.RegisterHandler(new ImportDataHandler());
+
+                server.UseHttps(new X509Certificate2(Way.Lib.PlatformHelper.GetAppDirectory() + "EJServerCert.pfx", "123456"));
+                Console.WriteLine($"use ssl EJServerCert.pfx");
 
                 SessionState.Timeout = 60 * 24;
 
-                ScriptRemotingServer.Start(port, webroot, 1);
+                server.Start();
             }
             catch(Exception ex)
             {
@@ -71,7 +75,7 @@ namespace Way.EJServer
                 else if (line == "exit")
                     break;
             }
-            ScriptRemotingServer.Stop();
+            server?.Stop();
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
 

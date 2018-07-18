@@ -23,7 +23,7 @@ namespace Way.EJServer
             if (_ConnectionString != null)
                 return _ConnectionString;
 
-            _ConnectionString = $"Data Source=\"{Way.Lib.ScriptRemoting.RemotingController.WebRoot}EasyJob.db\"";
+            _ConnectionString = $"Data Source=\"{Way.Lib.ScriptRemoting.RemotingContext.Current.WebRoot}EasyJob.db\"";
             return _ConnectionString;
         }
 

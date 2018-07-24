@@ -31,7 +31,7 @@ namespace Way.EntityDB.Design
         /// <summary>
         /// 目前支持的数据库字段类型
         /// </summary>
-       public static List<string> SupportTypes
+        public static List<string> SupportTypes
         {
             get
             {
@@ -59,7 +59,43 @@ namespace Way.EntityDB.Design
             return outBuffer.ToArray();
         }
 
-        public static void Upgrade(EntityDB.DBContext dbContext,string designData)
+        public static List<EntityDB.Design.Actions.Action> GetDatabaseActions(string designData)
+        {
+            var list = new List<EntityDB.Design.Actions.Action>();
+            if (designData.IsNullOrEmpty())
+                return list;
+
+            byte[] bs;
+            if (designData.StartsWith("\r\n"))
+            {
+                bs = System.Convert.FromBase64String(designData.Substring(2));
+                bs = UnGzip(bs);
+            }
+            else
+            {
+                bs = System.Convert.FromBase64String(designData);
+            }
+
+            using (var dset = Newtonsoft.Json.JsonConvert.DeserializeObject<WayDataSet>(System.Text.Encoding.UTF8.GetString(bs)))
+            {
+                var assembly = typeof(Way.EntityDB.Design.Actions.CreateTableAction).GetTypeInfo().Assembly;
+                var dtable = dset.Tables[0];
+                var rows = dtable.Rows.OrderBy(m => (long)m["id"]).ToList();
+                foreach( var datarow in rows)
+                {
+                    string actionType = datarow["type"].ToString();
+
+                    string json = datarow["content"].ToString();
+
+                    Type type = assembly.GetType($"Way.EntityDB.Design.Actions.{actionType}");
+                    var actionItem = (EntityDB.Design.Actions.Action)Newtonsoft.Json.JsonConvert.DeserializeObject(json, type);
+                    list.Add(actionItem);
+                }
+            }
+            return list;
+        }
+
+        public static void Upgrade(EntityDB.DBContext dbContext, string designData)
         {
             if (designData.IsNullOrEmpty())
                 return;
@@ -90,12 +126,12 @@ namespace Way.EntityDB.Design
                 if (string.IsNullOrEmpty(dbconfig.DatabaseGuid) == false && dbconfig.DatabaseGuid != dset.DataSetName)
                     throw new Exception("此结构脚本并不是对应此数据库");
 
-               
+
                 var dtable = dset.Tables[0];
                 try
                 {
-                    var query = dtable.Rows.Where(m=>(long)m["id"] > dbconfig.LastUpdatedID).OrderBy(m=>(long)m["id"]).ToList();
-                   
+                    var query = dtable.Rows.Where(m => (long)m["id"] > dbconfig.LastUpdatedID).OrderBy(m => (long)m["id"]).ToList();
+
                     if (query.Count > 0)
                     {
                         int? lastid = Convert.ToInt32(query.Last()["id"]);

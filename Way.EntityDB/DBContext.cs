@@ -743,6 +743,15 @@ namespace Way.EntityDB
             this.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
+        /// <summary>
+        /// 获取数据库结构修改的所有action
+        /// </summary>
+        /// <returns></returns>
+        public List<Design.Actions.Action> GetDesignActions()
+        {
+            return Way.EntityDB.Design.DBUpgrade.GetDatabaseActions(GetDesignString());
+        }
+
         static Dictionary<Type,bool> CreatedIfNotExist = new Dictionary<Type, bool>();
         /// <summary>
         /// 如果数据库不存在，创建数据库，此方法在构造函数中自动调用，如果不想创建数据库，请重写此方法

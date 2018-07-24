@@ -20,6 +20,7 @@ namespace Way.EntityDB.Test
         const string SqlServerConstr = "server=192.168.136.137;uid=sa;pwd=Sql12345678;Database=TestDB";
         const string PostgreSqlConStr = "Server=192.168.136.137;Port=5432;UserId=postgres;Password=123456;Database=TestDB;";
         const string MySqlConStr = "server=192.168.136.137;User Id=user1;password=User.123456;Database=TestDB";
+
         [TestMethod]
         public void ConnectionString_Check()
         {

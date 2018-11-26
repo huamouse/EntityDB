@@ -199,7 +199,6 @@ namespace Way.EntityDB.Design
                                                 {
                                                     deletedColumnids.Add(c.id.Value);
                                                 }
-                                                break;
                                             }
                                         }
                                     }

@@ -7,116 +7,21 @@ using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace MyDB{
-
-
-    /// <summary>
-	/// 用户信息
-	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("userinfo")]
-    [Way.EntityDB.Attributes.Table("id")]
-    public class UserInfo :Way.EntityDB.DataItem
-    {
-
-        /// <summary>
-	    /// 
-	    /// </summary>
-        public  UserInfo()
-        {
-        }
-
-
-        System.Nullable<Int32> _id;
-        /// <summary>
-        /// 
-        /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
-        public virtual System.Nullable<Int32> id
-        {
-            get
-            {
-                return this._id;
-            }
-            set
-            {
-                if ((this._id != value))
-                {
-                    this.SendPropertyChanging("id",this._id,value);
-                    this._id = value;
-                    this.SendPropertyChanged("id");
-
-                }
-            }
-        }
-
-        String _UserName;
-        /// <summary>
-        /// 用户名
-        /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("username")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="username",Comment="",Caption="用户名",Storage = "_UserName",DbType="varchar(50)")]
-        public virtual String UserName
-        {
-            get
-            {
-                return this._UserName;
-            }
-            set
-            {
-                if ((this._UserName != value))
-                {
-                    this.SendPropertyChanging("UserName",this._UserName,value);
-                    this._UserName = value;
-                    this.SendPropertyChanged("UserName");
-
-                }
-            }
-        }
-
-        String _Password;
-        /// <summary>
-        /// 密码
-        /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("password")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="password",Comment="",Caption="密码",Storage = "_Password",DbType="varchar(50)")]
-        public virtual String Password
-        {
-            get
-            {
-                return this._Password;
-            }
-            set
-            {
-                if ((this._Password != value))
-                {
-                    this.SendPropertyChanging("Password",this._Password,value);
-                    this._Password = value;
-                    this.SendPropertyChanged("Password");
-
-                }
-            }
-        }
-
-        [System.ComponentModel.DataAnnotations.Schema.ForeignKey("UserId")]
-        public virtual ICollection<FamilyInfo> Families { get; set; }
-}}
-namespace MyDB{
+namespace TDB{
 
 
     /// <summary>
 	/// 
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("familyinfo")]
+    [System.ComponentModel.DataAnnotations.Schema.Table("userinfo2")]
     [Way.EntityDB.Attributes.Table("id")]
-    public class FamilyInfo :Way.EntityDB.DataItem
+    public class UserInfo2 :Way.EntityDB.DataItem
     {
 
         /// <summary>
 	    /// 
 	    /// </summary>
-        public  FamilyInfo()
+        public  UserInfo2()
         {
         }
 
@@ -146,83 +51,124 @@ namespace MyDB{
             }
         }
 
-        System.Nullable<Int32> _UserId;
+        String _Name;
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("userid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="userid",Comment="",Caption="",Storage = "_UserId",DbType="int")]
-        public virtual System.Nullable<Int32> UserId
+        [System.ComponentModel.DataAnnotations.Schema.Column("name")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="name",Comment="",Caption="",Storage = "_Name",DbType="varchar(50)")]
+        public virtual String Name
         {
             get
             {
-                return this._UserId;
+                return this._Name;
             }
             set
             {
-                if ((this._UserId != value))
+                if ((this._Name != value))
                 {
-                    this.SendPropertyChanging("UserId",this._UserId,value);
-                    this._UserId = value;
-                    this.SendPropertyChanged("UserId");
+                    this.SendPropertyChanging("Name",this._Name,value);
+                    this._Name = value;
+                    this.SendPropertyChanged("Name");
 
                 }
             }
         }
 
-        String _MotherName;
+        String _column1;
         /// <summary>
-        /// 母亲姓名
+        /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("mothername")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="mothername",Comment="",Caption="母亲姓名",Storage = "_MotherName",DbType="varchar(50)")]
-        public virtual String MotherName
+        [System.ComponentModel.DataAnnotations.Schema.Column("column1")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="column1",Comment="",Caption="",Storage = "_column1",DbType="varchar(50)")]
+        public virtual String column1
         {
             get
             {
-                return this._MotherName;
+                return this._column1;
             }
             set
             {
-                if ((this._MotherName != value))
+                if ((this._column1 != value))
                 {
-                    this.SendPropertyChanging("MotherName",this._MotherName,value);
-                    this._MotherName = value;
-                    this.SendPropertyChanged("MotherName");
+                    this.SendPropertyChanging("column1",this._column1,value);
+                    this._column1 = value;
+                    this.SendPropertyChanged("column1");
 
                 }
             }
         }
+}}
+namespace TDB{
 
-        String _FatherName;
+
+    /// <summary>
+	/// 
+	/// </summary>
+    [System.ComponentModel.DataAnnotations.Schema.Table("t2")]
+    [Way.EntityDB.Attributes.Table("id")]
+    public class t2 :Way.EntityDB.DataItem
+    {
+
         /// <summary>
-        /// 父亲姓名
+	    /// 
+	    /// </summary>
+        public  t2()
+        {
+        }
+
+
+        System.Nullable<Int32> _id;
+        /// <summary>
+        /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("fathername")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="fathername",Comment="",Caption="父亲姓名",Storage = "_FatherName",DbType="varchar(50)")]
-        public virtual String FatherName
+[System.ComponentModel.DataAnnotations.Key]
+        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
+        public virtual System.Nullable<Int32> id
         {
             get
             {
-                return this._FatherName;
+                return this._id;
             }
             set
             {
-                if ((this._FatherName != value))
+                if ((this._id != value))
                 {
-                    this.SendPropertyChanging("FatherName",this._FatherName,value);
-                    this._FatherName = value;
-                    this.SendPropertyChanged("FatherName");
+                    this.SendPropertyChanging("id",this._id,value);
+                    this._id = value;
+                    this.SendPropertyChanged("id");
 
                 }
             }
         }
 
-        [System.ComponentModel.DataAnnotations.Schema.ForeignKey("UserId")]
-        public virtual UserInfo User { get; set; }
+        String _column1;
+        /// <summary>
+        /// 
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Schema.Column("column1")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="column1",Comment="",Caption="",Storage = "_column1",DbType="varchar(50)")]
+        public virtual String column1
+        {
+            get
+            {
+                return this._column1;
+            }
+            set
+            {
+                if ((this._column1 != value))
+                {
+                    this.SendPropertyChanging("column1",this._column1,value);
+                    this._column1 = value;
+                    this.SendPropertyChanged("column1");
+
+                }
+            }
+        }
 }}
 
-namespace MyDB.DB{
+namespace TDB.DB{
     /// <summary>
 	/// 
 	/// </summary>
@@ -254,33 +200,10 @@ namespace MyDB.DB{
 
         static void Database_BeforeDelete(object sender, Way.EntityDB.DatabaseModifyEventArg e)
         {
-            var db =  sender as MyDB.DB.TestDB;
+            var db =  sender as TDB.DB.TestDB;
             if (db == null)
                 return;
 
-
-                    if (e.DataItem is MyDB.UserInfo)
-                    {
-                        var deletingItem = (MyDB.UserInfo)e.DataItem;
-                        
-                    var items0 = (from m in db.FamilyInfo
-                    where m.UserId == deletingItem.id
-                    select new MyDB.FamilyInfo
-                    {
-                        id = m.id
-                    });
-                    while(true)
-                    {
-                        var data2del = items0.Take(100).ToList();
-                        if(data2del.Count() ==0)
-                            break;
-                        foreach (var t in data2del)
-                        {
-                            db.Delete(t);
-                        }
-                    }
-
-                    }
 
         }
 
@@ -290,48 +213,48 @@ namespace MyDB.DB{
         /// <param name="modelBuilder"></param>
          protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-   modelBuilder.Entity<MyDB.UserInfo>().HasKey(m => m.id);
-modelBuilder.Entity<MyDB.FamilyInfo>().HasKey(m => m.id);
+   modelBuilder.Entity<TDB.UserInfo2>().HasKey(m => m.id);
+modelBuilder.Entity<TDB.t2>().HasKey(m => m.id);
 }
 
-        System.Linq.IQueryable<MyDB.UserInfo> _UserInfo;
-        /// <summary>
-        /// 用户信息
-        /// </summary>
-        public virtual System.Linq.IQueryable<MyDB.UserInfo> UserInfo
-        {
-             get
-            {
-                if (_UserInfo == null)
-                {
-                    _UserInfo = this.Set<MyDB.UserInfo>();
-                }
-                return _UserInfo;
-            }
-        }
-
-        System.Linq.IQueryable<MyDB.FamilyInfo> _FamilyInfo;
+        System.Linq.IQueryable<TDB.UserInfo2> _UserInfo2;
         /// <summary>
         /// 
         /// </summary>
-        public virtual System.Linq.IQueryable<MyDB.FamilyInfo> FamilyInfo
+        public virtual System.Linq.IQueryable<TDB.UserInfo2> UserInfo2
         {
              get
             {
-                if (_FamilyInfo == null)
+                if (_UserInfo2 == null)
                 {
-                    _FamilyInfo = this.Set<MyDB.FamilyInfo>();
+                    _UserInfo2 = this.Set<TDB.UserInfo2>();
                 }
-                return _FamilyInfo;
+                return _UserInfo2;
+            }
+        }
+
+        System.Linq.IQueryable<TDB.t2> _t2;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual System.Linq.IQueryable<TDB.t2> t2
+        {
+             get
+            {
+                if (_t2 == null)
+                {
+                    _t2 = this.Set<TDB.t2>();
+                }
+                return _t2;
             }
         }
 
 protected override string GetDesignString(){System.Text.StringBuilder result = new System.Text.StringBuilder(); 
 result.Append("\r\n");
-result.Append("H4sIAAAAAAAAC+1YzW7aQBB+lz1DhY2BhFsEimS1pVFJq0qBw2KPwep6ndpLEUIccqlyiRSpfYD21N6QemilXvoygbxGd9cGGzu4aSsokXxi53e/wfN5Rp6gU9wj4KP62SQ4trADqI7ab4jNABXQc3cUWHUGTnAKXWyTm19iMuSCMi2s9Gx8DpEFNTzADGTuI4PZLkUx");
-result.Append("X8OlDCiLuU86AY4OqvOjbfJfpdBBBj4XsVzqoNsPXxaX329+flpczDqIG0UyaXnhg6dTy5XaJma4h33Qm2EO+4lrvObn0pQLDZcMHepz8Sx+zyqV0HBZ94+GzNWp4YHDgXIT84Yg4jFtDQnhCgsTX2jM3imvPAgWnoWwktX9un/yWAphCtczwZM3c0RLEOqdxc6vr9KV");
-result.Append("BsKdIJeYIpThnTGQb7FnDLAnMxCgfTaQ6kopC/oycYRdibCXE9jns3e3Hy/WgZ9g3x/x6P8PXJ12hUPzVcOllt2XrRBo5BOJt6kZttJ6y3clO9qMt3fwCLM5om6TI2r8Pz7Gjk3Gf08EbYtEUO9LhEqK2P/SM0sgsX7JApbZ5tVEmy9mVzc/vs4/v0+x9KnLBjvj6W8K");
-result.Append("UKMCasl3zOW3DQUc4/0poLxjvpYz+DrAtP9HfH1GzNV4TY+qFowyrLKJ8nmVzyvR7RRGsVYQGkM2o5nQmkCApbS7Y4+Wsyff9vZu23so7KlslT2J/TA1fRL2TfMnXxPzNXFf18SHQvRqPibzMZmPyQ3s4WLITCT4E5zjLBKfNsQLRHyxHPucaI90yqqapOmadzhE0/5t");
-result.Append("5tm0nw6IJun9Y9beCBuhdUVZwtoGFgZWNPOwVOsZRVyzekVNOVSKByVNLVqqZihVUMtwUEbTX+YvzTWtFQAA");
+result.Append("H4sIAAAAAAAAC91YTXPaMBD9LzpDB4sPh9wIXDzt0ExJO50JHIS9Np4ImcpyaYbxf68k29jU1IWmATUnpN2V9FbvSVqzQw9kSSFGt4+7rDkla0C3aPaNhgJQC32KtpnXEbDOWnlI6En3F0IT2bHS1t4unjdQetCYAxGg5x65IowYqsS6ERPARCV8N89wzNGtbIae/LVa");
+result.Append("cx0vm3P0OQbuMD+aI2mdEEGWJAZnkoeFHyL3SbY7qeyMI5qsWSy7j0enUhbZd+JRIiKHuRzWEot0CZ6AGk/YNKFUGnxCY2Xxlg8yuWywimzlYPfrO/H9e93Jp4i4B1yvLBEVIHAVRNY4CqNYtcSRz1qB8Z1wd0W4noECC8RKm/udJnDFxCU6q0TXraIbBS8BV+xRBdh5");
+result.Append("sHC6UAGTr+OI+WGgqcwsekerSvJyKRyqcqEFPBNSgRkFzTLGDTJeERacJeOP1NufqLp0p7Bt8DLYHlFvr0rNDH5cXzddTZCr98Y7gvhXMeGrqkn27oj7lGwyMr17Hm2AixAU5t0eqeKOh0HICNV0lichTXW+HlAQB/leVqZdM2XaLIXarYcNuPZeoojMZ4gkem9CEm9A");
+result.Append("EbhBEmbeiuXTb+r7crlj1H/NOvZA7gL/XQXbf8UKFp9awQ6qIFwN0rqAWPCfitjLimVg5p1bkGRfh6STSvr6m2DCI2obQCg++RU1YcduLrJj+PwtKw7BTf0QYHM/m0ygdGgqpeds2f9A/7+jVHbz3JEiNWtXqVVVhkpC/bH3HEv23zlMDHp6oYPonPB6/EzwkAX1ASXr");
+result.Append("p485yOm30BYqLeWdgcgH9sHt9LE9bPtet9vu+UPSJu7Abvu+BTDoWdi2PZT+BL8svBDUFAAA");
 return result.ToString();}
 }}

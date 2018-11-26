@@ -102,7 +102,7 @@ namespace Way.EntityDB.Test
             var file = $"{AppDomain.CurrentDomain.BaseDirectory}testej.db";
             if (File.Exists(file))
                 File.Delete(file);
-            using (var db = new EJ.DB.easyjob($"data source=\"{file}\"", DatabaseType.Sqlite))
+            using (var db = new TDB.DB.TestDB($"data source=\"{file}\"", DatabaseType.Sqlite))
             {
 
             }

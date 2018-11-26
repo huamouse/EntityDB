@@ -323,7 +323,7 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
         }
 
         public void ChangeTable(EntityDB.IDatabaseService database, string oldTableName, string newTableName, 
-            EJ.DBColumn[] addColumns, EJ.DBColumn[] changedColumns, EJ.DBColumn[] deletedColumns,EJ.DBColumn[] otherColumns
+            EJ.DBColumn[] addColumns, EJ.DBColumn[] changedColumns, EJ.DBColumn[] deletedColumns, Func<List<EJ.DBColumn>> getColumnsFunc
             , IndexInfo[] indexInfos)
         {
             oldTableName = oldTableName.ToLower();

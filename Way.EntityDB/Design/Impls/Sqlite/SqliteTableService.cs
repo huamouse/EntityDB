@@ -168,7 +168,7 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
                 }
             }
         }
-        public void ChangeTable(EntityDB.IDatabaseService database, string oldTableName, string newTableName, EJ.DBColumn[] addColumns, EJ.DBColumn[] changedColumns, EJ.DBColumn[] deletedColumns, EJ.DBColumn[] otherColumns, IndexInfo[] _indexInfos)
+        public void ChangeTable(EntityDB.IDatabaseService database, string oldTableName, string newTableName, EJ.DBColumn[] addColumns, EJ.DBColumn[] changedColumns, EJ.DBColumn[] deletedColumns, Func<List<EJ.DBColumn>> getColumnsFunc, IndexInfo[] _indexInfos)
         {
             oldTableName = oldTableName.ToLower();
             newTableName = newTableName.ToLower();
@@ -193,8 +193,16 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
                         Name = newTableName,
                     };
                 //PRAGMA table_info([project]) 用name type
-                List<EJ.DBColumn> allColumns = new List<EJ.DBColumn>();
-                allColumns.AddRange(otherColumns);
+                var allColumns = getColumnsFunc();
+                for(int i = 0; i < allColumns.Count; i ++)
+                {
+                    var columnid = allColumns[i].id;
+                    if( deletedColumns.Any(m=>m.id == columnid) || changedColumns.Any(m => m.id == columnid))
+                    {
+                        allColumns.RemoveAt(i);
+                        i--;
+                    }
+                }
                 allColumns.AddRange(addColumns);
                 allColumns.AddRange(changedColumns);
 

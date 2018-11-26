@@ -176,7 +176,7 @@ CREATE TABLE `" + table.Name.ToLower() + @"` (
                table = table.ToLower();
             database.ExecSqlString("ALTER TABLE `" + table + "` DROP INDEX `" + indexName + "`");
         }
-        public void ChangeTable(EntityDB.IDatabaseService database, string oldTableName, string newTableName, EJ.DBColumn[] addColumns, EJ.DBColumn[] changedColumns, EJ.DBColumn[] deletedColumns, EJ.DBColumn[] otherColumns, IndexInfo[] _indexInfos)
+        public void ChangeTable(EntityDB.IDatabaseService database, string oldTableName, string newTableName, EJ.DBColumn[] addColumns, EJ.DBColumn[] changedColumns, EJ.DBColumn[] deletedColumns, Func<List<EJ.DBColumn>> getColumnsFunc, IndexInfo[] _indexInfos)
         {
             oldTableName = oldTableName.ToLower();
             newTableName = newTableName.ToLower();

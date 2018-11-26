@@ -139,12 +139,73 @@ namespace Way.EntityDB.Design
                         db.DBContext.BeginTransaction();
                         foreach (var datarow in query)
                         {
-                            string actionType = datarow["type"].ToString();
+                            var rowid = Convert.ToInt32(datarow["id"]);
+                            var actionItem = dataRowToAction(assembly, datarow);
 
-                            string json = datarow["content"].ToString();
+                            if(actionItem is EntityDB.Design.Actions.ChangeTableAction)
+                            {
+                                var changeAction = (EntityDB.Design.Actions.ChangeTableAction)actionItem;
+                                changeAction._getColumnsFunc = () => {
+                                    List<EJ.DBColumn> allcolumns = new List<EJ.DBColumn>();
 
-                            Type type = assembly.GetType($"Way.EntityDB.Design.Actions.{actionType}");
-                            var actionItem = (EntityDB.Design.Actions.Action)Newtonsoft.Json.JsonConvert.DeserializeObject(json, type);
+                                    //往上逆推，查找字段信息
+                                    var datarows = dtable.Rows.Where(m => (long)m["id"] < rowid).OrderByDescending(m => (long)m["id"]).ToList();
+                                    var curTableName = changeAction.OldTableName;
+                                    List<int> deletedColumnids = new List<int>();
+
+                                    foreach (var preRow in datarows )
+                                    {
+                                        var preAction = dataRowToAction(assembly, preRow);
+                                        if(preAction is EntityDB.Design.Actions.CreateTableAction)
+                                        {
+                                            var tableAction = preAction as EntityDB.Design.Actions.CreateTableAction;
+                                            if (tableAction.Table.Name != curTableName)
+                                                continue;
+                                            else
+                                            {
+                                                foreach( var c in tableAction.Columns )
+                                                {
+                                                    if(allcolumns.Any(m=>m.id == c.id) == false)
+                                                    {
+                                                        allcolumns.Add(c);
+                                                    }
+                                                }
+                                                break;
+                                            }
+                                        }
+                                        else if (preAction is EntityDB.Design.Actions.ChangeTableAction)
+                                        {
+                                            var preChangeAction = preAction as EntityDB.Design.Actions.ChangeTableAction;
+                                            if (preChangeAction.NewTableName != curTableName)
+                                                continue;
+                                            else
+                                            {
+                                                curTableName = preChangeAction.OldTableName;
+                                                foreach (var c in preChangeAction.newColumns)
+                                                {
+                                                    if (deletedColumnids.Contains(c.id.Value) == false && allcolumns.Any(m => m.id == c.id) == false)
+                                                    {
+                                                        allcolumns.Add(c);
+                                                    }
+                                                }
+                                                foreach (var c in preChangeAction.changedColumns)
+                                                {
+                                                    if (deletedColumnids.Contains(c.id.Value) == false && allcolumns.Any(m => m.id == c.id) == false)
+                                                    {
+                                                        allcolumns.Add(c);
+                                                    }
+                                                }
+                                                foreach (var c in preChangeAction.deletedColumns)
+                                                {
+                                                    deletedColumnids.Add(c.id.Value);
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    return allcolumns;
+                                };
+                            }
 
                             actionItem.Invoke(db);
 
@@ -160,6 +221,16 @@ namespace Way.EntityDB.Design
                     throw;
                 }
             }
+        }
+
+        static EntityDB.Design.Actions.Action dataRowToAction(Assembly assembly, WayDataRow datarow)
+        {
+            string actionType = datarow["type"].ToString();
+            string json = datarow["content"].ToString();
+
+            Type type = assembly.GetType($"Way.EntityDB.Design.Actions.{actionType}");
+            var actionItem = (EntityDB.Design.Actions.Action)Newtonsoft.Json.JsonConvert.DeserializeObject(json, type);
+            return actionItem;
         }
 
         public static void SetLastUpdateID(object actionid, string databaseGuid, EntityDB.IDatabaseService db)

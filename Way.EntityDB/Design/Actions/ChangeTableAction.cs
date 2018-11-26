@@ -18,11 +18,9 @@ namespace Way.EntityDB.Design.Actions
             get;
             set;
         }
-         public EJ.DBColumn[] otherColumns
-         {
-             get;
-             set;
-         }
+
+        internal Func< List<EJ.DBColumn>> _getColumnsFunc;
+
          public EJ.DBColumn[] newColumns
         {
             get;
@@ -46,16 +44,17 @@ namespace Way.EntityDB.Design.Actions
 
          public ChangeTableAction()
         {
+            
         }
          public ChangeTableAction( string oldTableName, string newTableName, 
              EJ.DBColumn[] newColumns, EJ.DBColumn[] changedColumns,
-             EJ.DBColumn[] deletedColumns, EJ.DBColumn[] othercolumns, IndexInfo[] idxConfigs)
+             EJ.DBColumn[] deletedColumns, Func<List<EJ.DBColumn>> getColumnsFunc, IndexInfo[] idxConfigs)
         {
             this.OldTableName = oldTableName;
             this.NewTableName = newTableName;
             this.newColumns = newColumns;
 
-            this.otherColumns = othercolumns;
+            this._getColumnsFunc = getColumnsFunc; 
             this.changedColumns = changedColumns;
           
             this.deletedColumns = deletedColumns;
@@ -93,8 +92,11 @@ namespace Way.EntityDB.Design.Actions
          }
          public override void Invoke(EntityDB.IDatabaseService invokingDB)
         {
+            if (_getColumnsFunc == null)
+                throw new Exception("getColumnsFunc is null");
+
             ITableDesignService service = DBHelper.CreateTableDesignService(invokingDB.DBContext.DatabaseType);
-             service.ChangeTable(invokingDB, OldTableName, NewTableName, newColumns, changedColumns, deletedColumns,otherColumns , IDXConfigs);
+             service.ChangeTable(invokingDB, OldTableName, NewTableName, newColumns, changedColumns, deletedColumns, _getColumnsFunc, IDXConfigs);
         }
 
         public override string ToString()

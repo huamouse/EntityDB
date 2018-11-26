@@ -874,14 +874,12 @@ create table __action (
                         db.Update(idxIndex);
                     }
 
-                    var oldcolumns = db.DBColumn.Where(m => m.TableID == oldtable.id).ToArray().ToJsonString().ToJsonObject<EJ.DBColumn[]>();
+                    var oldcolumns = db.DBColumn.Where(m => m.TableID == oldtable.id).ToArray().ToJsonString().ToJsonObject<List<EJ.DBColumn>>();
                     //找出下面这些对象
                     EJ.DBColumn[] addcolumns = nowcolumns.Where(m => m.id == null).ToArray();
                     EJ.DBColumn[] delColumns = oldcolumns.Where(m => nowids.Contains(m.id) == false).ToArray();
 
-                    List<EJ.DBColumn> otherColumns = new List<EJ.DBColumn>();
-                    otherColumns.AddRange(oldcolumns.Where(m => nowids.Contains(m.id)).ToArray());
-
+                 
                     var maybeChanges = oldcolumns.Where(m => nowids.Contains(m.id)).ToArray();
                     List<EJ.DBColumn> changedColumns = new List<EJ.DBColumn>();
                     for (int i = 0; i < maybeChanges.Length; i++)
@@ -899,8 +897,6 @@ create table __action (
                         if (c.ChangedProperties.Count > 0)
                         {
                             changedColumns.Add(c);
-
-                            otherColumns.Remove(c);
                         }
                     }
 
@@ -909,7 +905,7 @@ create table __action (
 
 
                     ChangeTableAction action = new ChangeTableAction(oldtable.Name, newtable.Name,
-                        addcolumns, changedColumns.ToArray(), delColumns, otherColumns.ToArray(),
+                        addcolumns, changedColumns.ToArray(), delColumns, ()=> oldcolumns,
                         idxConfigs);
                     action.Invoke(invokingDB);
 

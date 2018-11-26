@@ -11,6 +11,7 @@ using Way.EntityDB.Design.Services;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace Way.EntityDB.Test
 { 
@@ -93,6 +94,18 @@ namespace Way.EntityDB.Test
             var data = result.ToString();
 
             Way.EntityDB.Design.DBUpgrade.Upgrade(null, data);
+        }
+
+        [TestMethod]
+        public void CreateDb()
+        {
+            var file = $"{AppDomain.CurrentDomain.BaseDirectory}testej.db";
+            if (File.Exists(file))
+                File.Delete(file);
+            using (var db = new EJ.DB.easyjob($"data source=\"{file}\"", DatabaseType.Sqlite))
+            {
+
+            }
         }
 
         [TestMethod]
@@ -195,7 +208,11 @@ namespace Way.EntityDB.Test
                 IsUnique = true,
             };
 
-            var invokeDB = EntityDB.DBContext.CreateDatabaseService($"data source=\"{AppDomain.CurrentDomain.BaseDirectory}\\test.sqlite\"", EntityDB.DatabaseType.Sqlite);
+            var dbfile = $"{AppDomain.CurrentDomain.BaseDirectory}test.sqlite";
+            if (File.Exists(dbfile))
+                File.Delete(dbfile);
+
+            var invokeDB = EntityDB.DBContext.CreateDatabaseService($"data source=\"{dbfile}\"", EntityDB.DatabaseType.Sqlite);
 
             var action = new EF_CreateTable_Action(table, columns, idxConfigs);
             invokeDB.DBContext.BeginTransaction();
@@ -219,15 +236,18 @@ namespace Way.EntityDB.Test
             IDatabaseDesignService dbservice;
             IDatabaseService db;
 
+            var dbfile = $"{AppDomain.CurrentDomain.BaseDirectory}test.sqlite";
+            if (File.Exists(dbfile))
+                File.Delete(dbfile);
 
             Test(new EJ.Databases()
             {
-                conStr = "data source=d:\\test\\test.db",
+                conStr = $"data source=\"{dbfile}\"",
                 Name = "TestingDb",
                 dbType = EJ.Databases_dbTypeEnum.Sqlite,
             });
             dbservice = EntityDB.Design.DBHelper.CreateDatabaseDesignService(DatabaseType.Sqlite);
-            db = EntityDB.DBContext.CreateDatabaseService("data source=d:\\test\\test.db", EntityDB.DatabaseType.Sqlite);
+            db = EntityDB.DBContext.CreateDatabaseService($"data source=\"{dbfile}\"", EntityDB.DatabaseType.Sqlite);
             dbservice.GetCurrentTableNames(db);
             dbservice.GetCurrentColumns(db, "test3");
             dbservice.GetCurrentIndexes(db, "test3");
@@ -423,6 +443,8 @@ namespace Way.EntityDB.Test
                     EJ.DBColumn[] deletecolumns = new EJ.DBColumn[1];
                     deletecolumns[0] = allColumns.FirstOrDefault(m => m.Name == "C2");
 
+                    var tableColumns = allColumns.ToList();
+
                     allColumns.Remove(deletecolumns[0]);
 
                     allindexes.Clear();
@@ -433,11 +455,7 @@ namespace Way.EntityDB.Test
                         IsClustered = true
                     });
 
-                    var otherColumns = (from m in allColumns
-                                        where changedColumns.Contains(m) == false
-                                        select m).ToArray();
-
-                    new ChangeTableAction(table.Name, "Test2", newcolumns, changedColumns, deletecolumns, otherColumns, allindexes.ToArray())
+                    new ChangeTableAction(table.Name, "Test2", newcolumns, changedColumns, deletecolumns, ()=> tableColumns, allindexes.ToArray())
                     .Invoke(db);
                     table.Name = "Test2";
                     allColumns.AddRange(newcolumns);
@@ -464,11 +482,9 @@ namespace Way.EntityDB.Test
 
                     EJ.DBColumn[] deletecolumns = new EJ.DBColumn[0];
 
-                    var otherColumns = (from m in allColumns
-                                        where changedColumns.Contains(m) == false
-                                        select m).ToArray();
+                    var tableColumns = allColumns.ToList();
 
-                    new ChangeTableAction(table.Name, "Test3", newcolumns, changedColumns, deletecolumns, otherColumns, allindexes.ToArray())
+                    new ChangeTableAction(table.Name, "Test3", newcolumns, changedColumns, deletecolumns, ()=>tableColumns, allindexes.ToArray())
                     .Invoke(db);
                     table.Name = "Test3";
                     allColumns.AddRange(newcolumns);

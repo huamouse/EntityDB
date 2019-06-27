@@ -270,22 +270,19 @@ namespace EJClient.Forms
                 }
                 else
                 {
-                    var dt = r.ToDataTable();
-                    if (dt.Rows.Count == 0)
+                    foreach( var c in r.Columns )
                     {
-
-                        //如果没有数据，可能column的数据类型都会是int，这样不对
-                        for (int i = 0; i < dt.Columns.Count; i++)
+                        try
                         {
-                            try
-                            {
-                                dt.Columns[i].DataType = SqlType2CsharpType(SqlTypeString2SqlType(m_columns.FirstOrDefault(m => string.Equals( m.Name , dt.Columns[i].ColumnName, StringComparison.CurrentCultureIgnoreCase)).dbType));
-                            }
-                            catch {
-                                dt.Columns[i].DataType = typeof(string);
-                            }
+                            c.DataType = SqlType2CsharpType(SqlTypeString2SqlType(m_columns.FirstOrDefault(m => string.Equals(m.Name, c.ColumnName, StringComparison.CurrentCultureIgnoreCase)).dbType)).ToString();
+                        }
+                        catch
+                        {
+                            c.DataType = typeof(string).ToString();
                         }
                     }
+                    var dt = r.ToDataTable();
+                   
 
                     int rowcount = Convert.ToInt32( dt.TableName);
                     dt.AcceptChanges();

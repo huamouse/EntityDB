@@ -5,19 +5,35 @@ using System.Linq;
 
 namespace Way.EntityDB.Design.Actions
 {
+    class ActionIdObject
+    {
+        public int ActionId = 0;
+    }
     public abstract class Action
     {
         public int ID { get; set; }
         public abstract void Invoke( EntityDB.IDatabaseService invokingDB);
         internal abstract void BeforeSave();
+
+        static System.Collections.Concurrent.ConcurrentDictionary<int, ActionIdObject> IDDict = new System.Collections.Concurrent.ConcurrentDictionary<int, ActionIdObject>();
         public object Save( EJ.DB.easyjob db , int databaseid)
         {
             BeforeSave();
 
-            var action = new EntityDB.CustomDataItem("__action" , "id" , null);
-            action.SetValue("type", this.GetType().Name);
-            action.SetValue("databaseid",databaseid);
-            action.SetValue("content", this.ToJsonString());
+            var action = new EJ.DesignHistory();
+            action.Type = this.GetType().Name;
+            action.DatabaseId = databaseid;
+            action.Content = this.ToJsonString();
+
+            var actionObject = IDDict.GetOrAdd(databaseid, new ActionIdObject());
+            lock(actionObject)
+            {
+                if(actionObject.ActionId == 0)
+                {
+                    actionObject.ActionId = db.DesignHistory.Where(m => m.DatabaseId == databaseid).Max(m => m.ActionId).GetValueOrDefault();
+                }
+            }
+            action.ActionId = System.Threading.Interlocked.Increment(ref actionObject.ActionId);
 
             db.Insert(action);
             return action.GetValue("id");

@@ -149,8 +149,8 @@ namespace "+nameSpace+@".DB{
             }
             result.Append("\r\n");
 
-            
-            var dt = db.Database.SelectDataSet("select * from __action where databaseid=" + databaseObj.id + " order by [id]");
+
+            var dt = db.Database.SelectDataSet("select actionid as [id],type,content,databaseid from designhistory where databaseid=" + databaseObj.id + " order by [actionid]");
             dt.Tables[0].TableName = databaseObj.dbType.ToString();
             dt.DataSetName = databaseObj.Guid;
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(dt);

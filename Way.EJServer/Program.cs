@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EJ;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -22,14 +23,14 @@ namespace Way.EJServer
             {
                 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-                int port = 6061;
+                int port = 6068;
                 if (args != null && args.Length > 0)
                 {
                     port = Convert.ToInt32(args[0]);
                 }
                 
                 Console.WriteLine($"server starting at port:{port}...");
-                var webroot = $"{Way.Lib.PlatformHelper.GetAppDirectory()}Port{port}";
+                var webroot = $"{AppDomain.CurrentDomain.BaseDirectory}Port{port}";
 
                 if (!System.IO.Directory.Exists(webroot))
                 {
@@ -53,6 +54,37 @@ namespace Way.EJServer
                 Console.WriteLine($"use ssl EJServerCert.pfx");
 
                 server.SessionTimeout = 60 * 24;
+
+
+                //copy action table data
+                //复制action表
+                using (var db = new EJ.DB.easyjob($"Data Source=\"{webroot}/EasyJob.db\"" , DatabaseType.Sqlite))
+                {
+                    if(db.DesignHistory.Count() == 0)
+                    {
+                        db.BeginTransaction();
+                        try
+                        {
+                            db.Database.ExecuteReader((reader) =>
+                            {
+                                db.Insert(new DesignHistory() { 
+                                    ActionId = Convert.ToInt32(reader["id"]),
+                                    Type = (string)reader["type"],
+                                    Content = (string)reader["content"],
+                                    DatabaseId = Convert.ToInt32(reader["databaseid"]),
+                                });
+                                return true;
+                            }, "select * from __action", null);
+                            db.CommitTransaction();
+                        }
+                        catch (Exception)
+                        {
+                            db.RollbackTransaction();
+                            throw;
+                        }
+                       
+                    }
+                }
 
                 server.Start();
             }

@@ -487,7 +487,8 @@ namespace Way.EJServer
             using (EJDB db = new EJDB())
             {
                 var database = db.Databases.FirstOrDefault(m => m.id == databaseid);
-                var dt = db.Database.SelectTable("select * from __action where databaseid=" + databaseid + " order by [id]");
+
+                var dt = db.Database.SelectTable("select * from designhistory where databaseid=" + databaseid + " order by [id]");
                 dt.TableName = database.dbType.ToString();
                 return dt;
             }
@@ -507,7 +508,8 @@ namespace Way.EJServer
                 {
                     object lastid = null;
                     var database = db.Databases.FirstOrDefault(m => m.id == databaseid);
-                    db.Database.ExecSqlString("delete from __action where databaseid=" + databaseid);
+                    db.Delete(db.DesignHistory.Where(m => m.DatabaseId == databaseid));
+
                     var tables = db.DBTable.Where(m => m.DatabaseID == databaseid).ToArray();
                     foreach (var dbtable in tables)
                     {
@@ -1377,7 +1379,8 @@ namespace Way.EJServer
             db.BeginTransaction();
             try
             {
-                db.Database.ExecSqlString($"delete from __action where databaseid={dbobj.id}");
+                db.Delete(db.DesignHistory.Where(m => m.DatabaseId == dbobj.id));
+
                 var tables = db.DBTable.Where(m => m.DatabaseID == dbobj.id).ToArray();
                 foreach (var table in tables)
                 {
@@ -1445,27 +1448,26 @@ namespace Way.EJServer
                             try
                             {
                                 int? lastid = null;
-                                using (var dt = db.Database.SelectTable("select * from __action where id>" + dbconfig.LastUpdatedID + " and databaseid=" + dataitem.id + " order by [id]"))
+                                var actionrows = db.DesignHistory.Where(m => m.ActionId > dbconfig.LastUpdatedID && m.DatabaseId == dataitem.id).OrderBy(m => m.ActionId).ToArray();
+
+                                foreach (var datarow in actionrows)
                                 {
-                                    foreach (var datarow in dt.Rows)
-                                    {
-                                        string actionType = datarow["type"].ToString();
-                                        int id = Convert.ToInt32(datarow["id"]);
+                                    string actionType = datarow.Type;
+                                    int actionid = datarow.ActionId.Value;
 
-                                        string json = datarow["content"].ToString();
+                                    string json = datarow.Content;
 
 
-                                        Type type = typeof(Way.EntityDB.Design.Actions.Action).GetTypeInfo().Assembly.GetType($"Way.EntityDB.Design.Actions.{actionType}");
-                                        var actionItem = (Way.EntityDB.Design.Actions.Action)Newtonsoft.Json.JsonConvert.DeserializeObject(json, type);
+                                    Type type = typeof(Way.EntityDB.Design.Actions.Action).GetTypeInfo().Assembly.GetType($"Way.EntityDB.Design.Actions.{actionType}");
+                                    var actionItem = (Way.EntityDB.Design.Actions.Action)Newtonsoft.Json.JsonConvert.DeserializeObject(json, type);
 
-                                        actionItem.Invoke(invokeDB);
+                                    actionItem.Invoke(invokeDB);
 
-                                        lastid = id;
-                                    }
-                                    if (lastid != null)
-                                    {
-                                        dbconfig.LastUpdatedID = lastid.Value;
-                                    }
+                                    lastid = actionid;
+                                }
+                                if (lastid != null)
+                                {
+                                    dbconfig.LastUpdatedID = lastid.Value;
                                 }
 
                                 var obj = new Way.EntityDB.CustomDataItem("__wayeasyjob", null, null);
@@ -1936,24 +1938,5 @@ namespace Way.EJServer
             return Convert.ToBase64String(System.IO.File.ReadAllBytes($"{RemotingContext.Current.WebRoot}updates/{savepath}"));
         }
     }
-    public class TableInfo
-    {
-        public string TableName;
-        public EJ.DBColumn[] Columns;
-        public IndexInfo[] Indexes;
-    }
-    public class FileInfo
-    {
-        public string SavePath;
-        public string FileName;
-        public long LastWriteTime;
-    }
-    class JsonObject_ClassView
-    {
-        public string FullName;
-    }
-    class JsonObject_DescriptionView
-    {
-        public string Content;
-    }
+  
 }

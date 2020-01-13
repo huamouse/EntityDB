@@ -52,23 +52,7 @@ namespace Way.EJServer
                     saUser.Role = EJ.User_RoleEnum.管理员;
                     db.Insert(saUser);
 
-                    //创建action表
-                    try
-                    {
-                        db.Database.ExecSqlString("select id from __action limit 0,1");
-                    }
-                    catch
-                    {
-                        //没有__action
-                        db.Database.ExecSqlString(@"
-create table __action (
-    [id]            integer PRIMARY KEY autoincrement,
-    [type]          varchar (100),
-    [content]         text,
-    [databaseid]      int 
-)
-");
-                    }
+                   
                 }
                 var user = db.User.FirstOrDefault(m => m.Name == name);
                 if (user == null || user.Password != pwd)
@@ -491,7 +475,7 @@ create table __action (
             using (EJDB db = new EJDB())
             {
                 db.Delete(db.Databases.Where(m => m.id == databaseid));
-                db.Database.ExecSqlString("delete from __action where databaseid=" + databaseid);
+                db.Delete(db.DesignHistory.Where(m => m.DatabaseId == databaseid));
             }
         }
         [RemotingMethod]
@@ -500,7 +484,8 @@ create table __action (
             using (EJDB db = new EJDB())
             {
                 var database = db.Databases.FirstOrDefault(m => m.id == databaseid);
-                var dt = db.Database.SelectTable("select * from __action where databaseid=" + databaseid + " order by [id]");
+
+                var dt = db.Database.SelectTable("select * from designhistory where databaseid=" + databaseid + " order by [id]");
                 dt.TableName = database.dbType.ToString();
                 return dt;
             }
@@ -520,7 +505,8 @@ create table __action (
                 {
                     object lastid = null;
                     var database = db.Databases.FirstOrDefault(m => m.id == databaseid);
-                    db.Database.ExecSqlString("delete from __action where databaseid=" + databaseid);
+                    db.Delete(db.DesignHistory.Where(m=>m.DatabaseId == databaseid));
+
                     var tables = db.DBTable.Where(m => m.DatabaseID == databaseid).ToArray();
                     foreach (var dbtable in tables)
                     {
@@ -836,6 +822,9 @@ create table __action (
         [RemotingMethod]
         public void ModifyTable(EJ.DBTable newtable, EJ.DBColumn[] nowcolumns, EJ.DBDeleteConfig[] delConfigs, IndexInfo[] idxConfigs,EJ.classproperty[] classProperties)
         {
+            if (nowcolumns.Any(m => m.IsPKID == true) == false)
+                throw new Exception("必须设置主键");
+
             foreach (var p in classProperties)
             {
                 if (p.foreignkey_columnid == null && p.iscollection == true)
@@ -1255,6 +1244,9 @@ create table __action (
                     throw new Exception($"导航属性{p.name}必须设置外键");
             }
 
+            if (columns.Any(m => m.IsPKID == true) == false)
+                throw new Exception("必须设置主键");
+
             using (EJDB db = new EJDB())
             {
                 Way.EntityDB.IDatabaseService invokingDB = null;
@@ -1356,7 +1348,9 @@ create table __action (
             db.BeginTransaction();
             try
             {
-                db.Database.ExecSqlString($"delete from __action where databaseid={dbobj.id}");
+                var databaseid = dbobj.id;
+                db.Delete(db.DesignHistory.Where(m=>m.DatabaseId == databaseid));
+
                 var tables = db.DBTable.Where(m => m.DatabaseID == dbobj.id).ToArray();
                 foreach( var table in tables )
                 {
@@ -1433,27 +1427,26 @@ create table __action (
                             try
                             {
                                 int? lastid = null;
-                                using (var dt = db.Database.SelectTable("select * from __action where id>" + dbconfig.LastUpdatedID + " and databaseid=" + dataitem.id + " order by [id]"))
+                                var actionrows = db.DesignHistory.Where(m => m.ActionId > dbconfig.LastUpdatedID && m.DatabaseId == dataitem.id).OrderBy(m => m.ActionId).ToArray();
+
+                                foreach (var datarow in actionrows)
                                 {
-                                    foreach (var datarow in dt.Rows)
-                                    {
-                                        string actionType = datarow["type"].ToString();
-                                        int id = Convert.ToInt32(datarow["id"]);
+                                    string actionType = datarow.Type;
+                                    int actionid = datarow.ActionId.Value;
 
-                                        string json = datarow["content"].ToString();
+                                    string json = datarow.Content;
 
 
-                                        Type type = typeof(Way.EntityDB.Design.Actions.Action).GetTypeInfo().Assembly.GetType($"Way.EntityDB.Design.Actions.{actionType}");
-                                        var actionItem = (Way.EntityDB.Design.Actions.Action)Newtonsoft.Json.JsonConvert.DeserializeObject(json, type);
+                                    Type type = typeof(Way.EntityDB.Design.Actions.Action).GetTypeInfo().Assembly.GetType($"Way.EntityDB.Design.Actions.{actionType}");
+                                    var actionItem = (Way.EntityDB.Design.Actions.Action)Newtonsoft.Json.JsonConvert.DeserializeObject(json, type);
 
-                                        actionItem.Invoke(invokeDB);
+                                    actionItem.Invoke(invokeDB);
 
-                                        lastid = id;
-                                    }
-                                    if (lastid != null)
-                                    {
-                                        dbconfig.LastUpdatedID = lastid.Value;
-                                    }
+                                    lastid = actionid;
+                                }
+                                if (lastid != null)
+                                {
+                                    dbconfig.LastUpdatedID = lastid.Value;
                                 }
 
                                 var obj = new Way.EntityDB.CustomDataItem("__wayeasyjob", null, null);
@@ -1924,5 +1917,26 @@ create table __action (
             return Convert.ToBase64String( System.IO.File.ReadAllBytes($"{RemotingContext.Current.WebRoot}updates/{savepath}"));
         }
     }
-   
+
+
+    public class TableInfo
+    {
+        public string TableName;
+        public EJ.DBColumn[] Columns;
+        public IndexInfo[] Indexes;
+    }
+    public class FileInfo
+    {
+        public string SavePath;
+        public string FileName;
+        public long LastWriteTime;
+    }
+    class JsonObject_ClassView
+    {
+        public string FullName;
+    }
+    class JsonObject_DescriptionView
+    {
+        public string Content;
+    }
 }

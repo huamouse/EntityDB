@@ -38,6 +38,17 @@ namespace Way.EntityDB.Design.Actions
             db.Insert(action);
             return action.GetValue("id");
         }
+
+        public void AddLog(EJ.DB.easyjob db, int userid, int databaseid)
+        {
+            var log = new EJ.SysLog();
+            log.DatabaseId = databaseid;
+            log.Content = this.ToJsonString();
+            log.UserId = userid;
+            log.Type = this.GetType().Name;
+            log.Time = DateTime.Now;
+            db.Insert(log);
+        }
     }
 
 }

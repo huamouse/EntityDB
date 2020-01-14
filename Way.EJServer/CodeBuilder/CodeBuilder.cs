@@ -165,8 +165,37 @@ namespace "+nameSpace+@".DB{
             }
             result.AppendLine("return result.ToString();}");
             result.Append("}}\r\n");
+
+            //记录数据库设计数据
+            result.AppendLine("/*<design>");
+            outputDesigns(result, db, databaseObj);
+            result.AppendLine("<design>*/");
+
             return result.ToString();
         }
+
+        void outputDesigns(StringBuilder result,EJDB db,EJ.Databases databaseObj)
+        {
+            DesignData data = new DesignData();
+            data.Database = databaseObj;
+            data.Modules = db.DBModule.Where(m => m.DatabaseID == databaseObj.id).ToArray();
+            data.Tables = db.DBTable.Where(m => m.DatabaseID == databaseObj.id).ToArray();
+            var tableids = data.Tables.Select(m => m.id.Value).ToArray();
+            data.TableInModules = db.TableInModule.Where(m => tableids.Contains(m.TableID.Value)).ToArray();
+            data.IDXIndexes = db.IDXIndex.Where(m => tableids.Contains(m.TableID.Value)).ToArray();
+            data.DBDeleteConfigs = db.DBDeleteConfig.Where(m => tableids.Contains(m.TableID.Value)).ToArray();
+            data.DBColumns = db.DBColumn.Where(m => tableids.Contains(m.TableID.Value)).ToArray();
+            data.classproperties = db.classproperty.Where(m => tableids.Contains(m.tableid.Value)).ToArray();
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+            string content = Convert.ToBase64String(GZip(System.Text.Encoding.UTF8.GetBytes(json)));
+
+            for (int i = 0; i < content.Length; i += 200)
+            {
+                int len = Math.Min(content.Length - i, 200);
+                result.AppendLine(content.Substring(i, len));
+            }
+        }
+
         static byte[] GZip(byte[] byteArray)
         {
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
@@ -794,5 +823,17 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
 
             return result.ToString();
         }
+    }
+
+    public class DesignData
+    {
+        public EJ.Databases Database;
+        public EJ.DBModule[] Modules;
+        public EJ.DBTable[] Tables;
+        public EJ.TableInModule[] TableInModules;
+        public EJ.IDXIndex[] IDXIndexes;
+        public EJ.DBDeleteConfig[] DBDeleteConfigs;
+        public EJ.DBColumn[] DBColumns;
+        public EJ.classproperty[] classproperties;
     }
 }

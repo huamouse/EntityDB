@@ -476,6 +476,13 @@ namespace Way.EJServer
             {
                 db.Delete(db.Databases.Where(m => m.id == databaseid));
                 db.Delete(db.DesignHistory.Where(m => m.DatabaseId == databaseid));
+
+                var log = new EJ.SysLog();
+                log.DatabaseId = databaseid;
+                log.UserId = this.User.id;
+                log.Type = "delete database";
+                log.Time = DateTime.Now;
+                db.Insert(log);
             }
         }
         [RemotingMethod]
@@ -953,6 +960,8 @@ namespace Way.EJServer
                     object actionid = action.Save(db, database.id.GetValueOrDefault());
                     SetLastUpdateID(actionid, database.Guid, invokingDB);
 
+                    action.AddLog(db, this.User.id.Value, database.id.Value);
+
                     if (invokingDB.DBContext != db)
                     {
                         invokingDB.DBContext.CommitTransaction();
@@ -1105,6 +1114,7 @@ namespace Way.EJServer
 
                     object actionid = action.Save(db, databaseID);
                     SetLastUpdateID(actionid, database.Guid, invokingDB);
+                    action.AddLog(db, this.User.id.Value, databaseID);
 
                     if (invokingDB.DBContext != db)
                     {
@@ -1200,7 +1210,8 @@ namespace Way.EJServer
 
 
                         lastActionID = action.Save(db, database.id.GetValueOrDefault());
-                        
+                        action.AddLog(db, this.User.id.Value, database.id.Value);
+
                     }
                     if (lastActionID != null)
                     {
@@ -1313,6 +1324,8 @@ namespace Way.EJServer
 
                     object actionid = action.Save(db, database.id.GetValueOrDefault());
                     SetLastUpdateID(actionid, database.Guid, invokingDB);
+
+                    action.AddLog(db, this.User.id.Value, database.id.Value);
 
                     if (invokingDB.DBContext != db)
                     {

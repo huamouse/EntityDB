@@ -3251,6 +3251,170 @@ namespace EJ{
             }
         }
 }}
+namespace EJ{
+
+
+    /// <summary>
+	/// 
+	/// </summary>
+    [System.ComponentModel.DataAnnotations.Schema.Table("syslog")]
+    [Way.EntityDB.Attributes.Table("id")]
+    public class SysLog :Way.EntityDB.DataItem
+    {
+
+        /// <summary>
+	    /// 
+	    /// </summary>
+        public  SysLog()
+        {
+        }
+
+
+        System.Nullable<Int32> _id;
+        /// <summary>
+        /// 
+        /// </summary>
+[System.ComponentModel.DataAnnotations.Key]
+        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
+        public virtual System.Nullable<Int32> id
+        {
+            get
+            {
+                return this._id;
+            }
+            set
+            {
+                if ((this._id != value))
+                {
+                    this.SendPropertyChanging("id",this._id,value);
+                    this._id = value;
+                    this.SendPropertyChanged("id");
+
+                }
+            }
+        }
+
+        System.Nullable<Int32> _DatabaseId;
+        /// <summary>
+        /// 
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Schema.Column("databaseid")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="databaseid",Comment="",Caption="",Storage = "_DatabaseId",DbType="int")]
+        public virtual System.Nullable<Int32> DatabaseId
+        {
+            get
+            {
+                return this._DatabaseId;
+            }
+            set
+            {
+                if ((this._DatabaseId != value))
+                {
+                    this.SendPropertyChanging("DatabaseId",this._DatabaseId,value);
+                    this._DatabaseId = value;
+                    this.SendPropertyChanged("DatabaseId");
+
+                }
+            }
+        }
+
+        System.Nullable<Int32> _UserId;
+        /// <summary>
+        /// 
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Schema.Column("userid")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="userid",Comment="",Caption="",Storage = "_UserId",DbType="int")]
+        public virtual System.Nullable<Int32> UserId
+        {
+            get
+            {
+                return this._UserId;
+            }
+            set
+            {
+                if ((this._UserId != value))
+                {
+                    this.SendPropertyChanging("UserId",this._UserId,value);
+                    this._UserId = value;
+                    this.SendPropertyChanged("UserId");
+
+                }
+            }
+        }
+
+        System.Nullable<DateTime> _Time;
+        /// <summary>
+        /// 
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Schema.Column("time")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="time",Comment="",Caption="",Storage = "_Time",DbType="datetime")]
+        public virtual System.Nullable<DateTime> Time
+        {
+            get
+            {
+                return this._Time;
+            }
+            set
+            {
+                if ((this._Time != value))
+                {
+                    this.SendPropertyChanging("Time",this._Time,value);
+                    this._Time = value;
+                    this.SendPropertyChanged("Time");
+
+                }
+            }
+        }
+
+        String _Type;
+        /// <summary>
+        /// 
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Schema.Column("type")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="type",Comment="",Caption="",Storage = "_Type",DbType="varchar(100)")]
+        public virtual String Type
+        {
+            get
+            {
+                return this._Type;
+            }
+            set
+            {
+                if ((this._Type != value))
+                {
+                    this.SendPropertyChanging("Type",this._Type,value);
+                    this._Type = value;
+                    this.SendPropertyChanged("Type");
+
+                }
+            }
+        }
+
+        String _Content;
+        /// <summary>
+        /// 
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Schema.Column("content")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="content",Comment="",Caption="",Storage = "_Content",DbType="text")]
+        public virtual String Content
+        {
+            get
+            {
+                return this._Content;
+            }
+            set
+            {
+                if ((this._Content != value))
+                {
+                    this.SendPropertyChanging("Content",this._Content,value);
+                    this._Content = value;
+                    this.SendPropertyChanged("Content");
+
+                }
+            }
+        }
+}}
 
 namespace EJ.DB{
     /// <summary>
@@ -3751,6 +3915,7 @@ modelBuilder.Entity<EJ.InterfaceInModule>().HasKey(m => m.id);
 modelBuilder.Entity<EJ.InterfaceModulePower>().HasKey(m => m.id);
 modelBuilder.Entity<EJ.classproperty>().HasKey(m => m.id);
 modelBuilder.Entity<EJ.DesignHistory>().HasKey(m => m.id);
+modelBuilder.Entity<EJ.SysLog>().HasKey(m => m.id);
 }
 
         System.Linq.IQueryable<EJ.Project> _Project;
@@ -4089,6 +4254,22 @@ modelBuilder.Entity<EJ.DesignHistory>().HasKey(m => m.id);
             }
         }
 
+        System.Linq.IQueryable<EJ.SysLog> _SysLog;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual System.Linq.IQueryable<EJ.SysLog> SysLog
+        {
+             get
+            {
+                if (_SysLog == null)
+                {
+                    _SysLog = this.Set<EJ.SysLog>();
+                }
+                return _SysLog;
+            }
+        }
+
 protected override string GetDesignString(){System.Text.StringBuilder result = new System.Text.StringBuilder(); 
 result.Append("\r\n");
 result.Append("H4sIAAAAAAAAC+1d7XPTRhr/VxjfV7ixbNmymfYDSY6rr5TLENrpTNPpCFtJfFXkVJIbMpSZcAck0IJDSY6XXnlreDl6dVpKIdgU/hlLtv+LW60ce3clW7LslTdTf4Fo9eLnp3329zy7+zyPzkROiqdkSYsc/uSM/edxcVGKHI7MfCHndSlyMHKisGyfzejSov1X65J8");
@@ -4111,7 +4292,33 @@ result.Append("CamwVc1/kisHCxzRCJ/pVa3PS0DUsEHPr/MChxdn0fe02Etq1ImGdShoxLsMXWq0r
 result.Append("YsMcvr9pBcUaPANIqUunB32DaAkcWOKnLd9yPjeQzzx476JlbWBtkrZsC1J+fkEfqXCh15cRqGZlOIqMEQ6wnZ4BHGdgeh1VZ4hrB8jX4GAFF1rGAYL0+dGBZMhrurhsvU1DPHzL5SVe6BPHFNXtbbhq3llok0VNW1ILS5KqB9xkAUsFFBUbiuuvNmIUM0IAhQw6gqrq");
 result.Append("4MK5aXbYqtNrI29BVOb7Up2/yzl4eQ9tOS4te11S0Bckdaw3/euNIi27vjZs6quEs6LgJTFaYTeKOVtzBRW4NMrn0spnLAxJxK+ORfkugmbhax+xpIh/HYvivoMGBJTBOtdgVYwCL3l4SW6vFWQh3+QQFbZaczBbhGwNkyJjVCkSLVPoIEf0ZDdaHJcqDCuucVyqkO28");
 result.Append("yD9aqULc3rNMob12fMde5v6ZnSDSjZ3KsVO5D5zK/cORvXb/xxw55khaE29se/mXO+bqYysaBBayrFUfNv/5Q233KbQ+nebdirF2EfeWxrP2P+isff8QbILuPB77OLVzJo+d7jaXH3+ievyJ6vEnqsefqHZd3hh/ohozP+NPVI8/UU3/E9X7xb0Bm+pUgwCwGJApSQMb");
-result.Append("XwNlWsaiNEMfobg+gwCwAJI2DsorbX18YjWKBT/a/Tdi8bA5ZHoUsYZeEqK7trCocFvCyYEzxXyEGnqJN+zsSHDYGmMRix/sv1GWsPTaAgCOZ1ZAIvvin0GgWpKHP4Rd3WIO5/UzuppX5p03dOjD/z0Ypq6ifWrBss7OSHrrRuEoP8lPJKOHEsmJiUP8RCp26Eg6zh1K");
-result.Append("g09ETPBRIXFESEbO/h+0jr47qYsAAA==");
+result.Append("XwNlWsaiNEMfobg+gwCwAJI2DsorbX18YjWKBT/a/Tdi8bA5ZHoUsYZeEqK7trCocFvCyYEzxXyEGnqJF3Z2JFhMpsoO2BiaWdGOFYJ+cRVWm6VGC/6/mwpnYqHTgv+UqRieIR5CwL+XcCgp4Ams4WQke8mHUUJiJKTl/xOjMTy9NRzS8vxE6HBJCxy2GCBi0Zb9N0pe");
+result.Append("1qizAIBjwCmA3/4MomuTPPwh7OoWoTmvn9HVvDLvvKHDav7vwTB1Fe1TC5Z1dkbSWzcKR/lJfiIZPZRITkwc4idSsUNH0nHuUBp812aCjwqJI0Iycvb/492GI16QAAA=");
 return result.ToString();}
 }}
+/*<design>
+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
+<design>*/

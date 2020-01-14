@@ -41,6 +41,28 @@ namespace Way.EntityDB.Test
 
             //server=;User Id=;password=;Database=
         }
+
+        [TestMethod]
+        public void ConcatTest()
+        {
+            TestDB.DB.Test db = new TestDB.DB.Test("server=192.168.0.151;uid=sa;pwd=sa!@#123;database=Test", DatabaseType.SqlServer);
+            var userinfo = from m in db.UserInfo
+                           select new { 
+                            myname = m.UserName,
+                            id = m.id
+                           };
+
+            var accountinfo = from m in db.UserAccount
+                              select new
+                              {
+                                  myname = m.AccountName,
+                                  id = m.id
+                              };
+
+           var result =  userinfo.Concat(accountinfo);
+           var ret = result.ToArray();
+        }
+
         [TestMethod]
         public void SqlServer_Insert_Check()
         {

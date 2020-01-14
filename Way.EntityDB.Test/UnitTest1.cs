@@ -64,6 +64,30 @@ namespace Way.EntityDB.Test
         }
 
         [TestMethod]
+        public void DeleteTest()
+        {
+            TestDB.DB.Test db = new TestDB.DB.Test("server=192.168.0.151;uid=sa;pwd=sa!@#123;database=Test", DatabaseType.SqlServer);
+            db.Delete(db.UserInfo.Where(m=>m.UserName == "way"));
+        }
+        [TestMethod]
+        public void UpdateLockTest()
+        {
+            TestDB.DB.Test db = new TestDB.DB.Test("server=192.168.0.151;uid=sa;pwd=sa!@#123;database=Test", DatabaseType.SqlServer);
+            db.BeginTransaction();
+            try
+            {
+                db.UpdateLock(db.UserInfo.Where(m => m.UserName == "way"));
+                db.UpdateLock(db.UserInfo.Where(m => m.UserName == "way"));
+                db.CommitTransaction();
+            }
+            catch (Exception)
+            {
+                db.RollbackTransaction();
+                throw;
+            }
+           
+        }
+        [TestMethod]
         public void SqlServer_Insert_Check()
         {
 

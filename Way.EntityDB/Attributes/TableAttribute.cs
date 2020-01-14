@@ -7,6 +7,7 @@ namespace Way.EntityDB.Attributes
 {
     public class Table:Attribute
     {
+        internal static Dictionary<Type, WayDBColumnAttribute[]> DataTypeColumns = new Dictionary<Type, WayDBColumnAttribute[]>();
         public string KeyName
         {
             get;

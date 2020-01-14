@@ -27,6 +27,14 @@ namespace Way.EntityDB
         {
             optionsBuilder.UseMySql(this.ConnectionString);
         }
+
+        public override void UpdateLock(string tablename, WayDBColumnAttribute[] columns, object pkValue)
+        {
+            var pkColumn = columns.FirstOrDefault(m => m.IsPrimaryKey);
+            var columnname = FormatObjectName(pkColumn.Name.ToLower());
+            this.ExecSqlString($"select {FormatObjectName(columnname)} from {FormatObjectName(tablename.ToLower())} where {columnname}=@p0 for update", pkValue);
+        }
+
         public override string FormatObjectName(string name)
         {
             if (name.StartsWith("`") || name.StartsWith("("))

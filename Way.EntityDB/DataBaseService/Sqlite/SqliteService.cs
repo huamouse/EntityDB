@@ -47,6 +47,14 @@ namespace Way.EntityDB
         {
 
         }
+
+        public virtual void UpdateLock(string tablename, Way.EntityDB.WayDBColumnAttribute[] columns, object pkValue)
+        {
+            var pkColumn = columns.FirstOrDefault(m => m.IsPrimaryKey);
+            var columnname = FormatObjectName(pkColumn.Name.ToLower());
+            this.ExecSqlString($"update {FormatObjectName(tablename.ToLower())} set {columnname}={columnname} where {columnname}=@p0", pkValue);
+        }
+
         public virtual string FormatObjectName(string name)
         {
             if (name.StartsWith("[") || name.StartsWith("("))

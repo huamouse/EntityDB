@@ -924,6 +924,74 @@ namespace Way.EntityDB
             }
            
         }
+
+
+        /// <summary>
+        /// 开启更新锁
+        /// </summary>
+        /// <param name="items"></param>
+        public void UpdateLock(System.Linq.IQueryable items)
+        {
+            if (this.Database.Connection.State != System.Data.ConnectionState.Open)
+                throw new Exception("没有开启事务");
+
+           Type dataType = items.GetType().GetGenericArguments()[0];
+
+            string pkid = null;
+            Attributes.Table tableAttr = null;
+            if (dataType != null)
+            {
+                try
+                {
+                    tableAttr = dataType.GetTypeInfo().GetCustomAttribute(typeof(Attributes.Table)) as Attributes.Table;
+                    if (tableAttr != null)
+                        pkid = tableAttr.KeyName;
+                }
+                catch
+                {
+                }
+            }
+            if (pkid == null)
+                throw new Exception(dataType.Name + "没有定义主键");
+
+            WayDBColumnAttribute[] columns = null;
+            Attributes.Table.DataTypeColumns.TryGetValue(dataType, out columns);
+            if (columns == null)
+            {
+                var properties = dataType.GetProperties();
+                List<WayDBColumnAttribute> allcolumns = new List<WayDBColumnAttribute>();
+                foreach (var pro in properties)
+                {
+                    var attr = pro.GetCustomAttribute<WayDBColumnAttribute>();
+                    if (attr != null)
+                        allcolumns.Add(attr);
+                }
+                Attributes.Table.DataTypeColumns[dataType] = columns = allcolumns.ToArray();
+            }
+           
+            int pagesize = 100;
+                var query = InvokeSelect(items, pkid);
+                int skip = 0;
+                while (true)
+                {
+                    var skipQuery = InvokeSkip(query, skip);
+                    var data1 = InvokeTake(skipQuery, pagesize);
+                    var dataitems = (System.Array)InvokeToArray(data1);
+
+                    foreach (var idvalue in dataitems)
+                    {
+                        this.Database.UpdateLock(dataType.Name, columns, idvalue);
+                    }
+
+                    if (dataitems.Length < pagesize)
+                        break;
+
+                    skip += pagesize;
+                }
+
+            
+        }
+
         /// <summary>
         /// 删除对象
         /// </summary>
@@ -956,21 +1024,24 @@ namespace Way.EntityDB
                 this.Database.Connection.Open();
             }
 
+            int pagesize = 100;
             try
             {
                 var query = InvokeSelect(items, pkid);
                 while (true)
                 {
-                    var data1 = InvokeTake(query, 100);
-                    var dataitems = (System.Collections.IList)InvokeToList(data1);
-                    if (dataitems.Count == 0)
-                        break;
+                    var data1 = InvokeTake(query, pagesize);
+                    var dataitems = (System.Array)InvokeToArray(data1);
+                   
                     foreach (var idvalue in dataitems)
                     {
                         var deldataItem = (DataItem)Activator.CreateInstance(dataType);
                         deldataItem.SetValue(pkid, idvalue);
                         Delete(deldataItem);
                     }
+
+                    if (dataitems.Length < pagesize)
+                        break;
                 }
             }
             catch (Exception)

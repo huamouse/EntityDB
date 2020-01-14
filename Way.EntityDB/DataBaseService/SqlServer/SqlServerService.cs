@@ -38,7 +38,12 @@ namespace Way.EntityDB
             return SelectTable(sql, sqlparameters);
         }
 
-      
+        public override void UpdateLock(string tablename, WayDBColumnAttribute[] columns, object pkValue)
+        {
+            var pkColumn = columns.FirstOrDefault(m => m.IsPrimaryKey);
+            var columnname = FormatObjectName(pkColumn.Name.ToLower());
+            this.ExecSqlString($"select {FormatObjectName(columnname)} from {FormatObjectName(tablename.ToLower())} WITH (UPDLOCK) where {columnname}=@p0" , pkValue);
+        }
         public override string FormatObjectName(string name)
         {
             if (name.StartsWith("[") || name.StartsWith("("))

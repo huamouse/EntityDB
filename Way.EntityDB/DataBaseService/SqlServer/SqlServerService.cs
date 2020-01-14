@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -57,9 +56,9 @@ namespace Way.EntityDB
 
         protected override void ThrowSqlException(Type tableType, Exception ex)
         {
-            if (!(ex is System.Data.SqlClient.SqlException))
+            if (!(ex is Microsoft.Data.SqlClient.SqlException))
                 throw ex;
-            if (((System.Data.SqlClient.SqlException)ex).Number != 2601)
+            if (((Microsoft.Data.SqlClient.SqlException)ex).Number != 2601)
                 throw ex;
 
             string[] keys = null;

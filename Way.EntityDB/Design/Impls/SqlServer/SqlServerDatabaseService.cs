@@ -3,11 +3,10 @@ using Way.EntityDB.Design.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using Microsoft.Data.SqlClient;
 
 namespace Way.EntityDB.Design.Database.SqlServer
 {
@@ -16,7 +15,7 @@ namespace Way.EntityDB.Design.Database.SqlServer
     {
         public void Drop(EJ.Databases database)
         {
-            System.Data.SqlClient.SqlConnectionStringBuilder conStrBuilder = new System.Data.SqlClient.SqlConnectionStringBuilder(database.conStr);
+            SqlConnectionStringBuilder conStrBuilder = new SqlConnectionStringBuilder(database.conStr);
             var mydbName = conStrBuilder.InitialCatalog;
             conStrBuilder.InitialCatalog = "master";
 
@@ -27,7 +26,7 @@ namespace Way.EntityDB.Design.Database.SqlServer
         }
         public void Create(EJ.Databases database)
         {
-            System.Data.SqlClient.SqlConnectionStringBuilder conStrBuilder = new System.Data.SqlClient.SqlConnectionStringBuilder(database.conStr);
+            SqlConnectionStringBuilder conStrBuilder = new SqlConnectionStringBuilder(database.conStr);
             var mydbName = conStrBuilder.InitialCatalog;
             conStrBuilder.InitialCatalog = "master";
 

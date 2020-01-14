@@ -139,12 +139,7 @@ namespace Way.EntityDB
                 return item;
             }
 
-            public override IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
-            {
-                return base.ExecuteAsync<TResult>(expression);
-            }
-
-            public override Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+            public override TResult ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken = default)
             {
                 return base.ExecuteAsync<TResult>(expression, cancellationToken);
             }

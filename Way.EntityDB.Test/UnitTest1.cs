@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
+using Microsoft.Data.SqlClient;
 
 namespace Way.EntityDB.Test
 { 
@@ -25,7 +26,7 @@ namespace Way.EntityDB.Test
         [TestMethod]
         public void ConnectionString_Check()
         {
-            System.Data.SqlClient.SqlConnectionStringBuilder conStrBuilder = new System.Data.SqlClient.SqlConnectionStringBuilder("server=ETHAN-20171016H;uid=sa;pwd=123;Database=TestDB");
+            SqlConnectionStringBuilder conStrBuilder = new SqlConnectionStringBuilder("server=ETHAN-20171016H;uid=sa;pwd=123;Database=TestDB");
             conStrBuilder.InitialCatalog = "master";
             var constr = conStrBuilder.ToString();
 
@@ -261,12 +262,12 @@ namespace Way.EntityDB.Test
 
             Test(new EJ.Databases()
             {
-                conStr = new System.Data.SqlClient.SqlConnectionStringBuilder(SqlServerConstr) { InitialCatalog = "TestingDb" }.ToString(),
+                conStr = new SqlConnectionStringBuilder(SqlServerConstr) { InitialCatalog = "TestingDb" }.ToString(),
                 Name = "testingdb",
                 dbType = EJ.Databases_dbTypeEnum.SqlServer,
             });
             dbservice = EntityDB.Design.DBHelper.CreateDatabaseDesignService(DatabaseType.SqlServer);
-            db = EntityDB.DBContext.CreateDatabaseService(new System.Data.SqlClient.SqlConnectionStringBuilder(SqlServerConstr) { InitialCatalog = "TestingDb" }.ToString(), EntityDB.DatabaseType.SqlServer);
+            db = EntityDB.DBContext.CreateDatabaseService(new SqlConnectionStringBuilder(SqlServerConstr) { InitialCatalog = "TestingDb" }.ToString(), EntityDB.DatabaseType.SqlServer);
             dbservice.GetCurrentTableNames(db);
             dbservice.GetCurrentColumns(db, "test3");
             dbservice.GetCurrentIndexes(db, "test3");

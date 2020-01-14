@@ -31,15 +31,16 @@ namespace Way.EJServer
                 Session["user"] = value;
             }
         }
-        protected override void OnBeforeInvokeMethod(MethodInfo method)
+        protected override object OnInvokeMethod(MethodInfo methodInfo, object[] parameters)
         {
-            if (method.Name != "Login")
+            if (methodInfo.Name != "Login")
             {
                 if (this.User == null)
                     throw new Exception("请先登录");
             }
-            base.OnBeforeInvokeMethod(method);
+            return base.OnInvokeMethod(methodInfo, parameters);
         }
+
 
         [RemotingMethod]
         public int[] Login(string name, string pwd)

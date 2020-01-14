@@ -2,6 +2,8 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -208,6 +210,24 @@ namespace "+nameSpace+@".DB{
                 //Transform byte[] zip data to string
                 return ms.ToArray();
             }
+        }
+
+        internal static byte[] UnGzip(byte[] zippedData)
+        {
+            MemoryStream ms = new MemoryStream(zippedData);
+            GZipStream compressedzipStream = new GZipStream(ms, CompressionMode.Decompress);
+            MemoryStream outBuffer = new MemoryStream();
+            byte[] block = new byte[1024];
+            while (true)
+            {
+                int bytesRead = compressedzipStream.Read(block, 0, block.Length);
+                if (bytesRead <= 0)
+                    break;
+                else
+                    outBuffer.Write(block, 0, bytesRead);
+            }
+            compressedzipStream.Close();
+            return outBuffer.ToArray();
         }
 
         public string[] BuildTable(EJDB db,string nameSpace, EJ.DBTable table)

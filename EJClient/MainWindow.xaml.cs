@@ -3,6 +3,7 @@ using EJClient.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -694,7 +695,75 @@ namespace EJClient
             }
         }
 
-      
-      
+        private void MenuItem_cs文件还原设计模型_Click_1(object sender, RoutedEventArgs e)
+        {
+
+            MenuItem item = (MenuItem)sender;
+            ContextMenu menu = (ContextMenu)item.Parent;
+            var obj = (StackPanel)menu.PlacementTarget;
+            ProjectNode projectNode = (ProjectNode)obj.Tag;
+
+
+            using (System.Windows.Forms.OpenFileDialog f = new System.Windows.Forms.OpenFileDialog())
+            {
+                f.Filter = "*.cs|*.cs";
+                if (f.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    try
+                    {
+                        var bs = System.IO.File.ReadAllBytes(f.FileName);
+                        string url = $"POST /ImportCSFileHandler.aspx?projectid={projectNode.Project.id}";
+
+                        var host = $"{Helper.WebSite}/";
+                        host = host.Substring(host.IndexOf("://") + 3);
+                        host = host.Substring(0, host.IndexOf("/"));
+                        int port = 80;
+                        if (host.Contains(":"))
+                        {
+                            port = Convert.ToInt32(host.Split(':')[1]);
+                            host = host.Split(':')[0];
+                        }
+
+                        Socket socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+                        socket.Connect(new System.Net.DnsEndPoint(host, port));
+                        Way.Lib.NetStream client = new Way.Lib.NetStream(socket);
+                        System.IO.StreamWriter stream = new System.IO.StreamWriter(client);
+                        stream.WriteLine(url);
+                        stream.WriteLine($"Cookie: WayScriptRemoting={Net.RemotingClient.SessionID}");
+                        stream.WriteLine($"Content-Type: import");
+                        stream.WriteLine($"Content-Length: {bs.Length}");
+                        stream.WriteLine("");
+                        stream.Flush();
+
+                        client.Write(bs , 0 ,bs.Length);
+
+
+                        var reader = new System.IO.StreamReader(client);
+                        while (true)
+                        {
+                            if (reader.ReadLine().Length == 0)
+                                break;
+                        }
+                        var result = reader.ReadLine();
+                        client.Close();
+
+                        if (result != "ok")
+                        {
+                            Helper.ShowError(this, result);
+                            return;
+                        }
+
+                        DatabaseNode dbnode = (DatabaseNode)projectNode.Children.Where(m => m is TreeNode.DatabaseNode).FirstOrDefault();
+                        dbnode.ReBindItems();
+                        MessageBox.Show(this, "成功导入！");
+                    }
+                    catch (Exception ex)
+                    {
+
+                        MessageBox.Show(this, ex.GetBaseException().Message);
+                    }
+                }
+            }
+        }
     }
 }

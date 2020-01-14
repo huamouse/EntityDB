@@ -49,8 +49,9 @@ namespace Way.EJServer
                 server.RegisterHandler(new DownLoadSimpleCodeHandler());
                 server.RegisterHandler(new DownloadTableDataHandler());
                 server.RegisterHandler(new ImportDataHandler());
+                server.RegisterHandler(new ImportCSFileHandler());
 
-                server.UseHttps(new X509Certificate2(Way.Lib.PlatformHelper.GetAppDirectory() + "EJServerCert.pfx", "123456"));
+                server.UseHttps(new X509Certificate2(Way.Lib.PlatformHelper.GetAppDirectory() + "EJServerCert.pfx", "123456") , true);
                 Console.WriteLine($"use ssl EJServerCert.pfx");
 
                 server.SessionTimeout = 60 * 24;

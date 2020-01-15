@@ -1359,6 +1359,9 @@ namespace Way.EJServer
         [RemotingMethod]
         public bool RebuildDatabaseActions(int databaseid)
         {
+            if (this.User.Role?.HasFlag(EJ.User_RoleEnum.数据库设计师) == false)
+                throw new Exception("没有权限进行此操作");
+
             using (EJDB db = new EJDB())
             {
                 rebuildDatabaseActions(db, db.Databases.FirstOrDefault(m => m.id == databaseid));
@@ -1371,10 +1374,13 @@ namespace Way.EJServer
         /// </summary>
         void rebuildDatabaseActions(EJDB db, EJ.Databases dbobj)
         {
+            
             db.BeginTransaction();
             try
             {
                 var databaseid = dbobj.id;
+                int nowMaxActionId = db.DesignHistory.Where(m=> m.DatabaseId == databaseid ).Max(m => m.ActionId).GetValueOrDefault();
+
                 db.Delete(db.DesignHistory.Where(m=>m.DatabaseId == databaseid));
 
                 var tables = db.DBTable.Where(m => m.DatabaseID == dbobj.id).ToArray();
@@ -1395,6 +1401,29 @@ namespace Way.EJServer
                     var action = new CreateTableAction(table, columns, idxConfigs);
                     action.Save(db , dbobj.id.Value);
                 }
+
+                if(db.DesignHistory.Where(m => m.DatabaseId == databaseid).Max(m => m.ActionId).GetValueOrDefault() < nowMaxActionId)
+                {
+                    var lastitem = (from m in db.DesignHistory 
+                                    orderby m.ActionId descending
+                                    where m.DatabaseId == databaseid 
+                                    select m).FirstOrDefault();
+                    if(lastitem != null)
+                    {
+                        lastitem.ActionId = nowMaxActionId;
+                        db.Update(lastitem);
+                    }
+                }
+
+                db.Insert(new EJ.SysLog()
+                {
+                    UserId = this.User.id,
+                    Type = "重置表结构变更历史",
+                    DatabaseId = databaseid,
+                    Time = DateTime.Now,
+
+                });
+
                 db.CommitTransaction();
             }
             catch(Exception ex)

@@ -17,6 +17,8 @@ namespace EJClient
                                             "smalldatetime",
                                             "real",
                                             "datetime",
+                                            "date",
+                                            "time",
                                             "float",
                                             "double",
                                             "bit",

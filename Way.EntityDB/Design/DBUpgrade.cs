@@ -19,6 +19,8 @@ namespace Way.EntityDB.Design
                                             "smalldatetime",
                                             "real",
                                             "datetime",
+                                             "date",
+                                              "time",
                                             "float",
                                             "double",
                                             "bit",

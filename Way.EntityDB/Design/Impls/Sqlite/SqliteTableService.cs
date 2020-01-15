@@ -20,6 +20,8 @@ namespace Way.EntityDB.Design.Database.Sqlite
                                             "DATETIME",//smalldatetime
                                             "REAL",
                                             "DATETIME",//datetime
+                                             "DATE",//date
+                                              "TIME",//time
                                             "FLOAT",
                                             "DOUBLE",
                                             "BOOLEAN",

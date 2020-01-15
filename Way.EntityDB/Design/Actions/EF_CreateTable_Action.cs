@@ -43,6 +43,10 @@ namespace Way.EntityDB.Design.Actions
                     return typeof(string);
                 case "datetime":
                     return typeof(DateTime);
+                case "date":
+                    return typeof(DateTime);
+                case "time":
+                    return typeof(DateTime);
                 case "decimal":
                     return typeof(decimal);
                 case "float":

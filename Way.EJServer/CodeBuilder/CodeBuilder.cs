@@ -558,6 +558,10 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                     return "string";
                 case "datetime":
                     return "DateTime";
+                case "date":
+                    return "DateTime";
+                case "time":
+                    return "DateTime";
                 case "decimal":
                     return "Decimal";
                 case "float":

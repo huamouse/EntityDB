@@ -1355,6 +1355,17 @@ namespace Way.EJServer
             return null;
         }
 
+
+        [RemotingMethod]
+        public bool RebuildDatabaseActions(int databaseid)
+        {
+            using (EJDB db = new EJDB())
+            {
+                rebuildDatabaseActions(db, db.Databases.FirstOrDefault(m => m.id == databaseid));
+            }
+            return true;
+        }
+
         /// <summary>
         /// 重建数据库action
         /// </summary>

@@ -767,5 +767,23 @@ namespace EJClient
                 }
             }
         }
+
+        private void MenuItem_重置表结构变更历史_Click(object sender, RoutedEventArgs e)
+        {
+            if( MessageBox.Show(this , "重置表结构变更历史，会把所有表设置为新建的数据表，即把表结构历史清空，把所有表都认为是新建的数据表。\r\n\r\n此操作不会影响目前的表结构，但是如果此数据库已经应用到程序上，不建议重置表结构变更历史。\r\n\r\n确定重置吗？", "" , MessageBoxButton.OKCancel) == MessageBoxResult.OK )
+            {
+                try
+                {
+                    DatabaseItemNode selectedItem = ((FrameworkElement)e.OriginalSource).DataContext as DatabaseItemNode;
+                    Helper.Client.InvokeSync<bool>("RebuildDatabaseActions", selectedItem.Database.id);
+                    MessageBox.Show(this, "成功重置表结构变更历史！");
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show(this, ex.GetBaseException().Message);
+                }
+            }
+        }
     }
 }

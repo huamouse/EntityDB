@@ -28,7 +28,7 @@ namespace Way.EJServer
           
                 byte[] bs = new byte[connectInfo.Request.ContentLength];
                 connectInfo.Request.Body.Read(bs, 0, bs.Length);
-                ImportDesign(projectid, bs);
+                ImportDesign(projectid, bs, connectInfo);
 
                 connectInfo.Response.Write("ok\r\n");
             }
@@ -39,7 +39,7 @@ namespace Way.EJServer
             
         }
 
-        public bool ImportDesign(int projectid, byte[] csFileContent)
+        public bool ImportDesign(int projectid, byte[] csFileContent, HttpConnectInformation connectInfo)
         {
             using (MemoryStream ms = new MemoryStream(csFileContent))
             using (StreamReader sr = new StreamReader(ms, Encoding.UTF8))
@@ -205,6 +205,15 @@ namespace Way.EJServer
                             db.Insert(action);
                         }
 
+
+                        db.Insert(new EJ.SysLog()
+                        {
+                            UserId = ((EJ.User)connectInfo.Session["user"]).id,
+                            Type = "从cs导入数据库设计模型",
+                            DatabaseId = designData.Database.id,
+                            Time = DateTime.Now,
+
+                        });
 
                         db.CommitTransaction();
 

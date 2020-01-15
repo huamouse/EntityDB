@@ -20,7 +20,8 @@
             <MenuItem Header="导入数据..." Click="MenuItem_导入数据_Click_1"></MenuItem>
             <Separator></Separator>
             <MenuItem Header="从其他数据库导入表结构..." Click="MenuItem_从其他数据库导入表结构_Click_1"></MenuItem>
-          
+            <Separator></Separator>
+            <MenuItem Header="重置表结构变更历史..." Click="MenuItem_重置表结构变更历史_Click"></MenuItem>
             <Separator></Separator>
             <MenuItem Header="移除" Click="MenuItem_移除数据库_Click_1"></MenuItem>
             <Separator></Separator>

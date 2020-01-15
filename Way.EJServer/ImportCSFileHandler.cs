@@ -25,8 +25,9 @@ namespace Way.EJServer
             try
             {
                 int projectid = Convert.ToInt32(connectInfo.Request.Query["projectid"]);
-                System.IO.BinaryReader reader = new System.IO.BinaryReader(connectInfo.Request.Body);
-                byte[] bs = reader.ReadBytes(connectInfo.Request.ContentLength);
+          
+                byte[] bs = new byte[connectInfo.Request.ContentLength];
+                connectInfo.Request.Body.Read(bs, 0, bs.Length);
                 ImportDesign(projectid, bs);
 
                 connectInfo.Response.Write("ok\r\n");
@@ -206,6 +207,7 @@ namespace Way.EJServer
 
 
                         db.CommitTransaction();
+
                     }
                     catch (Exception)
                     {

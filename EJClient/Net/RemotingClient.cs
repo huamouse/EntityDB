@@ -101,7 +101,7 @@ namespace EJClient.Net
         public void Init(out byte[] exponent, out byte[] modulus)
         {
             Dictionary<string, string> values = new Dictionary<string, string>();
-            HttpClient client = new HttpClient();
+            System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
             client.DefaultRequestHeaders.Add("Referer", _Referer);
             values["m"] = (new  {
                 Action= "init",
@@ -158,7 +158,7 @@ namespace EJClient.Net
                 //});
 
                 //string body = System.Text.Encoding.UTF8.GetString(bs);
-                HttpClient client = new HttpClient();
+                System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
                 client.DefaultRequestHeaders.Add("Referer", _Referer);
                 values["m"] = (new InvokeArg
                 {
@@ -284,7 +284,7 @@ namespace EJClient.Net
                 parameterJson = "[]";
             }
 
-            HttpClient client = new HttpClient();
+            System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
             client.DefaultRequestHeaders.Add("Referer", _Referer);
             values["m"] = (new InvokeArg
             {

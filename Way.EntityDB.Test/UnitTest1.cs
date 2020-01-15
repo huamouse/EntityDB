@@ -64,6 +64,29 @@ namespace Way.EntityDB.Test
         }
 
         [TestMethod]
+        public void DateTest()
+        {
+            TestDB.DB.Test db = new TestDB.DB.Test("server=192.168.0.151;uid=sa;pwd=sa!@#123;database=Test", DatabaseType.SqlServer);
+            db.BeginTransaction();
+
+            var userinfo = new TestDB.UserInfo() { 
+            Age = 11,
+            Birthday = DateTime.Now,
+            UserName = "test"
+            };
+
+            db.Insert(userinfo);
+
+            userinfo = db.UserInfo.FirstOrDefault(m => m.id == userinfo.id);
+            db.RollbackTransaction();
+
+            var str = userinfo.Birthday.Value.ToString("HH:mm:ss");
+            if (str != "00:00:00")
+                throw new Exception("Birthday不应该包含有时间值");
+            
+        }
+
+        [TestMethod]
         public void DeleteTest()
         {
             TestDB.DB.Test db = new TestDB.DB.Test("server=192.168.0.151;uid=sa;pwd=sa!@#123;database=Test", DatabaseType.SqlServer);

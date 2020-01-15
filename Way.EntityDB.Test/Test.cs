@@ -98,6 +98,30 @@ namespace TestDB{
                 }
             }
         }
+
+        System.Nullable<DateTime> _Birthday;
+        /// <summary>
+        /// 
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Schema.Column("birthday")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="birthday",Comment="",Caption="",Storage = "_Birthday",DbType="date")]
+        public virtual System.Nullable<DateTime> Birthday
+        {
+            get
+            {
+                return this._Birthday;
+            }
+            set
+            {
+                if ((this._Birthday != value))
+                {
+                    this.SendPropertyChanging("Birthday",this._Birthday,value);
+                    this._Birthday = value;
+                    this.SendPropertyChanged("Birthday");
+
+                }
+            }
+        }
 }}
 namespace TestDB{
 
@@ -251,9 +275,15 @@ modelBuilder.Entity<TestDB.UserAccount>().HasKey(m => m.id);
 
 protected override string GetDesignString(){System.Text.StringBuilder result = new System.Text.StringBuilder(); 
 result.Append("\r\n");
-result.Append("H4sIAAAAAAAAC72UW0/CMBTHv0ufweyu8kbgZdEQ49CYMB7KVmBxtNp1GEL47p5egAKKEMWnnVtP/6fnly1RH49KUqHWYKnNHp4R1ELJe5kQPiccNdAj+9AFsSAzbZmqIof0My5rcNxVYxMXizeyzaAOJ1gQ1b6diYJRZNVmjApChVW+TLWUFLXALHL4un4jVQfATtFT");
-result.Append("RXhMxyxFEO1igUe4InEXciEEinuWvYLtrMDpsLKe0QrcwbpX5Ni9ZAj8uGrXgsU042QGaiAleE1kA0x7dVlCYIzLSkbyUR/G04dlZcPIVQKU0Lh6uFOe6cF4Tri6GzRtZLj7I2nnSzHru7dqTGtLzBzzbIq56lASOhFTFQ6doxLXnbcaXUujZ2tsT34jb/1WlrQzhXmr");
-result.Append("oSzovnQYHRcTtVQdUS9rQ5UbKGxAQzguWU4EwKhXcZxo76JEB/vrb2cZq80jnQ+1f0mog5Oh3pnKTPRfXAc/cf23+IBrFoEkQNq2MZJLlFPI3+miAtKuYiqiQF20U23gOqxPBC/o5PDAlrDTz+zM9K20oRxLZhOi9gYF2I3CyIuCJvYjtxn4zk0T58F1M/fGToZD/zZ3");
-result.Append("IrT6BBtaG6ZKBgAA");
+result.Append("H4sIAAAAAAAAC71VXW/aMBT9L36GKd9beaPwEq1i09JNk5o+mPgSohm7c5wihPjvu3YCmNLSItY+cb99rs9xWJNbOuVQk8HdujUndAFkQLK/PAP1CIr0yA+5bAtSDYvW6qoqhulflDfo+JveLq5XD7DPkJECqsGOHxa6koI4tYUUGoR2ytd5CyUnAzQrhr9+2MttA9o5");
+result.Append("+VmDSsVM5gSjY6rplNaQjjEXY6C6kcUftL0NOiPJm4Wo0b3bzko8d5YJoZ/Ww0bLVBQKFogGU1o1YAZQMWk4x8CM8tpE2PQW12ubTWWvg2sBWKBp/f2r9boZUjFQ9mzEtIPhP12pdZ4Fsz17j6Yb7YB5pKqYU2UncBClnttw7J2EuJ28x+g7GAMX47C8BN72rhxoZwIL");
+result.Append("NvemYPx7JMWsKi2pbcTerCsq1onCFWiM7UbLmUYxtlScVnTwroqOntI/LArZdJd0vqjD9xR19GZRH2zVbfRRuo5e0/XHyic8IZ85FeVZ8vnG2e7zfPwNnMDyRFbA8hnF+FdGV7uO60rpOaOrC4jCW4MLn3hoOSrs9TAHtIky4KCPov+PT3S72cQw2tour+ZRmmXN3+Oq");
+result.Append("Ruo/pUInkT3ooLpj+7g+06oS5XHDnvK39xzs9CK0e7OWyWZg3yEWUD+JkyCJ+jRM/H4Uel/6lEWf+yyYeQWNwyvmJWTzD0k4oKIaCAAA");
 return result.ToString();}
 }}
+/*<design>
+H4sIAAAAAAAAC7VUXW/TMBT9K8O8plWcr7WpKtE2AkXAVGlFQiI8eInbBlw7sp2xqup/33U+3JUBKhMkD8nN9T3n3OPrHFBCNLkjiqL4gMoCxaGDllJ8o7lOExRjB92QHSTRiiqNHFTcrfYVbRK54LdaQkpReU/lFI+9IY5GQ3eIQzypy2KqyKT6YR6v3rzGnj8pOq5p
+D8bYkugtQBwymfGrqwzwMxTDM4kzuMy6Ya4y5PR5Ve4qRts1cMPXIwCVH0T+HcV+q/a2InkvOZlD+h2IgZjgKIy8KBgQP8KDwHdHA1IE14PCW7s5Cf1x4Ubo6KCPoqgZVSj+0lpybU3YYUDrHTP+gFupeitYQcGINWGKOqgikvLGPff41UErcvcUDPsW7RMYl/K1eI7Z
+9eMena4oOCua5bmouf5DXc+b8p+bMfxtKmmDdoGJoM8HMNF1HbSHHB4/pT/VBM9rwlHY1nihoU6Tzykv6ENDC3EyTyijmi4EX5cb+3EhWL3jJ2mRa7uE0Dg7q7VIeS7pDhxFsZY1+Lsg/KZmzPrdjyQqG0vOmkvV8r15byuFhH0yTNbYCJ8Z27z+grhjsswtnCW+JzLf
+EgmVjPJNM9Ch+zspHZbVgq0Wz2qZbV4io+3fSrhUgGcF+P/W/+AC/0+D3Q31f9uC4IItwGOY407PvJR6W5D9C8TAf8708Nc74ZvDkzOiVCVFRaUu2xN0fAR8h7HvpwUAAA==
+<design>*/

@@ -255,6 +255,10 @@ namespace "+nameSpace+@".DB{
                     return "String";
                 case "datetime":
                     return "System.Nullable<DateTime>";
+                case "date":
+                    return "System.Nullable<DateTime>";
+                case "time":
+                    return "System.Nullable<DateTime>";
                 case "decimal":
                     return "System.Nullable<Decimal>";
                 case "float":

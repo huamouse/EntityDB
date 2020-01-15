@@ -18,6 +18,8 @@ namespace Way.EntityDB.Design.Impls.MySql
                                             "date",//smalldatetime
                                             "real",
                                             "datetime",//datetime
+                                             "date",//date
+                                              "time",//time
                                             "float",
                                             "double",
                                             "bit",

@@ -17,9 +17,11 @@ namespace Way.EntityDB.Design.Impls.Sqlite
                                             "BLOB",//image
                                             "TEXT",
                                             "SMALLINT",//smallint
-                                            "DATETIME",//smalldatetime
+                                            "DATE",//smalldatetime
                                             "REAL",
                                             "DATETIME",//datetime
+                                             "DATE",//date
+                                              "TIME",//time
                                             "FLOAT",
                                             "DOUBLE",
                                             "BOOLEAN",

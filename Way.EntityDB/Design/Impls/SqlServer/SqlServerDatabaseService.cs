@@ -190,29 +190,6 @@ namespace Way.EntityDB.Design.Database.SqlServer
         }
 
 
-        //public static string GetDBTypeString(Type type)
-        //{
-        //    if (type == typeof(long))
-        //        return "bigint";
-        //    if (type == typeof(Byte[]))
-        //        return "binary";
-        //    if (type == typeof(bool))
-        //        return "bit";
-        //    if (type == typeof(string))
-        //        return "varchar";
-        //    if (type == typeof(DateTime))
-        //        return "datetime";
-        //    if (type == typeof(decimal))
-        //        return "decimal";
-        //    if (type == typeof(double))
-        //        return "float";
-        //    if (type == typeof(float))
-        //        return "float";
-        //    if (type == typeof(int))
-        //        return "int";
-        //    return "";
-        //}
-
         public void CreateEasyJobTable(EntityDB.IDatabaseService db)
         {
             bool exists = true;

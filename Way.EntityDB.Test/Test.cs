@@ -122,6 +122,30 @@ namespace TestDB{
                 }
             }
         }
+
+        System.Nullable<TimeSpan> _Time;
+        /// <summary>
+        /// 
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Schema.Column("time")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="time",Comment="",Caption="",Storage = "_Time",DbType="time")]
+        public virtual System.Nullable<TimeSpan> Time
+        {
+            get
+            {
+                return this._Time;
+            }
+            set
+            {
+                if ((this._Time != value))
+                {
+                    this.SendPropertyChanging("Time",this._Time,value);
+                    this._Time = value;
+                    this.SendPropertyChanged("Time");
+
+                }
+            }
+        }
 }}
 namespace TestDB{
 
@@ -275,15 +299,15 @@ modelBuilder.Entity<TestDB.UserAccount>().HasKey(m => m.id);
 
 protected override string GetDesignString(){System.Text.StringBuilder result = new System.Text.StringBuilder(); 
 result.Append("\r\n");
-result.Append("H4sIAAAAAAAAC71VXW/aMBT9L36GKd9beaPwEq1i09JNk5o+mPgSohm7c5wihPjvu3YCmNLSItY+cb99rs9xWJNbOuVQk8HdujUndAFkQLK/PAP1CIr0yA+5bAtSDYvW6qoqhulflDfo+JveLq5XD7DPkJECqsGOHxa6koI4tYUUGoR2ytd5CyUnAzQrhr9+2MttA9o5");
-result.Append("+VmDSsVM5gSjY6rplNaQjjEXY6C6kcUftL0NOiPJm4Wo0b3bzko8d5YJoZ/Ww0bLVBQKFogGU1o1YAZQMWk4x8CM8tpE2PQW12ubTWWvg2sBWKBp/f2r9boZUjFQ9mzEtIPhP12pdZ4Fsz17j6Yb7YB5pKqYU2UncBClnttw7J2EuJ28x+g7GAMX47C8BN72rhxoZwIL");
-result.Append("NvemYPx7JMWsKi2pbcTerCsq1onCFWiM7UbLmUYxtlScVnTwroqOntI/LArZdJd0vqjD9xR19GZRH2zVbfRRuo5e0/XHyic8IZ85FeVZ8vnG2e7zfPwNnMDyRFbA8hnF+FdGV7uO60rpOaOrC4jCW4MLn3hoOSrs9TAHtIky4KCPov+PT3S72cQw2tour+ZRmmXN3+Oq");
-result.Append("Ruo/pUInkT3ooLpj+7g+06oS5XHDnvK39xzs9CK0e7OWyWZg3yEWUD+JkyCJ+jRM/H4Uel/6lEWf+yyYeQWNwyvmJWTzD0k4oKIaCAAA");
+result.Append("H4sIAAAAAAAAC81WXW/aMBT9L36GKt9beaPwEm1i08KmSU0fTHwJ0YyzOU4RQvz3XTsJmNKxUlS2J+63z/U5sdiQKZ1xqMjgftOYE7oEMiDJL56AfARJeuRLuWoKYgXLxmqrCobpb5TX6Ljb3i6u1j9hnyEjCVSBGT/MVFEKYtVmpVAglFW+SRsoKRmgWTD8df1eahrQ");
+result.Append("TsnXCmQs5mVKMDqmis5oBfEYcyEGio9l9gNtZ4vOqOT1UlTo3nezIseepUPox9WwVmUsMglLRIMpJWvQA6iY1JxjYE55pSNsNsX1mmZd2WvhGgAGaFx9/mC8dkYpGUhzNmLawXCfrtQ4z4Lpzt6jaUdbYB6pzBZUmgkcRK4WJhw6JyF2k/cYXQujZ2Mc5pfA6+7KgnYm");
+result.Append("MG/7oAvG30elmBe5IbWJmJu1RcVaUdgCDbFdazlRKMaGitOK9t5U0cFT+odZVtbtJZ0vav8tRR28WNQHW7UbXUvXwd90fV35+Cfks6AiP0s+nzjbPc/Hb+AEVieyAlbPKMa91braddwVUi0YXV9AFN4aXPiJ+4ajzFwPs0DrKAMO6ih6PT6D/53PyOZzWlz00amu/fVc");
+result.Append("Bv+QS3Tb2USz2dg2p/qB1cvqvzrrCmm/iYWKAnPQQXXL9HF9omQh8uOGPd0v7znY6Y/QHvRaOpuAeVOxgLpRGHlR0Kd+5PYD33nfpyx412fe3Mlo6N8yJyLb39y8DRXmCQAA");
 return result.ToString();}
 }}
 /*<design>
-H4sIAAAAAAAAC7VUXW/TMBT9K8O8plWcr7WpKtE2AkXAVGlFQiI8eInbBlw7sp2xqup/33U+3JUBKhMkD8nN9T3n3OPrHFBCNLkjiqL4gMoCxaGDllJ8o7lOExRjB92QHSTRiiqNHFTcrfYVbRK54LdaQkpReU/lFI+9IY5GQ3eIQzypy2KqyKT6YR6v3rzGnj8pOq5p
-D8bYkugtQBwymfGrqwzwMxTDM4kzuMy6Ya4y5PR5Ve4qRts1cMPXIwCVH0T+HcV+q/a2InkvOZlD+h2IgZjgKIy8KBgQP8KDwHdHA1IE14PCW7s5Cf1x4Ubo6KCPoqgZVSj+0lpybU3YYUDrHTP+gFupeitYQcGINWGKOqgikvLGPff41UErcvcUDPsW7RMYl/K1eI7Z
-9eMena4oOCua5bmouf5DXc+b8p+bMfxtKmmDdoGJoM8HMNF1HbSHHB4/pT/VBM9rwlHY1nihoU6Tzykv6ENDC3EyTyijmi4EX5cb+3EhWL3jJ2mRa7uE0Dg7q7VIeS7pDhxFsZY1+Lsg/KZmzPrdjyQqG0vOmkvV8r15byuFhH0yTNbYCJ8Z27z+grhjsswtnCW+JzLf
-EgmVjPJNM9Ch+zspHZbVgq0Wz2qZbV4io+3fSrhUgGcF+P/W/+AC/0+D3Q31f9uC4IItwGOY407PvJR6W5D9C8TAf8708Nc74ZvDkzOiVCVFRaUu2xN0fAR8h7HvpwUAAA==
+H4sIAAAAAAAAC7VUW2/aMBT+K533GlCcWyEIaUC0KdpWIZVJk5Y9mNhANmNHjtMVIf77TmJiyrpNFG3wkJwcf5fz2ckeJUSTJakYiveooCgOHTRX8hvLdZqgGDvojmyhiRas0shBdLnYlaxt5FLcawWtiqkHpsZ46PVxNOi7fRziUV3QcUVG5Y/m8urNa+z5I3rUGndk
+nM+J3gDFPlOZuLnJgD9DMVyTOINfs66fVxlyun5VbEvOzBr4w9MDEBUfZP4dxYFxe1+SvLOcTKH9DsxATXAURl4U9Igf4V7gu4MeocFtj3orNyehP6RuhA4O+ihpzVmF4i8mklsbwhYDW5dYkw+klVZvJacMglgRXjEHlUQx0abnHr46aEGWT8mwb9k+QXCpWMnnnMd5
+3INzBAVnoEmey1rov+A63VT8Okyjb1qJKcyCpoI5H1Hsu66DdtDDw6fyJ0zwHBMOQoPxwkY6TT6ngrLHVhbqZJowzjSbSbEq1vbhTPJ6K07WItdOCWWT7KTWMhW5YltIFMVa1ZDvjIi7mnObd3ckUdFGcjZcWs3fN/cGKRXsU6Nkg43wWbDt7W+Ej0pW2dBZ4Qei8g1R
+gORMrNsDHbp/snLksl6w9eJZL5P1NTbM/NbCpQY8a8D/t/kHF+R/OtjHQ/3ftiC4YAvwMLR+poXSG0p2V5ihRDczvHgn/JOP6PThLa4KRBvYiz0EzQucc1JVpZIlU7owb/HhJ1SxGuYrBgAA
 <design>*/

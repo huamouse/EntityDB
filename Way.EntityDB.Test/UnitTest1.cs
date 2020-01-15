@@ -69,10 +69,11 @@ namespace Way.EntityDB.Test
             TestDB.DB.Test db = new TestDB.DB.Test("server=192.168.0.151;uid=sa;pwd=sa!@#123;database=Test", DatabaseType.SqlServer);
             db.BeginTransaction();
 
-            var userinfo = new TestDB.UserInfo() { 
-            Age = 11,
-            Birthday = DateTime.Now,
-            UserName = "test"
+            var userinfo = new TestDB.UserInfo() {
+                Age = 11,
+                Birthday = DateTime.Now,
+                UserName = "test",
+                Time = DateTime.Now.TimeOfDay
             };
 
             db.Insert(userinfo);
@@ -83,7 +84,10 @@ namespace Way.EntityDB.Test
             var str = userinfo.Birthday.Value.ToString("HH:mm:ss");
             if (str != "00:00:00")
                 throw new Exception("Birthday不应该包含有时间值");
-            
+
+            //str = userinfo.Time.ToString("yyyy-MM-dd");
+            //if (str != "0000-00-00")
+            //    throw new Exception("Time不应该包含日期");
         }
 
         [TestMethod]

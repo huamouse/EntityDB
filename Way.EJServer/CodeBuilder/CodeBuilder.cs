@@ -258,7 +258,7 @@ namespace "+nameSpace+@".DB{
                 case "date":
                     return "System.Nullable<DateTime>";
                 case "time":
-                    return "System.Nullable<DateTime>";
+                    return "System.Nullable<TimeSpan>";
                 case "decimal":
                     return "System.Nullable<Decimal>";
                 case "float":

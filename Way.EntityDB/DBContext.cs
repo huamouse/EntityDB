@@ -966,7 +966,16 @@ namespace Way.EntityDB
                     if (attr != null)
                         allcolumns.Add(attr);
                 }
-                Attributes.Table.DataTypeColumns[dataType] = columns = allcolumns.ToArray();
+                columns = allcolumns.ToArray();
+                try
+                {
+                    Attributes.Table.DataTypeColumns[dataType] = columns;
+                }
+                catch
+                {
+                    //并发时可能报错
+                }
+               
             }
            
             int pagesize = 100;

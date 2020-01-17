@@ -7,7 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace TestDB{
+namespace TDB{
 
 
     /// <summary>
@@ -26,145 +26,53 @@ namespace TestDB{
         }
 
 
-        System.Nullable<Int32> _id;
+        String _phone;
         /// <summary>
         /// 
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
-        public virtual System.Nullable<Int32> id
+        [System.ComponentModel.DataAnnotations.Schema.Column("phone")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="phone",Comment="",Caption="",Storage = "_phone",DbType="varchar(50)",CanBeNull=false)]
+        public virtual String phone
         {
             get
             {
-                return this._id;
+                return this._phone;
             }
             set
             {
-                if ((this._id != value))
+                if ((this._phone != value))
                 {
-                    this.SendPropertyChanging("id",this._id,value);
-                    this._id = value;
-                    this.SendPropertyChanged("id");
+                    this.SendPropertyChanging("phone",this._phone,value);
+                    this._phone = value;
+                    this.SendPropertyChanged("phone");
 
                 }
             }
         }
 
-        String _UserName;
+        System.Nullable<Int32> _chance=0;
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("username")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="username",Comment="",Caption="",Storage = "_UserName",DbType="varchar(50)")]
-        public virtual String UserName
+        [System.ComponentModel.DataAnnotations.Schema.Column("chance")]
+        [Way.EntityDB.WayDBColumnAttribute(Name="chance",Comment="",Caption="",Storage = "_chance",DbType="int")]
+        public virtual System.Nullable<Int32> chance
         {
             get
             {
-                return this._UserName;
+                return this._chance;
             }
             set
             {
-                if ((this._UserName != value))
+                if ((this._chance != value))
                 {
-                    this.SendPropertyChanging("UserName",this._UserName,value);
-                    this._UserName = value;
-                    this.SendPropertyChanged("UserName");
+                    this.SendPropertyChanging("chance",this._chance,value);
+                    this._chance = value;
+                    this.SendPropertyChanged("chance");
 
                 }
             }
         }
-
-        System.Nullable<Int32> _Age;
-        /// <summary>
-        /// 
-        /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("age")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="age",Comment="",Caption="",Storage = "_Age",DbType="int")]
-        public virtual System.Nullable<Int32> Age
-        {
-            get
-            {
-                return this._Age;
-            }
-            set
-            {
-                if ((this._Age != value))
-                {
-                    this.SendPropertyChanging("Age",this._Age,value);
-                    this._Age = value;
-                    this.SendPropertyChanged("Age");
-
-                }
-            }
-        }
-
-        System.Nullable<DateTime> _Birthday;
-        /// <summary>
-        /// 
-        /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("birthday")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="birthday",Comment="",Caption="",Storage = "_Birthday",DbType="date")]
-        public virtual System.Nullable<DateTime> Birthday
-        {
-            get
-            {
-                return this._Birthday;
-            }
-            set
-            {
-                if ((this._Birthday != value))
-                {
-                    this.SendPropertyChanging("Birthday",this._Birthday,value);
-                    this._Birthday = value;
-                    this.SendPropertyChanged("Birthday");
-
-                }
-            }
-        }
-
-        System.Nullable<TimeSpan> _Time;
-        /// <summary>
-        /// 
-        /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("time")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="time",Comment="",Caption="",Storage = "_Time",DbType="time")]
-        public virtual System.Nullable<TimeSpan> Time
-        {
-            get
-            {
-                return this._Time;
-            }
-            set
-            {
-                if ((this._Time != value))
-                {
-                    this.SendPropertyChanging("Time",this._Time,value);
-                    this._Time = value;
-                    this.SendPropertyChanged("Time");
-
-                }
-            }
-        }
-}}
-namespace TestDB{
-
-
-    /// <summary>
-	/// 
-	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("useraccount")]
-    [Way.EntityDB.Attributes.Table("id")]
-    public class UserAccount :Way.EntityDB.DataItem
-    {
-
-        /// <summary>
-	    /// 
-	    /// </summary>
-        public  UserAccount()
-        {
-        }
-
 
         System.Nullable<Int32> _id;
         /// <summary>
@@ -190,44 +98,20 @@ namespace TestDB{
                 }
             }
         }
-
-        String _AccountName;
-        /// <summary>
-        /// 
-        /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("accountname")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="accountname",Comment="",Caption="",Storage = "_AccountName",DbType="varchar(50)")]
-        public virtual String AccountName
-        {
-            get
-            {
-                return this._AccountName;
-            }
-            set
-            {
-                if ((this._AccountName != value))
-                {
-                    this.SendPropertyChanging("AccountName",this._AccountName,value);
-                    this._AccountName = value;
-                    this.SendPropertyChanged("AccountName");
-
-                }
-            }
-        }
 }}
 
-namespace TestDB.DB{
+namespace TDB.DB{
     /// <summary>
 	/// 
 	/// </summary>
-    public class Test : Way.EntityDB.DBContext
+    public class Test2 : Way.EntityDB.DBContext
     {
         /// <summary>
         /// 
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="dbType"></param>
-        public Test(string connection, Way.EntityDB.DatabaseType dbType): base(connection, dbType)
+        public Test2(string connection, Way.EntityDB.DatabaseType dbType): base(connection, dbType)
         {
             if (!setEvented)
             {
@@ -248,7 +132,7 @@ namespace TestDB.DB{
 
         static void Database_BeforeDelete(object sender, Way.EntityDB.DatabaseModifyEventArg e)
         {
-            var db =  sender as TestDB.DB.Test;
+            var db =  sender as TDB.DB.Test2;
             if (db == null)
                 return;
 
@@ -261,53 +145,36 @@ namespace TestDB.DB{
         /// <param name="modelBuilder"></param>
          protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-   modelBuilder.Entity<TestDB.UserInfo>().HasKey(m => m.id);
-modelBuilder.Entity<TestDB.UserAccount>().HasKey(m => m.id);
+   modelBuilder.Entity<TDB.UserInfo>().HasKey(m => m.id);
 }
 
-        System.Linq.IQueryable<TestDB.UserInfo> _UserInfo;
+        System.Linq.IQueryable<TDB.UserInfo> _UserInfo;
         /// <summary>
         /// 
         /// </summary>
-        public virtual System.Linq.IQueryable<TestDB.UserInfo> UserInfo
+        public virtual System.Linq.IQueryable<TDB.UserInfo> UserInfo
         {
              get
             {
                 if (_UserInfo == null)
                 {
-                    _UserInfo = this.Set<TestDB.UserInfo>();
+                    _UserInfo = this.Set<TDB.UserInfo>();
                 }
                 return _UserInfo;
             }
         }
 
-        System.Linq.IQueryable<TestDB.UserAccount> _UserAccount;
-        /// <summary>
-        /// 
-        /// </summary>
-        public virtual System.Linq.IQueryable<TestDB.UserAccount> UserAccount
-        {
-             get
-            {
-                if (_UserAccount == null)
-                {
-                    _UserAccount = this.Set<TestDB.UserAccount>();
-                }
-                return _UserAccount;
-            }
-        }
-
 protected override string GetDesignString(){System.Text.StringBuilder result = new System.Text.StringBuilder(); 
 result.Append("\r\n");
-result.Append("H4sIAAAAAAAAC81WXW/aMBT9L36GKt9beaPwEm1i08KmSU0fTHwJ0YyzOU4RQvz3XTsJmNKxUlS2J+63z/U5sdiQKZ1xqMjgftOYE7oEMiDJL56AfARJeuRLuWoKYgXLxmqrCobpb5TX6Ljb3i6u1j9hnyEjCVSBGT/MVFEKYtVmpVAglFW+SRsoKRmgWTD8df1eahrQ");
-result.Append("TsnXCmQs5mVKMDqmis5oBfEYcyEGio9l9gNtZ4vOqOT1UlTo3nezIseepUPox9WwVmUsMglLRIMpJWvQA6iY1JxjYE55pSNsNsX1mmZd2WvhGgAGaFx9/mC8dkYpGUhzNmLawXCfrtQ4z4Lpzt6jaUdbYB6pzBZUmgkcRK4WJhw6JyF2k/cYXQujZ2Mc5pfA6+7KgnYm");
-result.Append("MG/7oAvG30elmBe5IbWJmJu1RcVaUdgCDbFdazlRKMaGitOK9t5U0cFT+odZVtbtJZ0vav8tRR28WNQHW7UbXUvXwd90fV35+Cfks6AiP0s+nzjbPc/Hb+AEVieyAlbPKMa91braddwVUi0YXV9AFN4aXPiJ+4ajzFwPs0DrKAMO6ih6PT6D/53PyOZzWlz00amu/fVc");
-result.Append("Bv+QS3Tb2USz2dg2p/qB1cvqvzrrCmm/iYWKAnPQQXXL9HF9omQh8uOGPd0v7znY6Y/QHvRaOpuAeVOxgLpRGHlR0Kd+5PYD33nfpyx412fe3Mlo6N8yJyLb39y8DRXmCQAA");
+result.Append("H4sIAAAAAAAAC81U32/aMBD+X/wMVdKSpPDWwUu0iVWjmyY1fXDiI1g1NnOcoQrxv+9sh+KIljFpD33K3Xc/8t3dl+zIAy0FNGTyuPPmnK6BTMjil+AGyIB8U1sfzQ2svdWlcIbhH1S06MT7wStuXjZwjJCpBmrA9b6rDFeSBLmVkgakCdJ3hedRkAmanOEzvkkHhatA");
+result.Append("pyDfG9C5XKqCIDqjhpa0gXxmExNE+BdVPaMT7dGZKtGuZYPu46FbOs7CbpuVkmghlDd3rVG5rDSskRNGl1Q0YLtQOW+FCBBWPuCUrsFvqqsV1a6FAFmblYOTyCFuFk/OTZE395+da3RrGynNQDteyPdI8TakiO1ldTnHrnNAkdvMPj3nM1jSVhi3eof+hfPhXUfS8f7J");
+result.Append("Jsx+TpVc8tot2iNuovDUrLtUTzYJ1luJLQxqxO/gvNCuzwgN11T/k9C+Cvaq+VNpzWF7Jiph+6a4xuHlLPbm1bobnRXWe1e7XFL+OlY+NbCP+ymcyipC7xOtntuNPyq712oD2nCw/HdBrb2i5jWXVBxkbNew37vRGQgwvdH/s1zR7ZoTK1hvh7K1/ye7H/tLfWlQ2Ve5");
+result.Append("NOnIvamX3Yn5NH9hNJf1acFR0ZfX9IZ6l9qTHctGF2C6wjK5jhgbj4dZVibDESQ3w1uI0+GIZWkWR1FCSyz8A0tmY1tOBgAA");
 return result.ToString();}
 }}
 /*<design>
-H4sIAAAAAAAAC7VUW2/aMBT+K533GlCcWyEIaUC0KdpWIZVJk5Y9mNhANmNHjtMVIf77TmJiyrpNFG3wkJwcf5fz2ckeJUSTJakYiveooCgOHTRX8hvLdZqgGDvojmyhiRas0shBdLnYlaxt5FLcawWtiqkHpsZ46PVxNOi7fRziUV3QcUVG5Y/m8urNa+z5I3rUGndk
-nM+J3gDFPlOZuLnJgD9DMVyTOINfs66fVxlyun5VbEvOzBr4w9MDEBUfZP4dxYFxe1+SvLOcTKH9DsxATXAURl4U9Igf4V7gu4MeocFtj3orNyehP6RuhA4O+ihpzVmF4i8mklsbwhYDW5dYkw+klVZvJacMglgRXjEHlUQx0abnHr46aEGWT8mwb9k+QXCpWMnnnMd5
-3INzBAVnoEmey1rov+A63VT8Okyjb1qJKcyCpoI5H1Hsu66DdtDDw6fyJ0zwHBMOQoPxwkY6TT6ngrLHVhbqZJowzjSbSbEq1vbhTPJ6K07WItdOCWWT7KTWMhW5YltIFMVa1ZDvjIi7mnObd3ckUdFGcjZcWs3fN/cGKRXsU6Nkg43wWbDt7W+Ej0pW2dBZ4Qei8g1R
-gORMrNsDHbp/snLksl6w9eJZL5P1NTbM/NbCpQY8a8D/t/kHF+R/OtjHQ/3ftiC4YAvwMLR+poXSG0p2V5ihRDczvHgn/JOP6PThLa4KRBvYiz0EzQucc1JVpZIlU7owb/HhJ1SxGuYrBgAA
+H4sIAAAAAAAAC42SUWvbMBDHv8q4Z6eznThODHtYYzbMthJoNgb1HmTp0nhTJCPJoyX4u+9kJ05oM6hfzOnu/vr973SAnDlWMYuQHaAWkEVJAGujfyN3RU5hAHdsT1nYoHUxBCCqzXNDB3EAXKt7ZygnSOSd1a3h+KEEkb13vvhGVCX4DinXzO2o7kBJOstKyLOSPq95
+w20JQQm23jcS+2QJHbXVXzX/09/jCe4bxj1Gfkupz61HhSqJQyGWy0maVslkhsl0ssBoPpmJdJ5GYZiwagZdAN+0aCVayB4Gj9PF6AqR5E4z6A2T/8J+0lIgOdsyaTGAhhlU/TzC7lcAG1ZdykXT+aj33aIp1FZfUT36OSsU6iVYFC9OufyoO5T40FM/0S9KA3jus16p
+yH8WSuBTr0JxfpujRIcrrbb143i40rLdq/NN82U6Mjc7rfwYCvuxdbpQ3OCe7I7uV0zdtVKO8ekFwF9m+I4ZapWoHvsNJyG8dFDY9RcfHLu1ocl6hLALTiznfZCe4m+Ccaa9ZKmp5oLDPzvcsla6H0y2vuDtYPEZbDmCUXwFaoD474BeQ10nGGRGgMgvlktmbWN0g8bV
+w3a7f6UcfOuvAwAA
 <design>*/

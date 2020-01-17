@@ -166,7 +166,14 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
             {
                 foreach (var drow in dtable.Rows)
                 {
-                    database.ExecSqlString("DROP INDEX IF EXISTS [" + drow["name"] + "]");
+                    try
+                    {
+                        database.ExecSqlString("DROP INDEX IF EXISTS [" + drow["name"] + "]");
+                    }
+                    catch
+                    {
+
+                    }
                 }
             }
         }

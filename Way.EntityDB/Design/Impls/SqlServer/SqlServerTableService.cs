@@ -570,7 +570,7 @@ SELECT @NAME
                 database.ExecSqlString(sql);
 
                 if (column.IsPKID == true)
-                    database.ExecSqlString("nalter table [" + newTableName.ToLower() + "] add constraint pk_" + newTableName.ToLower() + "_" + column.Name.ToLower() + " primary key ([" + column.Name.ToLower() + "])");
+                    database.ExecSqlString("alter table [" + newTableName.ToLower() + "] add constraint pk_" + newTableName.ToLower() + "_" + column.Name.ToLower() + " primary key ([" + column.Name.ToLower() + "])");
                 
                 #endregion
             }

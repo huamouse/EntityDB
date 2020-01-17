@@ -45,73 +45,48 @@ namespace Way.EntityDB.Test
         [TestMethod]
         public void ConcatTest()
         {
-            TestDB.DB.Test db = new TestDB.DB.Test("server=192.168.0.151;uid=sa;pwd=sa!@#123;database=Test", DatabaseType.SqlServer);
-            var userinfo = from m in db.UserInfo
-                           select new { 
-                            myname = m.UserName,
-                            id = m.id
-                           };
+           // TestDB.DB.Test db = new TestDB.DB.Test("server=192.168.0.151;uid=sa;pwd=sa!@#123;database=Test", DatabaseType.SqlServer);
+           // var userinfo = from m in db.UserInfo
+           //                select new { 
+           //                 myname = m.UserName,
+           //                 id = m.id
+           //                };
 
-            var accountinfo = from m in db.UserAccount
-                              select new
-                              {
-                                  myname = m.AccountName,
-                                  id = m.id
-                              };
+           // var accountinfo = from m in db.UserAccount
+           //                   select new
+           //                   {
+           //                       myname = m.AccountName,
+           //                       id = m.id
+           //                   };
 
-           var result =  userinfo.Concat(accountinfo);
-           var ret = result.ToArray();
+           //var result =  userinfo.Concat(accountinfo);
+           //var ret = result.ToArray();
         }
 
-        [TestMethod]
-        public void DateTest()
-        {
-            TestDB.DB.Test db = new TestDB.DB.Test("server=192.168.0.151;uid=sa;pwd=sa!@#123;database=Test", DatabaseType.SqlServer);
-            db.BeginTransaction();
 
-            var userinfo = new TestDB.UserInfo() {
-                Age = 11,
-                Birthday = DateTime.Now,
-                UserName = "test",
-                Time = DateTime.Now.TimeOfDay
-            };
-
-            db.Insert(userinfo);
-
-            userinfo = db.UserInfo.FirstOrDefault(m => m.id == userinfo.id);
-            db.RollbackTransaction();
-
-            var str = userinfo.Birthday.Value.ToString("HH:mm:ss");
-            if (str != "00:00:00")
-                throw new Exception("Birthday不应该包含有时间值");
-
-            //str = userinfo.Time.ToString("yyyy-MM-dd");
-            //if (str != "0000-00-00")
-            //    throw new Exception("Time不应该包含日期");
-        }
 
         [TestMethod]
         public void DeleteTest()
         {
-            TestDB.DB.Test db = new TestDB.DB.Test("server=192.168.0.151;uid=sa;pwd=sa!@#123;database=Test", DatabaseType.SqlServer);
-            db.Delete(db.UserInfo.Where(m=>m.UserName == "way"));
+            TDB.DB.Test2 db = new TDB.DB.Test2("server=192.168.0.151;uid=sa;pwd=sa!@#123;database=Test2", DatabaseType.SqlServer);
+            db.Delete(db.UserInfo.Where(m=>m.phone == "way"));
         }
         [TestMethod]
         public void UpdateLockTest()
         {
-            TestDB.DB.Test db = new TestDB.DB.Test("server=192.168.0.151;uid=sa;pwd=sa!@#123;database=Test", DatabaseType.SqlServer);
-            db.BeginTransaction();
-            try
-            {
-                db.UpdateLock(db.UserInfo.Where(m => m.UserName == "way"));
-                db.UpdateLock(db.UserInfo.Where(m => m.UserName == "way"));
-                db.CommitTransaction();
-            }
-            catch (Exception)
-            {
-                db.RollbackTransaction();
-                throw;
-            }
+            //TDB.DB.Test2 db = new TDB.DB.Test2("server=192.168.0.151;uid=sa;pwd=sa!@#123;database=Test", DatabaseType.SqlServer);
+            //db.BeginTransaction();
+            //try
+            //{
+            //    db.UpdateLock(db.UserInfo.Where(m => m.UserName == "way"));
+            //    db.UpdateLock(db.UserInfo.Where(m => m.UserName == "way"));
+            //    db.CommitTransaction();
+            //}
+            //catch (Exception)
+            //{
+            //    db.RollbackTransaction();
+            //    throw;
+            //}
            
         }
         [TestMethod]

@@ -78,6 +78,25 @@ namespace EJClient.Net
                 _sessionid = value;
             }
         }
+
+
+        private static byte[] _CertRawData;
+        public static byte[] CertRawData
+        {
+            get
+            {
+                if(_CertRawData == null)
+                {
+                    using(var sr = typeof(RemotingClient).Assembly.GetManifestResourceStream("EJClient.certificate"))
+                    {
+                        _CertRawData = new byte[sr.Length];
+                        sr.Read(_CertRawData, 0, _CertRawData.Length);
+                    }
+                   
+                }
+                return _CertRawData;
+            }
+        }
        
         string _ServerUrl;
         string _Referer;
@@ -88,6 +107,14 @@ namespace EJClient.Net
         }
         private static bool CheckValidationResult(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors errors)
         {
+            var row = certificate.GetRawCertData();
+            if (row.Length != CertRawData.Length)
+                return false;
+            for(int i = 0; i < CertRawData.Length; i ++)
+            {
+                if (_CertRawData[i] != row[i])
+                    return false;
+            }
             return true; //总是接受     
         }
         public RemotingClient(string serverUrl)

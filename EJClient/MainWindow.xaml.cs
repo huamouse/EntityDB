@@ -695,7 +695,7 @@ namespace EJClient
             }
         }
 
-        private void MenuItem_cs文件还原设计模型_Click_1(object sender, RoutedEventArgs e)
+        private async void MenuItem_cs文件还原设计模型_Click_1(object sender, RoutedEventArgs e)
         {
 
             MenuItem item = (MenuItem)sender;
@@ -709,6 +709,7 @@ namespace EJClient
                 f.Filter = "*.cs|*.cs";
                 if (f.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
+                    this.Cursor = Cursors.Wait;
                     try
                     {
                         var bs = System.IO.File.ReadAllBytes(f.FileName);
@@ -724,30 +725,32 @@ namespace EJClient
                             host = host.Split(':')[0];
                         }
 
-
-                        Way.Lib.NetStream client = new Way.Lib.NetStream(host, port);
-                        client.AsSSLClient();
-
-
-                        System.IO.StreamWriter stream = new System.IO.StreamWriter(client);
-                        stream.WriteLine(url);
-                        stream.WriteLine($"Cookie: WayScriptRemoting={Net.RemotingClient.SessionID}");
-                        stream.WriteLine($"Content-Type: import");
-                        stream.WriteLine($"Content-Length: {bs.Length}");
-                        stream.WriteLine("");
-                        stream.Flush();
-
-                        client.Write(bs , 0 ,bs.Length);
+                        string result = null;
+                        await Task.Run(()=> {
+                            Way.Lib.NetStream client = new Way.Lib.NetStream(host, port);
+                            client.AsSSLClient();
 
 
-                        var reader = new System.IO.StreamReader(client);
-                        while (true)
-                        {
-                            if (reader.ReadLine().Length == 0)
-                                break;
-                        }
-                        var result = reader.ReadLine();
-                        client.Close();
+                            System.IO.StreamWriter stream = new System.IO.StreamWriter(client);
+                            stream.WriteLine(url);
+                            stream.WriteLine($"Cookie: WayScriptRemoting={Net.RemotingClient.SessionID}");
+                            stream.WriteLine($"Content-Type: import");
+                            stream.WriteLine($"Content-Length: {bs.Length}");
+                            stream.WriteLine("");
+                            stream.Flush();
+
+                            client.Write(bs, 0, bs.Length);
+
+
+                            while (true)
+                            {
+                                if (client.ReadLine().Length == 0)
+                                    break;
+                            }
+                            result = client.ReadLine();
+                            client.Close();
+                        });
+                       
 
                         if (result != "ok")
                         {
@@ -763,6 +766,10 @@ namespace EJClient
                     {
 
                         MessageBox.Show(this, ex.GetBaseException().Message);
+                    }
+                    finally
+                    {
+                        this.Cursor = null;
                     }
                 }
             }

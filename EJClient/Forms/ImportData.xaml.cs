@@ -121,13 +121,12 @@ namespace EJClient.Forms
                         bw.Flush();
 
                         
-                        var reader = new System.IO.StreamReader(client);
                         while(true)
                         {
-                            if (reader.ReadLine().Length == 0)
+                            if (client.ReadLine().Length == 0)
                                 break;
                         }
-                        result = reader.ReadLine();
+                        result = client.ReadLine();
                         client.Close();
                     }
                     catch(Exception ex)

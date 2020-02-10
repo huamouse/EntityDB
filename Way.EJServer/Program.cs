@@ -61,7 +61,19 @@ namespace Way.EJServer
                 //复制action表
                 using (var db = new EJ.DB.easyjob($"Data Source=\"{webroot}/EasyJob.db\"" , DatabaseType.Sqlite))
                 {
-                    if(db.DesignHistory.Count() == 0)
+                    //判断是否有__action
+
+                    bool isOldVersion = false;
+                    try
+                    {
+                        db.Database.ExecSqlString("select count(*) from __action");
+                    }
+                    catch(Exception)
+                    {
+
+                    }
+
+                    if (isOldVersion && db.DesignHistory.Count() == 0)
                     {
                         db.BeginTransaction();
                         try

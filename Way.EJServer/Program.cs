@@ -67,6 +67,7 @@ namespace Way.EJServer
                     try
                     {
                         db.Database.ExecSqlString("select count(*) from __action");
+                        isOldVersion = true;
                     }
                     catch(Exception)
                     {

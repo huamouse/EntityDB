@@ -1474,47 +1474,12 @@ namespace Way.EJServer
                             dbservice.Create(dataitem);
                             db.Update(dataitem);
 
-                            //更新到现在的数据结构
+                            //更新到现在的数据结构                         
+
                             var invokeDB = Way.EntityDB.Design.DBHelper.CreateInvokeDatabase(dataitem);
-                            var dbconfig = invokeDB.ExecSqlString("select contentConfig from __wayeasyjob").ToString().ToJsonObject<DataBaseConfig>();
-                            dbconfig.DatabaseGuid = dataitem.Guid;
-                            invokeDB.DBContext.BeginTransaction();
-                            try
-                            {
-                                int? lastid = null;
-                                var actionrows = db.DesignHistory.Where(m => m.ActionId > dbconfig.LastUpdatedID && m.DatabaseId == dataitem.id).OrderBy(m => m.ActionId).ToArray();
+                            var designData = CodeBuilder.GetDesignData(db, dataitem);
+                            DBUpgrade.Upgrade(invokeDB.DBContext,"\r\n"+ designData);
 
-                                foreach (var datarow in actionrows)
-                                {
-                                    string actionType = datarow.Type;
-                                    int actionid = datarow.ActionId.Value;
-
-                                    string json = datarow.Content;
-
-
-                                    Type type = typeof(Way.EntityDB.Design.Actions.Action).GetTypeInfo().Assembly.GetType($"Way.EntityDB.Design.Actions.{actionType}");
-                                    var actionItem = (Way.EntityDB.Design.Actions.Action)Newtonsoft.Json.JsonConvert.DeserializeObject(json, type);
-
-                                    actionItem.Invoke(invokeDB);
-
-                                    lastid = actionid;
-                                }
-                                if (lastid != null)
-                                {
-                                    dbconfig.LastUpdatedID = lastid.Value;
-                                }
-
-                                var obj = new Way.EntityDB.CustomDataItem("__wayeasyjob", null, null);
-                                obj.SetValue("contentConfig", dbconfig.ToJsonString());
-                                invokeDB.Update(obj);
-
-                                invokeDB.DBContext.CommitTransaction();
-                            }
-                            catch
-                            {
-                                invokeDB.DBContext.RollbackTransaction();
-                                throw;
-                            }
                         }
                         else if (dataitem.Name.ToLower() != oldData.Name.ToLower())
                         {

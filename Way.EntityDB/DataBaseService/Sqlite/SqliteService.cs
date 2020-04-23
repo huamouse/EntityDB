@@ -168,12 +168,26 @@ namespace Way.EntityDB
             {
                 needToClose = true;
                 this.Connection.Open();
-            } 
-          
-            string pkid = dataitem.KeyName;
+            }
+
+            Attributes.Table myTableAttr = dataitem.GetType().GetCustomAttribute(typeof(Attributes.Table)) as Attributes.Table;
+
+            string pkid = myTableAttr.KeyName;
             var fieldValues = dataitem.GetFieldValues(true);
-            if (fieldValues.Length == 0)
+            if (fieldValues.Count == 0)
                 return;
+
+            if (myTableAttr.AutoSetPropertyNameOnInsert != null)
+            {
+                var fv = fieldValues.FirstOrDefault(m => m.FieldName == myTableAttr.AutoSetPropertyNameOnInsert);
+                if (fv == null)
+                {
+                    fieldValues.Add(new FieldValue() { 
+                        FieldName = myTableAttr.AutoSetPropertyNameOnInsert,
+                        Value = myTableAttr.AutoSetPropertyValueOnInsert
+                    });
+                }
+            }
 
             StringBuilder str_fields = new StringBuilder();
             StringBuilder str_values = new StringBuilder();
@@ -283,7 +297,7 @@ namespace Way.EntityDB
                 using (var command = CreateCommand(null))
                 {
                     var fieldValues = dataitem.GetFieldValues(false);
-                    if (fieldValues.Length == 0)
+                    if (fieldValues.Count == 0)
                         return;
                     foreach (var fieldValue in fieldValues)
                     {

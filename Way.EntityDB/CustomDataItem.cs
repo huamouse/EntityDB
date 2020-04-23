@@ -86,9 +86,9 @@ namespace Way.EntityDB
             }
         }
 
-        internal override FieldValue[] GetFieldValues(bool isInsert)
+        internal override List<FieldValue> GetFieldValues(bool isInsert)
         {
-            return _fields.ToArray();
+            return _fields;
         }
     }
 }

@@ -252,6 +252,7 @@
     <Compile Include="DataTable\WayDataSet.cs" />
     <Compile Include="DataTable\WayDataTable.cs" />
     <Compile Include="Designer\BooleanTypeConvert.cs" />
+    <Compile Include="Designer\ClassNameTypeConvert.cs" />
     <Compile Include="Designer\DbTypeConvert.cs" />
     <Compile Include="Designer\EnumEditor.cs" />
     <Compile Include="Designer\EnumEditorForm.cs">

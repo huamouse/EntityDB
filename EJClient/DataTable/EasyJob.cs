@@ -75,27 +75,20 @@ public enum Databases_dbTypeEnum:int
     
 
 /// <summary>
-/// 
 /// </summary>
 SqlServer = 1,
 
 /// <summary>
-/// 
 /// </summary>
-
 Sqlite = 2,
 
 /// <summary>
-/// 
 /// </summary>
-
 MySql=3,
 
 /// <summary>
-/// 
 /// </summary>
-
-PostgreSql=4,
+PostgreSql=4
 }
 
 
@@ -321,32 +314,23 @@ public enum User_RoleEnum:int
     
 
 /// <summary>
-/// 
 /// </summary>
 开发人员 = 1,
 
 /// <summary>
-/// 
 /// </summary>
-
 客户端测试人员 = 1<<1,
 
 /// <summary>
-/// 
 /// </summary>
-
 数据库设计师 = 1<<2 | 开发人员,
 
 /// <summary>
-/// 
 /// </summary>
-
 管理员 = 数据库设计师 | 1<<3,
 
 /// <summary>
-/// 
 /// </summary>
-
 项目经理 = 1<<4 | 开发人员,
 }
 
@@ -463,15 +447,12 @@ public enum DBPower_PowerEnum:int
     
 
 /// <summary>
-/// 
 /// </summary>
 只读 = 0,
 
 /// <summary>
-/// 
 /// </summary>
-
-修改 = 1,
+修改 = 1
 }
 
 
@@ -587,21 +568,16 @@ public enum Bug_StatusEnum:int
     
 
 /// <summary>
-/// 
 /// </summary>
 提交给开发人员 = 0,
 
 /// <summary>
-/// 
 /// </summary>
-
 反馈给提交者 = 1,
 
 /// <summary>
-/// 
 /// </summary>
-
-处理完毕 = 2,
+处理完毕 = 2
 }
 
 
@@ -1220,6 +1196,50 @@ namespace EJ{
                     var original = this._orderid;
                     this._orderid = value;
                     this.OnPropertyChanged("orderid",original,value);
+
+                }
+            }
+        }
+
+        System.Nullable<Boolean> _IsDiscriminator=false;
+        /// <summary>
+        /// 是否是Discriminator字段
+        /// </summary>
+        public virtual System.Nullable<Boolean> IsDiscriminator
+        {
+            get
+            {
+                return this._IsDiscriminator;
+            }
+            set
+            {
+                if ((this._IsDiscriminator != value))
+                {
+                    var original = this._IsDiscriminator;
+                    this._IsDiscriminator = value;
+                    this.OnPropertyChanged("IsDiscriminator",original,value);
+
+                }
+            }
+        }
+
+        String _ClassName;
+        /// <summary>
+        /// 派生类的类名
+        /// </summary>
+        public virtual String ClassName
+        {
+            get
+            {
+                return this._ClassName;
+            }
+            set
+            {
+                if ((this._ClassName != value))
+                {
+                    var original = this._ClassName;
+                    this._ClassName = value;
+                    this.OnPropertyChanged("ClassName",original,value);
 
                 }
             }
@@ -2849,6 +2869,282 @@ namespace EJ{
                     var original = this._iscollection;
                     this._iscollection = value;
                     this.OnPropertyChanged("iscollection",original,value);
+
+                }
+            }
+        }
+}}
+namespace EJ{
+
+
+    /// <summary>
+	/// 
+	/// </summary>
+    public class DesignHistory :Way.Lib.DataModel
+    {
+
+        /// <summary>
+	    /// 
+	    /// </summary>
+        public  DesignHistory()
+        {
+        }
+
+
+        System.Nullable<Int32> _id;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual System.Nullable<Int32> id
+        {
+            get
+            {
+                return this._id;
+            }
+            set
+            {
+                if ((this._id != value))
+                {
+                    var original = this._id;
+                    this._id = value;
+                    this.OnPropertyChanged("id",original,value);
+
+                }
+            }
+        }
+
+        System.Nullable<Int32> _DatabaseId;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual System.Nullable<Int32> DatabaseId
+        {
+            get
+            {
+                return this._DatabaseId;
+            }
+            set
+            {
+                if ((this._DatabaseId != value))
+                {
+                    var original = this._DatabaseId;
+                    this._DatabaseId = value;
+                    this.OnPropertyChanged("DatabaseId",original,value);
+
+                }
+            }
+        }
+
+        System.Nullable<Int32> _ActionId;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual System.Nullable<Int32> ActionId
+        {
+            get
+            {
+                return this._ActionId;
+            }
+            set
+            {
+                if ((this._ActionId != value))
+                {
+                    var original = this._ActionId;
+                    this._ActionId = value;
+                    this.OnPropertyChanged("ActionId",original,value);
+
+                }
+            }
+        }
+
+        String _Type;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual String Type
+        {
+            get
+            {
+                return this._Type;
+            }
+            set
+            {
+                if ((this._Type != value))
+                {
+                    var original = this._Type;
+                    this._Type = value;
+                    this.OnPropertyChanged("Type",original,value);
+
+                }
+            }
+        }
+
+        String _Content;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual String Content
+        {
+            get
+            {
+                return this._Content;
+            }
+            set
+            {
+                if ((this._Content != value))
+                {
+                    var original = this._Content;
+                    this._Content = value;
+                    this.OnPropertyChanged("Content",original,value);
+
+                }
+            }
+        }
+}}
+namespace EJ{
+
+
+    /// <summary>
+	/// 
+	/// </summary>
+    public class SysLog :Way.Lib.DataModel
+    {
+
+        /// <summary>
+	    /// 
+	    /// </summary>
+        public  SysLog()
+        {
+        }
+
+
+        System.Nullable<Int32> _id;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual System.Nullable<Int32> id
+        {
+            get
+            {
+                return this._id;
+            }
+            set
+            {
+                if ((this._id != value))
+                {
+                    var original = this._id;
+                    this._id = value;
+                    this.OnPropertyChanged("id",original,value);
+
+                }
+            }
+        }
+
+        System.Nullable<Int32> _DatabaseId;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual System.Nullable<Int32> DatabaseId
+        {
+            get
+            {
+                return this._DatabaseId;
+            }
+            set
+            {
+                if ((this._DatabaseId != value))
+                {
+                    var original = this._DatabaseId;
+                    this._DatabaseId = value;
+                    this.OnPropertyChanged("DatabaseId",original,value);
+
+                }
+            }
+        }
+
+        System.Nullable<Int32> _UserId;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual System.Nullable<Int32> UserId
+        {
+            get
+            {
+                return this._UserId;
+            }
+            set
+            {
+                if ((this._UserId != value))
+                {
+                    var original = this._UserId;
+                    this._UserId = value;
+                    this.OnPropertyChanged("UserId",original,value);
+
+                }
+            }
+        }
+
+        System.Nullable<DateTime> _Time;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual System.Nullable<DateTime> Time
+        {
+            get
+            {
+                return this._Time;
+            }
+            set
+            {
+                if ((this._Time != value))
+                {
+                    var original = this._Time;
+                    this._Time = value;
+                    this.OnPropertyChanged("Time",original,value);
+
+                }
+            }
+        }
+
+        String _Type;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual String Type
+        {
+            get
+            {
+                return this._Type;
+            }
+            set
+            {
+                if ((this._Type != value))
+                {
+                    var original = this._Type;
+                    this._Type = value;
+                    this.OnPropertyChanged("Type",original,value);
+
+                }
+            }
+        }
+
+        String _Content;
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual String Content
+        {
+            get
+            {
+                return this._Content;
+            }
+            set
+            {
+                if ((this._Content != value))
+                {
+                    var original = this._Content;
+                    this._Content = value;
+                    this.OnPropertyChanged("Content",original,value);
 
                 }
             }

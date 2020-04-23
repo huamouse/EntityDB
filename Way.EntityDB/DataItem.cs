@@ -297,7 +297,7 @@ namespace Way.EntityDB
             }
         }
 
-        internal virtual FieldValue[] GetFieldValues(bool isInsert)
+        internal virtual List<FieldValue> GetFieldValues(bool isInsert)
         {
             List<FieldValue> fields = new List<FieldValue>();
             if (isInsert)
@@ -366,7 +366,7 @@ namespace Way.EntityDB
                     });
                 }
             }
-            return fields.ToArray();
+            return fields;
         }
 
         DataValueChangedItemCollection _BackupChangedProperties = new DataValueChangedItemCollection();

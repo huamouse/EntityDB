@@ -26,6 +26,8 @@ namespace EJClient
         {
             try
             {
+                while (Helper.Client == null)
+                    Thread.Sleep(1000);
                 bool hasUpdated = false;
 
                 var fileinfos = Helper.Client.InvokeSync<FileInfo[]>("GetUpdateFileList");

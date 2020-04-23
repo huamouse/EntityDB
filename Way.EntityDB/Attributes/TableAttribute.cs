@@ -13,6 +13,16 @@ namespace Way.EntityDB.Attributes
             get;
             set;
         }
+        public string AutoSetPropertyNameOnInsert
+        {
+            get;
+            set;
+        }
+        public object AutoSetPropertyValueOnInsert
+        {
+            get;
+            set;
+        }
         public Table( string keyname)
         {
 

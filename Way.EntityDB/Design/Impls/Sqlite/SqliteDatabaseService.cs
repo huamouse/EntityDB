@@ -44,7 +44,7 @@ namespace Way.EntityDB.Design.Database.Sqlite
             {
                 db.ExecSqlString("select * from __wayeasyjob");
             }
-            catch
+            catch(Exception ex)
             {
                 exists = false;
             }

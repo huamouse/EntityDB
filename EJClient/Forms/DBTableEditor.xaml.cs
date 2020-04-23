@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,7 +23,7 @@ namespace EJClient.Forms
     /// </summary>
     public partial class DBTableEditor : Window
     {
-       
+     
 
         static string[] Tables;
         #region design class
@@ -193,6 +194,18 @@ namespace EJClient.Forms
                 m_parentEditor = parentEditor;
                 m_pgGrid = parentEditor.pgridForColumn;
                 m_column = column;
+
+                if (!string.IsNullOrEmpty(column.EnumDefine) && column.IsDiscriminator == true)
+                {
+                    try
+                    {
+                       ClassNameTypeConvert.EnumNames = ParseNames(column.EnumDefine);
+                    }
+                    catch 
+                    {
+                        
+                    }
+                }
             }
 
             [Browsable(false)]
@@ -201,6 +214,38 @@ namespace EJClient.Forms
                 get
                 {
                     return m_column.id;
+                }
+            }
+
+            [Browsable(false)]
+            public string ShowInLeft
+            {
+                get
+                {
+                    if (!string.IsNullOrEmpty(this.ClassName))
+                    {
+                        StringBuilder fullpath = new StringBuilder();
+                        var curname = this.ClassName;
+                        
+                        while(ClassNameTypeConvert.EnumNames != null )
+                        {
+                            if(fullpath.Length > 0)
+                            {
+                                fullpath.Insert(0, "::");
+                            }
+                            fullpath.Insert(0 , curname);
+                            var item = ClassNameTypeConvert.EnumNames.FirstOrDefault(m => m.Name == curname);
+                            if(item != null && item.BaseName != null)
+                            {
+                                curname = item.BaseName;
+                                continue;
+                            }
+                            break;
+                        }
+                        return string.Format("{0}.{1}", fullpath, m_column.Name);
+                    }
+                    else
+                        return m_column.Name;
                 }
             }
 
@@ -243,7 +288,7 @@ namespace EJClient.Forms
 
                         m_column.Name = value;
                         OnPropertyChanged("Name");
-
+                        OnPropertyChanged("ShowInLeft");
                       
                     }
                 }
@@ -402,10 +447,80 @@ namespace EJClient.Forms
                     }
                 }
             }
-            //
-            // 摘要:
-            //     Enum定义
-           [Category("字段属性"), DisplayName("6:Enum"),
+
+            [Category("字段属性"), DisplayName("6:IsDiscriminator"),
+            System.ComponentModel.Editor(typeof(Editor.EnumEditor), typeof(System.Drawing.Design.UITypeEditor))]
+            public bool? IsDiscriminator
+            {
+                get
+                {
+                    return m_column.IsDiscriminator;
+                }
+                set
+                {
+                    if (m_column.IsDiscriminator != value)
+                    {
+                        if(value ==true && string.IsNullOrEmpty(EnumDefine))
+                        {
+                            throw new Exception("请先定义当前列的Enum内容");
+                        }
+                        var other = this.m_parentEditor.m_columns.FirstOrDefault(m => m.IsDiscriminator == true);
+                        if (other != null)
+                        {
+                            throw new Exception("列“" + other.Name + "”已经被设置为IsDiscriminator，不能设置多列");
+                        }
+                        m_column.IsDiscriminator = value;
+
+                        if (!string.IsNullOrEmpty(EnumDefine) && value == true)
+                        {
+                            try
+                            {
+                                ClassNameTypeConvert.EnumNames = ParseNames(EnumDefine);
+                            }
+                            catch
+                            {
+                                ClassNameTypeConvert.EnumNames = null;
+                            }
+                        }
+
+                        if (PropertyChanged != null)
+                            PropertyChanged(this, new PropertyChangedEventArgs("IsDiscriminator"));
+                    }
+                }
+            }
+
+           
+            List<ClassName> ParseNames(string value)
+            {
+                var ms = Regex.Matches(value, @"(?<name>\w+)[ ]?=(?<value>[ 0-9\w\<\>\(\)\|]+)");
+                List<ClassName> names = new List<ClassName>();
+                foreach (Match m in ms)
+                {
+                    names.Add(new ClassName() { Name = m.Groups["name"].Value });
+                }
+                foreach (Match m in ms)
+                {
+                    var content = m.Groups["value"].Value;
+                    var othernameMatch = Regex.Match(content, @"\w+");
+                    if (othernameMatch != null && othernameMatch.Length > 0 && Regex.Match(othernameMatch.Value, @"[0-9]+").Length != othernameMatch.Length)
+                    {
+                        var othername = othernameMatch.Value;
+                        var item = names.FirstOrDefault(c => c.Name == othername);
+                        if (item == null)
+                        {
+                            throw new Exception("无法识别" + othername);
+                        }
+                        else
+                        {
+                            var myitem = names.FirstOrDefault(c => c.Name == m.Groups["name"].Value);
+                            myitem.BaseName = othername;
+                        }
+                    }
+                }
+                return names;
+            }
+
+            [Category("字段属性"), DisplayName("6:Enum"),
              System.ComponentModel.Editor(typeof(Editor.EnumEditor), typeof(System.Drawing.Design.UITypeEditor))]
             public string EnumDefine
             {
@@ -417,7 +532,22 @@ namespace EJClient.Forms
                 {
                     if (m_column.EnumDefine != value)
                     {
+                        //解析代码
+                        try
+                        {
+                            var names = ParseNames(value); 
+                            if (!string.IsNullOrEmpty(EnumDefine) && this.IsDiscriminator == true)
+                            {
+                                ClassNameTypeConvert.EnumNames = names;
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            throw new Exception("枚举内容解析错误，" + ex.Message);
+                        }
+
                         m_column.EnumDefine = value;
+
                         this.dbType = "int";
                         if (PropertyChanged != null)
                             PropertyChanged(this, new PropertyChangedEventArgs("EnumDefine"));
@@ -472,10 +602,29 @@ namespace EJClient.Forms
                     }
                 }
             }
+
+            [Category("字段属性"), DisplayName("7:所属派生类"),
+                System.ComponentModel.TypeConverter(typeof(ClassNameTypeConvert))]
+            public string ClassName
+            {
+                get
+                {
+                    return m_column.ClassName;
+                }
+                set
+                {
+                    if (m_column.ClassName != value)
+                    {
+                        m_column.ClassName = value;
+                        OnPropertyChanged("ClassName");
+                        OnPropertyChanged("ShowInLeft");
+                    }
+                }
+            }
             //
             // 摘要:
             //     长度
-             [Category("字段属性"), DisplayName("7:Length")]
+            [Category("字段属性"), DisplayName("7:Length")]
             public string length
             {
                 get

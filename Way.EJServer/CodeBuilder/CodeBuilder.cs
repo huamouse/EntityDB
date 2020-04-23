@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Way.EJServer
 {
@@ -124,8 +125,29 @@ namespace "+nameSpace+@".DB{
             {
                 var pkcolumn = db.DBColumn.FirstOrDefault(m => m.TableID == t.id && m.IsPKID == true);
                 if (pkcolumn == null)
-                    throw new Exception(string.Format("表{0}缺少主键" , t.Name));
-                result.AppendLine("modelBuilder.Entity<" + nameSpace + @"." + t.Name + @">().HasKey(m => m." + pkcolumn.Name+");");
+                    throw new Exception(string.Format("表{0}缺少主键", t.Name));
+                result.AppendLine("modelBuilder.Entity<" + nameSpace + @"." + t.Name + @">().HasKey(m => m." + pkcolumn.Name + ");");
+
+                var discriminatorColumn = db.DBColumn.FirstOrDefault(m => m.TableID == t.id && m.IsDiscriminator == true);
+                if(discriminatorColumn != null)
+                {
+                    var columns = db.DBColumn.Where(m => m.TableID == t.id && !string.IsNullOrEmpty(m.ClassName)).ToArray();
+                    var groups = columns.GroupBy(m => m.ClassName).ToArray();
+                    if(groups.Count() > 0)
+                    {
+                        result.AppendLine("modelBuilder.Entity<" + t.Name + @">().HasDiscriminator<" + t.Name + "_" + discriminatorColumn.Name + @"Enum?>(""" + discriminatorColumn.Name + @""")");
+                        result.Append(".HasValue<" + t.Name + ">((" + t.Name + "_" + discriminatorColumn.Name + "Enum)0)");
+                    }
+                    foreach (var g in groups)
+                    {
+                        result.Append(".HasValue<" + g.Key + ">(" + t.Name + "_" + discriminatorColumn.Name + "Enum." + g.Key + ")");
+                    }
+                    if (groups.Count() > 0)
+                    {
+                        result.AppendLine(";");
+                    }
+                }
+              
             }
             result.AppendLine("}");
 
@@ -147,17 +169,43 @@ namespace "+nameSpace+@".DB{
                 return _" + t.Name + @";
             }
         }
+"); 
+                
+                
+                var discriminatorColumn = db.DBColumn.FirstOrDefault(m => m.TableID == t.id && m.IsDiscriminator == true);
+                if (discriminatorColumn != null)
+                {
+                    var columns = db.DBColumn.Where(m => m.TableID == t.id && !string.IsNullOrEmpty(m.ClassName)).ToArray();
+                    var groups = columns.GroupBy(m => m.ClassName).ToArray();
+                    foreach (var g in groups)
+                    {
+                        result.Append(@"
+        System.Linq.IQueryable<" + nameSpace + @"." + g.Key + @"> _" + g.Key + @";
+        /// <summary>
+        /// " + t.caption + @"
+        /// </summary>
+        public virtual System.Linq.IQueryable<" + nameSpace + @"." + g.Key + @"> " + g.Key + @"
+        {
+             get
+            {
+                if (_" + g.Key + @" == null)
+                {
+                    _" + g.Key + @" = this.Set<" + nameSpace + @"." + g.Key + @">();
+                }
+                return _" + g.Key + @";
+            }
+        }
 ");
+                    }
+                }
             }
             result.Append("\r\n");
 
 
-            var dt = db.Database.SelectDataSet("select actionid as [id],type,content,databaseid from designhistory where databaseid=" + databaseObj.id + " order by [actionid]");
-            dt.Tables[0].TableName = databaseObj.dbType.ToString();
-            dt.DataSetName = databaseObj.Guid;
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(dt);
-            string content = Convert.ToBase64String(GZip(System.Text.Encoding.UTF8.GetBytes(json)));
-           
+
+            string content = GetDesignData(db, databaseObj);
+
+
             result.AppendLine("protected override string GetDesignString(){System.Text.StringBuilder result = new System.Text.StringBuilder(); ");
             result.AppendLine("result.Append(\"\\r\\n\");");
             for (int i = 0; i < content.Length; i += 200)
@@ -174,6 +222,15 @@ namespace "+nameSpace+@".DB{
             result.AppendLine("<design>*/");
 
             return result.ToString();
+        }
+
+        internal static string GetDesignData(EJDB db,EJ.Databases databaseObj)
+        {
+            var dt = db.Database.SelectDataSet("select actionid as [id],type,content,databaseid from designhistory where databaseid=" + databaseObj.id + " order by [actionid]");
+            dt.Tables[0].TableName = databaseObj.dbType.ToString();
+            dt.DataSetName = databaseObj.Guid;
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(dt);
+            return Convert.ToBase64String(GZip(System.Text.Encoding.UTF8.GetBytes(json)));
         }
 
         void outputDesigns(StringBuilder result,EJDB db,EJ.Databases databaseObj)
@@ -306,14 +363,57 @@ namespace "+nameSpace+@".DB{
             public string ClassFullName;
             public Type TableType;
         }
-          
+        class ClassName
+        {
+            public string Name;
+            public string BaseName;
+        }
+        static List<ClassName> ParseNames(string value)
+        {
+            var ms = Regex.Matches(value, @"(?<name>\w+)[ ]?=(?<value>[ 0-9\w\<\>\(\)\|]+)");
+            List<ClassName> names = new List<ClassName>();
+            foreach (Match m in ms)
+            {
+                names.Add(new ClassName() { Name = m.Groups["name"].Value });
+            }
+            foreach (Match m in ms)
+            {
+                var content = m.Groups["value"].Value;
+                var othernameMatch = Regex.Match(content, @"\w+");
+                if (othernameMatch != null && othernameMatch.Length > 0 && Regex.Match(othernameMatch.Value, @"[0-9]+").Length != othernameMatch.Length)
+                {
+                    var othername = othernameMatch.Value;
+                    var item = names.FirstOrDefault(c => c.Name == othername);
+                    if (item == null)
+                    {
+                        throw new Exception("无法识别" + othername);
+                    }
+                    else
+                    {
+                        var myitem = names.FirstOrDefault(c => c.Name == m.Groups["name"].Value);
+                        myitem.BaseName = othername;
+                    }
+                }
+            }
+            return names;
+        }
 
         static string BuildTable(EJDB db, string nameSpace, EJ.DBTable table, List<EJ.DBColumn> columns)
         {
             var pkcolumn = columns.FirstOrDefault(m => m.IsPKID == true);
             StringBuilder result = new StringBuilder();
             StringBuilder enumDefines = new StringBuilder();
-            
+
+            Dictionary<string, StringBuilder> otherClassCode = new Dictionary<string, StringBuilder>();
+            var discriminatorColumn = columns.FirstOrDefault(m => m.IsDiscriminator == true && !string.IsNullOrEmpty(m.EnumDefine?.Trim()));
+
+            string tableAttString = @"[Way.EntityDB.Attributes.Table(""" + (pkcolumn == null ? "" : pkcolumn.Name.Trim()) + @""")]";
+            ClassName[] classNames = null;
+            if(discriminatorColumn != null && columns.Any(m=>!string.IsNullOrEmpty(m.ClassName?.Trim())))
+            {
+                classNames = ParseNames(discriminatorColumn.EnumDefine).ToArray();
+                   tableAttString = @"[Way.EntityDB.Attributes.Table(""" + (pkcolumn == null ? "" : pkcolumn.Name.Trim()) + @""", AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name + @""" , AutoSetPropertyValueOnInsert=(" + table.Name + "_" + discriminatorColumn.Name + @"Enum)0)]";
+            }
 
             result.Append(@"
 
@@ -321,7 +421,7 @@ namespace "+nameSpace+@".DB{
 	/// " + table.caption + @"
 	/// </summary>
     [System.ComponentModel.DataAnnotations.Schema.Table("""+ table.Name.ToLower() +@""")]
-    [Way.EntityDB.Attributes.Table(""" + (pkcolumn == null ? "" : pkcolumn.Name.Trim()) + @""")]
+    "+ tableAttString + @"
     public class " + table.Name + @" :Way.EntityDB.DataItem
     {
 
@@ -333,9 +433,42 @@ namespace "+nameSpace+@".DB{
         }
 
 ");
-
+          
+            StringBuilder curcodeBuffer;
             foreach (var column in columns)
             {
+                if (discriminatorColumn != null && classNames != null &&!string.IsNullOrEmpty(column.ClassName?.Trim()) && columns.Any(m=>m.IsDiscriminator == true))
+                {
+                    if(otherClassCode.ContainsKey(column.ClassName) == false)
+                    {
+                        var classnameitem = classNames.FirstOrDefault(m=>m.Name == column.ClassName);
+                        //[Way.EntityDB.Attributes.Table("id", AutoSetPropertyNameOnInsert = "Discriminator", AutoSetPropertyValueOnInsert = UserInfo_DiscriminatorEnum.SuperUser)]
+                        var buffer = otherClassCode[column.ClassName] = new StringBuilder();
+                        buffer.Append(@"
+
+    /// <summary>
+	/// " + table.caption + @"
+	/// </summary>
+     [Way.EntityDB.Attributes.Table(""" + (pkcolumn == null ? "" : pkcolumn.Name.Trim()) + @""", AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name +   @""" , AutoSetPropertyValueOnInsert=" + table.Name + "_" + discriminatorColumn.Name + @"Enum."+ column.ClassName +@")]
+    public class " + column.ClassName + @" :" + ((classnameitem == null || classnameitem.BaseName==null) ? table.Name : classnameitem.BaseName) + @"
+    {
+
+        /// <summary>
+	    /// 
+	    /// </summary>
+        public  " + column.ClassName + @"()
+        {
+        }
+
+");
+                    }
+                    curcodeBuffer = otherClassCode[column.ClassName];
+                }
+                else
+                {
+                    curcodeBuffer = result;
+                }
+
                 string caption = column.caption == null ? "" : column.caption;
                 if (caption.Contains(","))
                 {
@@ -469,7 +602,7 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                     otherAttrs = "\r\n[System.ComponentModel.DataAnnotations.Key]";
                 }
 
-                result.Append(@"
+                curcodeBuffer.Append(@"
         " + dataType + @" _" + column.Name + eqString  + @";
         /// <summary>
         /// " + column.caption + @"
@@ -539,6 +672,12 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                 {
                 }
                
+            }
+
+            foreach( var pair in otherClassCode )
+            {
+                pair.Value.Append("}\r\n");
+                result.Insert(0, pair.Value.ToString());
             }
 
             result.Append("}}\r\n");

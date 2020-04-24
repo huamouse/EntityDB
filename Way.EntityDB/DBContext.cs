@@ -1071,23 +1071,13 @@ namespace Way.EntityDB
         /// </summary>
         public Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction CurrentTransaction => ((Microsoft.EntityFrameworkCore.DbContext)this).Database.CurrentTransaction;
 
-
-        /// <summary>
-        /// 开始事务
-        /// </summary>
-        public virtual void BeginTransaction()
-        {
-            ((Microsoft.EntityFrameworkCore.DbContext)this).Database.BeginTransaction();
-        }
-
-        
         /// <summary>
         /// 开始事务
         /// </summary>
         /// <param name="IsolationLevel"></param>
-        public virtual void BeginTransaction(System.Data.IsolationLevel IsolationLevel)
+        public virtual Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction BeginTransaction(System.Data.IsolationLevel IsolationLevel = System.Data.IsolationLevel.ReadUncommitted)
         {
-            ((Microsoft.EntityFrameworkCore.DbContext)this).Database.BeginTransaction(IsolationLevel);
+            return ((Microsoft.EntityFrameworkCore.DbContext)this).Database.BeginTransaction(IsolationLevel);
         }
 
      

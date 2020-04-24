@@ -126,14 +126,15 @@ namespace EJClient.UI
         {
             t.IsReadOnly = true;
             t.BorderThickness = new Thickness(0);
-            Grid.SetColumn(t, column);
+            if(column > 0)
+                Grid.SetColumn(t, column);
             t.Background = Brushes.Transparent;
             t.Height = 21;
             if (column == 3)
             {
                 t.Margin = new Thickness(5, 0, 5, 0);
             }
-            else
+            else if(column >= -1)
             {
                 t.Margin = new Thickness(5, 0, 0, 0);
             }
@@ -181,11 +182,37 @@ namespace EJClient.UI
                     Grid.SetRow(t1, i);
                     gridColumns.Children.Add(t1);
 
-                    TextBox t2 = new MyTextBox();
-                    t2.Text = Column.Name;
-                    setTextBoxStyle(t2, 1);
-                    Grid.SetRow(t2, i);
-                    gridColumns.Children.Add(t2);
+                    if( string.IsNullOrEmpty( Column.ClassName))
+                    {
+                        TextBox t2 = new MyTextBox();
+                        t2.Text = Column.Name;
+                        setTextBoxStyle(t2, 1);
+                        Grid.SetRow(t2, i);
+                        gridColumns.Children.Add(t2);
+                    }
+                    else
+                    {
+                        StackPanel panel = new StackPanel();
+                        panel.Orientation = Orientation.Horizontal;
+                        Grid.SetRow(panel, i);
+                        Grid.SetColumn(panel, 1);
+                        gridColumns.Children.Add(panel);
+
+                        TextBox tClass = new MyTextBox();
+                        tClass.TextAlignment = TextAlignment.Left;
+                        tClass.Text = Column.ClassName + ".";
+                        tClass.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString( "#2b91af"));
+                        tClass.FontWeight = FontWeights.Bold;
+                        setTextBoxStyle(tClass, -1);
+                        panel.Children.Add(tClass);
+
+                        TextBox t2 = new MyTextBox();
+                        t2.TextAlignment = TextAlignment.Left;
+                        t2.Text = Column.Name;
+                        setTextBoxStyle(t2, -2);
+                        panel.Children.Add(t2);
+                    }
+                   
 
                     TextBox t3 = new MyTextBox();
                     t3.Text = Column.dbType;

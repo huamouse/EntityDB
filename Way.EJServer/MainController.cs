@@ -399,8 +399,12 @@ namespace Way.EJServer
                               select m).ToArray();
                 foreach (var tinm in result)
                 {
-                    tinm.flag = db.DBTable.FirstOrDefault(m => m.id == tinm.TableID).ToJsonString();
-                    tinm.flag2 = GetColumns(tinm.TableID.Value).ToJsonString();
+                    if(tinm.TableID != null)
+                    {
+                        tinm.flag = db.DBTable.FirstOrDefault(m => m.id == tinm.TableID).ToJsonString();
+                        tinm.flag2 = GetColumns(tinm.TableID.Value).ToJsonString();
+                    }
+                    
                 }
 
                 return result;

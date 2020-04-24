@@ -224,28 +224,10 @@ namespace EJClient.Forms
                 {
                     if (!string.IsNullOrEmpty(this.ClassName))
                     {
-                        StringBuilder fullpath = new StringBuilder();
-                        var curname = this.ClassName;
-                        
-                        while(ClassNameTypeConvert.EnumNames != null )
-                        {
-                            if(fullpath.Length > 0)
-                            {
-                                fullpath.Insert(0, "::");
-                            }
-                            fullpath.Insert(0 , curname);
-                            var item = ClassNameTypeConvert.EnumNames.FirstOrDefault(m => m.Name == curname);
-                            if(item != null && item.BaseName != null)
-                            {
-                                curname = item.BaseName;
-                                continue;
-                            }
-                            break;
-                        }
-                        return string.Format("{0}.{1}", fullpath, m_column.Name);
+                        return string.Format("{0}.", this.ClassName);
                     }
                     else
-                        return m_column.Name;
+                        return "";
                 }
             }
 

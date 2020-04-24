@@ -31,7 +31,11 @@
                                 <Grid x:Name="main_panel" Margin="-15,0,0,0" Width="286">
                                     <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"></CheckBox>
                                     <TextBlock x:Name="main_text" Margin="20,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding showCaption}"></TextBlock>
-                                    <TextBlock x:Name="main_text2" Margin="20,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch"  TextAlignment="Left" Text="{Binding ShowInLeft}"></TextBlock>
+                                   
+                                    <StackPanel Orientation="Horizontal" Margin="20,0,0,0" VerticalAlignment="Top">
+                                        <TextBlock TextAlignment="Left" Foreground="#2b91af" FontWeight="Bold" Text="{Binding ShowInLeft}"></TextBlock>
+                                        <TextBlock x:Name="main_text2"  TextAlignment="Left" Text="{Binding Name}"></TextBlock>
+                                    </StackPanel>
                                     
                                     <!--<Grid.ToolTip>
                                         <TextBlock VerticalAlignment="Center" Text="{Binding caption}" TextWrapping="Wrap" MaxWidth="200" ></TextBlock>

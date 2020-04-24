@@ -29,6 +29,11 @@ namespace Way.EJServer
             }
         }
 
+        protected override void OnLoad()
+        {
+            base.OnLoad();
+        }
+
         protected override object OnInvokeMethod(MethodInfo methodInfo, object[] parameters)
         {
             if (methodInfo.Name != "Login")

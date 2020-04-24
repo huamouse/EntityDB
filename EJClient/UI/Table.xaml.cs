@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -169,12 +170,9 @@ namespace EJClient.UI
                     TextBox t1 = new MyTextBox();
                     t1.Tag = Column.id.GetValueOrDefault();
 
-                    if (Column.caption != null && Column.caption.Contains(","))
-                        t1.Text = Column.caption.Substring(0, Column.caption.IndexOf(","));
-                    else if (Column.caption != null && Column.caption.Contains("，"))
-                        t1.Text = Column.caption.Substring(0, Column.caption.IndexOf("，"));
-                    else
-                        t1.Text = Column.caption;
+                    if (Column.caption != null)
+                        t1.Text = Column.caption.Split('\n')[0].Trim();
+
 
 
                    

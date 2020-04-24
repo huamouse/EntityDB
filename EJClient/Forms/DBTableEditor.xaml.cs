@@ -231,7 +231,7 @@ namespace EJClient.Forms
                 }
             }
 
-            [Category("字段属性"),DisplayName("1:Name")]
+            [Category("A字段属性"),DisplayName("1:Name")]
             public virtual string Name
             {
                 get
@@ -315,7 +315,7 @@ namespace EJClient.Forms
                 }
             }
 
-           [Category("字段属性"), DisplayName("3:CanNull")]
+           [Category("A字段属性"), DisplayName("3:CanNull")]
             public bool? CanNull
             {
                 get
@@ -345,11 +345,8 @@ namespace EJClient.Forms
                {
                    if (m_column.caption != null)
                    {
-                       if (m_column.caption.Contains(","))
-                           return m_column.caption.Substring(0, m_column.caption.IndexOf(","));
-                       else if (m_column.caption.Contains("，"))
-                           return m_column.caption.Substring(0, m_column.caption.IndexOf("，"));
-                   }
+                        return m_column.caption.Split('\n')[0].Trim();
+                    }
                    return m_column.caption;
                }
            }
@@ -357,7 +354,8 @@ namespace EJClient.Forms
             //
             // 摘要:
             //     caption
-           [Category("字段属性"), DisplayName("2:中文注释")]
+           [Category("A字段属性"), DisplayName("2:中文注释"),Description("中文注释，换行后可以备注更多内容"),
+                 System.ComponentModel.Editor(typeof(Editor.EnumEditor), typeof(System.Drawing.Design.UITypeEditor))]
             public string caption
             {
                 get
@@ -381,7 +379,7 @@ namespace EJClient.Forms
             //
             // 摘要:
             //     数据库字段类型
-           [Category("字段属性"), DisplayName("4:数据库中的类型"),
+           [Category("A字段属性"), DisplayName("4:数据库中的类型"),
             System.ComponentModel.TypeConverter(typeof(DbTypeConvert))]
             public string dbType
             {
@@ -413,7 +411,7 @@ namespace EJClient.Forms
             //
             // 摘要:
             //     默认值
-           [Category("字段属性"), DisplayName("5:默认值")]
+           [Category("A字段属性"), DisplayName("5:默认值")]
             public string defaultValue
             {
                 get
@@ -430,7 +428,7 @@ namespace EJClient.Forms
                 }
             }
 
-            [Category("字段属性"), DisplayName("6:IsDiscriminator"),
+            [Category("B继承设置"), DisplayName("1:IsDiscriminator"),Description("是否用来表示数据对应的类，如果设置为True，应该同时设置Enum内容"),
             System.ComponentModel.Editor(typeof(Editor.EnumEditor), typeof(System.Drawing.Design.UITypeEditor))]
             public bool? IsDiscriminator
             {
@@ -502,7 +500,7 @@ namespace EJClient.Forms
                 return names;
             }
 
-            [Category("字段属性"), DisplayName("6:Enum"),
+            [Category("A字段属性"), DisplayName("6:Enum"),Description("如果这是个枚举字段，那么在这里设置枚举的内容"),
              System.ComponentModel.Editor(typeof(Editor.EnumEditor), typeof(System.Drawing.Design.UITypeEditor))]
             public string EnumDefine
             {
@@ -540,7 +538,7 @@ namespace EJClient.Forms
             //
             // 摘要:
             //     自增长
-            [Category("字段属性"), DisplayName("3:自增长"), System.ComponentModel.TypeConverter(typeof(BooleanTypeConvert))]
+            [Category("A字段属性"), DisplayName("3:自增长"), System.ComponentModel.TypeConverter(typeof(BooleanTypeConvert))]
             public bool? IsAutoIncrement
             {
                 get
@@ -559,7 +557,7 @@ namespace EJClient.Forms
             //
             // 摘要:
             //     是否是主键
-             [Category("字段属性"), DisplayName("3:主键"), System.ComponentModel.TypeConverter(typeof(BooleanTypeConvert))]
+             [Category("A字段属性"), DisplayName("3:主键"), System.ComponentModel.TypeConverter(typeof(BooleanTypeConvert))]
             public bool? IsPKID
             {
                 get
@@ -585,7 +583,7 @@ namespace EJClient.Forms
                 }
             }
 
-            [Category("字段属性"), DisplayName("7:所属派生类"),
+            [Category("B继承设置"), DisplayName("2:所属派生类"),
                 System.ComponentModel.TypeConverter(typeof(ClassNameTypeConvert))]
             public string ClassName
             {
@@ -606,7 +604,7 @@ namespace EJClient.Forms
             //
             // 摘要:
             //     长度
-            [Category("字段属性"), DisplayName("7:Length")]
+            [Category("A字段属性"), DisplayName("7:Length")]
             public string length
             {
                 get

@@ -1064,11 +1064,14 @@ namespace Way.EntityDB
             }
 
         }
-#endregion
+        #endregion
+
+        /// <summary>
+        /// 当前事务对象
+        /// </summary>
+        public Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction CurrentTransaction => ((Microsoft.EntityFrameworkCore.DbContext)this).Database.CurrentTransaction;
 
 
-
-       
         /// <summary>
         /// 开始事务
         /// </summary>

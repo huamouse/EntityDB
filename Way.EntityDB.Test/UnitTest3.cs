@@ -23,7 +23,8 @@ namespace Way.EntityDB.Test
         public void test2()
         {
             var db = new Storm.Users.Relationship.DBModels.DB.UserRelationship("server=.\\SQLEXPRESS;database=UserRelationshipTest;uid=sa;pwd=123456;", DatabaseType.SqlServer);
-           
+            var t = db.Relationship.Where(m => m.UserId == "003").ToSql();
+            
         }
     }
 }

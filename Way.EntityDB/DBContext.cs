@@ -792,14 +792,15 @@ namespace Way.EntityDB
         /// 更新对象数据到数据库
         /// </summary>
         /// <param name="dataitem"></param>
-        public virtual void Update(DataItem dataitem)
+        /// <param name="coditionColumns">自己指定字段作为更新条件，如果不指定，则使用主键作为更新字段</param>
+        public virtual int Update(DataItem dataitem,params string[] coditionColumns)
         {
             string pkid = dataitem.KeyName;
             object pkvalue = dataitem.PKValue;
             if (pkvalue == null && pkid != null)
             {
                 Insert(dataitem);
-                return;
+                return 1;
             }
 
             if (BeforeUpdate != null)
@@ -819,7 +820,7 @@ namespace Way.EntityDB
 
             try
             {
-                this.Database.Update(dataitem);
+                var ret = this.Database.Update(dataitem, coditionColumns);
                 if (AfterUpdate != null)
                 {
                     AfterUpdate(this, new DatabaseModifyEventArg()
@@ -828,6 +829,7 @@ namespace Way.EntityDB
                     });
                 }
                 dataitem.ChangedProperties.Clear();
+                return ret;
             }
             catch (Exception)
             {

@@ -25,7 +25,7 @@ namespace Way.EntityDB
         void OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder optionsBuilder);
         //System.Data.Common.DbConnection CreateConnection(string connectString);
         void Insert(DataItem dataitem);
-        void Update(DataItem dataitem);
+        int Update(DataItem dataitem,params string[] conditionColumns);
         void Delete(DataItem dataitem);
         /// <summary>
         /// 允许自增长字段手动设置值

@@ -32,6 +32,12 @@ namespace Way.EntityDB
         {
             this.ExecSqlString($"SET IDENTITY_INSERT [{tablename}] {(allow ? "on":"off")}");
         }
+
+        protected int GetRowCount()
+        {
+            //
+            return Convert.ToInt32( this.ExecSqlString("select @@ROWCOUNT"));
+        }
         public override WayDataTable SelectTable(string sql, int skip, int take, params object[] sqlparameters)
         {
             sql = string.Format("SELECT * FROM  ({0}) as t1 ORDER BY 1   OFFSET {1} ROWS FETCH NEXT {2} ROWS ONLY", sql, skip, take);

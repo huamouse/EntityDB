@@ -69,6 +69,8 @@ namespace Way.EntityDB
         {
             return false;
         }
+
+
         /// <summary>
         /// 返回获取自增长字段值的sql语句
         /// </summary>
@@ -266,7 +268,7 @@ namespace Way.EntityDB
 
         }
 
-        public virtual void Update(DataItem dataitem)
+        public virtual int Update(DataItem dataitem, params string[] conditionColumns)
         {
 
 
@@ -275,7 +277,7 @@ namespace Way.EntityDB
             if (pkvalue == null && pkid != null)
             {
                 Insert(dataitem);
-                return;
+                return 1;
             }
 
 
@@ -296,9 +298,39 @@ namespace Way.EntityDB
                 
                 using (var command = CreateCommand(null))
                 {
+                    StringBuilder otherWhere = null;
+                    if (conditionColumns != null && conditionColumns.Length > 0)
+                    {
+                        otherWhere = new StringBuilder();
+                        foreach( var condition in conditionColumns )
+                        {
+                            object value = null;
+                            if( dataitem.ChangedProperties.Any(m=>m.Key == condition) )
+                            {
+                                value = dataitem.ChangedProperties.FirstOrDefault(m => m.Key == condition).Value.OriginalValue;
+                            }
+                            else
+                            {
+                                value = dataitem.GetValue(condition);
+                            }
+                            if(value != null)
+                            {
+                                string parameterName = "@cp" + (parameterIndex++);
+                                var parameter = command.CreateParameter();
+                                parameter.ParameterName = parameterName;
+                                parameter.Value = value;
+                                command.Parameters.Add(parameter);
+
+                                if (otherWhere.Length > 0)
+                                    otherWhere.Append(" and ");
+                                otherWhere.Append($"{FormatObjectName(condition)}={parameterName}");
+                            }
+                        }
+                    }
+
                     var fieldValues = dataitem.GetFieldValues(false);
                     if (fieldValues.Count == 0)
-                        return;
+                        return 0;
                     foreach (var fieldValue in fieldValues)
                     {
 
@@ -307,6 +339,7 @@ namespace Way.EntityDB
                         str_fields.Append(FormatObjectName(fieldValue.FieldName));
                         str_fields.Append('=');
 
+                       
 
                         object value = fieldValue.Value;
                         if (value == DBNull.Value || value == null)
@@ -324,6 +357,8 @@ namespace Way.EntityDB
 
                             str_fields.Append(parameterName);
 
+                           
+
                         }
                     }
 
@@ -334,15 +369,32 @@ namespace Way.EntityDB
                         parameter.Value = pkvalue;
                         command.Parameters.Add(parameter);
 
-                        command.CommandText = string.Format("update {0} set {1} where {2}=@pid", FormatObjectName(dataitem.TableName), str_fields, FormatObjectName(pkid.ToLower()));
+                        if (otherWhere != null && otherWhere.Length > 0)
+                        {
+                            command.CommandText = string.Format("update {0} set {1} where " + otherWhere, FormatObjectName(dataitem.TableName), str_fields);
+                        }
+                        else
+                        {
+                            command.CommandText = string.Format("update {0} set {1} where {2}=@pid", FormatObjectName(dataitem.TableName), str_fields, FormatObjectName(pkid.ToLower()));
+                        }
                     }
                     else
                     {
-                        command.CommandText = string.Format("update {0} set {1}", FormatObjectName(dataitem.TableName), str_fields);
+                        if (otherWhere != null && otherWhere.Length > 0)
+                        {
+                            command.CommandText = string.Format("update {0} set {1} where " + otherWhere, FormatObjectName(dataitem.TableName), str_fields);
+                        }
+                        else
+                        {
+                            command.CommandText = string.Format("update {0} set {1}", FormatObjectName(dataitem.TableName), str_fields);
+                        }
                     }
-                    command.ExecuteNonQuery();
+                    var ret = command.ExecuteNonQuery();
+                   
 
                     command.Parameters.Clear();
+
+                    return Convert.ToInt32(ret);
                 }
             }
             catch (Exception ex)
@@ -356,6 +408,7 @@ namespace Way.EntityDB
                     this.Connection.Close();
                 }
             }
+            return 0;
 
         }
         public virtual void Delete(DataItem dataitem)

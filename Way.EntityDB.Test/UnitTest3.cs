@@ -22,9 +22,16 @@ namespace Way.EntityDB.Test
         [TestMethod]
         public void test2()
         {
+            //var db = new Storm.Users.Relationship.DBModels.DB.UserRelationship("data source=./test99.db", DatabaseType.Sqlite);
             var db = new Storm.Users.Relationship.DBModels.DB.UserRelationship("server=.\\SQLEXPRESS;database=UserRelationshipTest;uid=sa;pwd=123456;", DatabaseType.SqlServer);
-            var t = db.Relationship.Where(m => m.UserId == "003").ToSql();
-            
+            var userinfo = new Storm.Users.Relationship.DBModels.Relationship()
+            {
+                UserId = "001"
+            };
+            db.Insert(userinfo);
+
+            userinfo.RakeBack = 0.5;
+            var ret = db.Update(userinfo, "UserId");
         }
     }
 }

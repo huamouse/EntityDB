@@ -11,6 +11,13 @@ namespace Way.EntityDB.Design.Database.SqlServer
     [EntityDB.Attributes.DatabaseTypeAttribute(DatabaseType.SqlServer)]
     class SqlServerTableService : Services.ITableDesignService
     {
+        string getSqlServerType(EJ.DBColumn column)
+        {
+            if (column.dbType == "double")
+                return "float";
+            return column.dbType;
+        }
+
         public void CreateTable(EntityDB.IDatabaseService db, EJ.DBTable table, EJ.DBColumn[] columns
             , IndexInfo[] IDXConfigs)
         {
@@ -20,10 +27,12 @@ namespace Way.EntityDB.Design.Database.SqlServer
 CREATE TABLE [" + table.Name.ToLower() + @"] (
 ";
 
+            
                 foreach (EJ.DBColumn column in columns)
                 {
-                    sqlstr += "[" + column.Name.ToLower() + "] [" + column.dbType + "]";
-                    if (column.dbType.IndexOf("char") >= 0)
+                    var dbtype = getSqlServerType(column);
+                    sqlstr += "[" + column.Name.ToLower() + "] [" + dbtype + "]";
+                    if (dbtype.IndexOf("char") >= 0)
                     {
                         if (!string.IsNullOrEmpty(column.length))
                             sqlstr += " (" + column.length + ")";
@@ -349,6 +358,7 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
 
             foreach (var column in changedColumns)
             {
+                var dbtype = getSqlServerType(column);
                 int changeColumnCount = 0;
                 var changeitem = column.BackupChangedProperties["Name"];
                 if (changeitem != null)
@@ -374,7 +384,7 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
                     if (column.IsAutoIncrement == false)
                     {
                         //去掉自增长
-                        database.ExecSqlString($"alter table [{newTableName.ToLower()}] add {flagColumnName.ToLower()} {column.dbType}");
+                        database.ExecSqlString($"alter table [{newTableName.ToLower()}] add {flagColumnName.ToLower()} {dbtype}");
                         database.ExecSqlString($"update [{newTableName.ToLower()}] set {flagColumnName.ToLower()}=[{column.Name.ToLower()}]");
                         deletecolumn(database, newTableName.ToLower(), column.Name.ToLower());
                         database.ExecSqlString($"EXEC sp_rename '[{newTableName.ToLower()}].{flagColumnName.ToLower()}', '{column.Name.ToLower()}', 'COLUMN'");
@@ -383,7 +393,7 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
                     else
                     {
                         //设为自增长
-                        database.ExecSqlString($"alter table [{newTableName.ToLower()}] add {flagColumnName.ToLower()} {column.dbType} IDENTITY (1, 1)");
+                        database.ExecSqlString($"alter table [{newTableName.ToLower()}] add {flagColumnName.ToLower()} {dbtype} IDENTITY (1, 1)");
                         deletecolumn(database, newTableName.ToLower(), column.Name.ToLower());
                         database.ExecSqlString($"EXEC sp_rename '[{newTableName.ToLower()}].{flagColumnName.ToLower()}', '{column.Name.ToLower()}', 'COLUMN'");
                     }
@@ -392,7 +402,7 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
                     if (column.IsPKID == true)
                     {
                         //主键不允许为空
-                        database.ExecSqlString($"alter table [{newTableName.ToLower()}] alter column [{column.Name.ToLower()}] [{column.dbType}] not null");
+                        database.ExecSqlString($"alter table [{newTableName.ToLower()}] alter column [{column.Name.ToLower()}] [{dbtype}] not null");
                         changeitem = column.BackupChangedProperties["IsPKID"];
                         if (changeitem == null)
                         {
@@ -471,9 +481,9 @@ SELECT @NAME
                  if (column.BackupChangedProperties.Count > changeColumnCount)
                  {
                      #region 如果其他地方还有更改
-                     string sql = "alter table [" + newTableName.ToLower() + "] alter column [" + column.Name.ToLower() + "] [" + column.dbType + "]";
+                     string sql = "alter table [" + newTableName.ToLower() + "] alter column [" + column.Name.ToLower() + "] [" + dbtype + "]";
 
-                     if (column.dbType.IndexOf("char") >= 0)
+                     if (dbtype.IndexOf("char") >= 0)
                      {
                          if (!string.IsNullOrEmpty(column.length))
                              sql += " (" + column.length + ")";
@@ -533,10 +543,11 @@ SELECT @NAME
 
             foreach (var column in addColumns)
             {
+                var dbtype = getSqlServerType(column);
                 #region 新增字段
-                string sql = "alter table [" + newTableName.ToLower() + "] add [" + column.Name.ToLower() + "] [" + column.dbType + "]";
+                string sql = "alter table [" + newTableName.ToLower() + "] add [" + column.Name.ToLower() + "] [" + dbtype + "]";
 
-                if (column.dbType.IndexOf("char") >= 0)
+                if (dbtype.IndexOf("char") >= 0)
                 {
                     if (!string.IsNullOrEmpty(column.length))
                         sql += " (" + column.length + ")";

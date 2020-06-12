@@ -1085,12 +1085,20 @@ namespace Way.EntityDB
      
         public void CommitTransaction()
         {
-            ((Microsoft.EntityFrameworkCore.DbContext)this).Database.CommitTransaction();
+            if (((Microsoft.EntityFrameworkCore.DbContext)this).Database.CurrentTransaction != null)
+                ((Microsoft.EntityFrameworkCore.DbContext)this).Database.CommitTransaction();
         }
 
         public void RollbackTransaction()
         {
-            ((Microsoft.EntityFrameworkCore.DbContext)this).Database.RollbackTransaction();
+            if(((Microsoft.EntityFrameworkCore.DbContext)this).Database.CurrentTransaction != null)
+                ((Microsoft.EntityFrameworkCore.DbContext)this).Database.RollbackTransaction();
+        }
+
+        public override void Dispose()
+        {
+            this.RollbackTransaction();
+            base.Dispose();
         }
     }
 }

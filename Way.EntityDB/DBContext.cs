@@ -1097,8 +1097,21 @@ namespace Way.EntityDB
 
         public override void Dispose()
         {
-            this.RollbackTransaction();
-            base.Dispose();
+            try
+            {
+                this.RollbackTransaction();
+            }
+            catch
+            {
+            }
+            try
+            {
+                base.Dispose();
+            }
+            catch
+            {
+            }
+            
         }
     }
 }

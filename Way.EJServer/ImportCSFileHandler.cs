@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Way.EntityDB;
 using Way.EntityDB.Design;
+using Way.EntityDB.Design.Services;
 using Way.Lib;
 using Way.Lib.ScriptRemoting;
 
@@ -109,6 +110,9 @@ namespace Way.EJServer
                         designData.Database.ProjectID = projectid;
                         db.Insert(designData.Database);
 
+                        
+                        
+
                         #region Modules
                         foreach (var module in designData.Modules)
                         {
@@ -162,7 +166,10 @@ namespace Way.EJServer
                         foreach (var classpro in designData.classproperties)
                         {
                             classpro.BackupChangedProperties.Add("id", new DataValueChangedItem() { OriginalValue = classpro.id.Value });
-                            classpro.tableid = designData.Tables.FirstOrDefault(m => (int)m.BackupChangedProperties["id"].OriginalValue == classpro.tableid.Value).id;
+                            if(classpro.tableid != null)
+                                classpro.tableid = designData.Tables.FirstOrDefault(m => (int)m.BackupChangedProperties["id"].OriginalValue == classpro.tableid.Value).id;
+                            if (classpro.foreignkey_tableid != null)
+                                classpro.foreignkey_tableid = designData.Tables.FirstOrDefault(m => (int)m.BackupChangedProperties["id"].OriginalValue == classpro.foreignkey_tableid.Value).id;
                             db.Insert(classpro);
                         }
                         #endregion
@@ -214,6 +221,24 @@ namespace Way.EJServer
                             Time = DateTime.Now,
 
                         });
+
+                        try
+                        {
+                            //变更数据库类型
+                            IDatabaseDesignService dbservice = Way.EntityDB.Design.DBHelper.CreateDatabaseDesignService((Way.EntityDB.DatabaseType)(int)designData.Database.dbType);
+                            dbservice.Create(designData.Database);
+                            db.Update(designData.Database);
+
+                            //更新到现在的数据结构                         
+
+                            var invokeDB = Way.EntityDB.Design.DBHelper.CreateInvokeDatabase(designData.Database);
+                            var designDataStr = CodeBuilder.GetDesignData(db, designData.Database);
+                            DBUpgrade.Upgrade(invokeDB.DBContext, "\r\n" + designDataStr);
+                        }
+                        catch
+                        {
+
+                        }
 
                         db.CommitTransaction();
 

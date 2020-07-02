@@ -20,6 +20,15 @@ server url:https://localhost:6060
 user name: sa  
 password:  1  
 
+# 支持表达式更新数据
+
+```code
+var dataObj = db.Account.First();
+dataObj.SetValue<Account>(m => m.Money == m.Money - 100 && m.Name == "abc");
+db.Update(dataObj, m=>m.id == dataObj.id && m.Money >= 100);
+```
+以上语句，等于执行sql语句：update Account set Money=Money-100,Name='abc' where id=dataObj.id and Money>=100
+
 # 目前支持的数据库
 
 SqlServer  

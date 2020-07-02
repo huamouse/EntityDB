@@ -50,6 +50,8 @@ namespace Way.EntityDB
             var columnname = FormatObjectName(pkColumn.Name.ToLower());
             this.ExecSqlString($"select {FormatObjectName(columnname)} from {FormatObjectName(tablename.ToLower())} WITH (UPDLOCK) where {columnname}=@p0" , pkValue);
         }
+
+
         public override string FormatObjectName(string name)
         {
             if (name.StartsWith("[") || name.StartsWith("("))

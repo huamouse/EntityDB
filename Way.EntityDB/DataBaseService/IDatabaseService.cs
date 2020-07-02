@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,7 +26,8 @@ namespace Way.EntityDB
         void OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder optionsBuilder);
         //System.Data.Common.DbConnection CreateConnection(string connectString);
         void Insert(DataItem dataitem);
-        int Update(DataItem dataitem,params string[] conditionColumns);
+        int Update(DataItem dataitem,string condition);
+
         void Delete(DataItem dataitem);
         /// <summary>
         /// 允许自增长字段手动设置值

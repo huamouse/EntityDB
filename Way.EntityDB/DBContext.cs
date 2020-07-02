@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -787,13 +788,14 @@ namespace Way.EntityDB
         }
 
 
-#region 数据更新、添加、删除操作
+        #region 数据更新、添加、删除操作
+       
         /// <summary>
         /// 更新对象数据到数据库
         /// </summary>
         /// <param name="dataitem"></param>
-        /// <param name="coditionColumns">自己指定字段作为更新条件，如果不指定，则使用主键作为更新字段</param>
-        public virtual int Update(DataItem dataitem,params string[] coditionColumns)
+        /// <param name="condition">指定更新条件，如：age > 16，默认使用主键匹配</param>
+        public virtual int Update(DataItem dataitem,string condition = null)
         {
             string pkid = dataitem.KeyName;
             object pkvalue = dataitem.PKValue;
@@ -820,7 +822,7 @@ namespace Way.EntityDB
 
             try
             {
-                var ret = this.Database.Update(dataitem, coditionColumns);
+                var ret = this.Database.Update(dataitem, condition);
                 if (AfterUpdate != null)
                 {
                     AfterUpdate(this, new DatabaseModifyEventArg()

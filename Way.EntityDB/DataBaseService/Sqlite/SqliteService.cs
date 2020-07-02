@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Linq.Expressions;
 
 namespace Way.EntityDB
 {
@@ -267,8 +268,10 @@ namespace Way.EntityDB
             }
 
         }
+      
+     
 
-        public virtual int Update(DataItem dataitem, params string[] conditionColumns)
+        public virtual int Update(DataItem dataitem,string condition)
         {
 
 
@@ -298,35 +301,6 @@ namespace Way.EntityDB
                 
                 using (var command = CreateCommand(null))
                 {
-                    StringBuilder otherWhere = null;
-                    if (conditionColumns != null && conditionColumns.Length > 0)
-                    {
-                        otherWhere = new StringBuilder();
-                        foreach( var condition in conditionColumns )
-                        {
-                            object value = null;
-                            if( dataitem.ChangedProperties.Any(m=>m.Key == condition) )
-                            {
-                                value = dataitem.ChangedProperties.FirstOrDefault(m => m.Key == condition).Value.OriginalValue;
-                            }
-                            else
-                            {
-                                value = dataitem.GetValue(condition);
-                            }
-                            if(value != null)
-                            {
-                                string parameterName = "@cp" + (parameterIndex++);
-                                var parameter = command.CreateParameter();
-                                parameter.ParameterName = parameterName;
-                                parameter.Value = value;
-                                command.Parameters.Add(parameter);
-
-                                if (otherWhere.Length > 0)
-                                    otherWhere.Append(" and ");
-                                otherWhere.Append($"{FormatObjectName(condition)}={parameterName}");
-                            }
-                        }
-                    }
 
                     var fieldValues = dataitem.GetFieldValues(false);
                     if (fieldValues.Count == 0)
@@ -369,9 +343,9 @@ namespace Way.EntityDB
                         parameter.Value = pkvalue;
                         command.Parameters.Add(parameter);
 
-                        if (otherWhere != null && otherWhere.Length > 0)
+                        if (condition != null && condition.Length > 0)
                         {
-                            command.CommandText = string.Format("update {0} set {1} where " + otherWhere, FormatObjectName(dataitem.TableName), str_fields);
+                            command.CommandText = string.Format("update {0} set {1} where " + condition, FormatObjectName(dataitem.TableName), str_fields);
                         }
                         else
                         {
@@ -380,9 +354,9 @@ namespace Way.EntityDB
                     }
                     else
                     {
-                        if (otherWhere != null && otherWhere.Length > 0)
+                        if (condition != null && condition.Length > 0)
                         {
-                            command.CommandText = string.Format("update {0} set {1} where " + otherWhere, FormatObjectName(dataitem.TableName), str_fields);
+                            command.CommandText = string.Format("update {0} set {1} where " + condition, FormatObjectName(dataitem.TableName), str_fields);
                         }
                         else
                         {

@@ -244,7 +244,7 @@ namespace Way.EntityDB.Design
 
             var data = new EntityDB.CustomDataItem("__wayeasyjob", null, null);
             data.SetValue("contentConfig", dbconfig.ToJsonString());
-            db.Update(data);
+            db.Update(data,null);
         }
     }
 }

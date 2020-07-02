@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq.Expressions;
+using Way.EntityDB.Exceptons;
 
 namespace Way.EntityDB
 {
@@ -81,7 +82,7 @@ namespace Way.EntityDB
         {
             return "select last_insert_rowid()";
         }
-        protected virtual System.Data.Common.DbCommand CreateCommand(string sql , params object[] parames)
+        public virtual System.Data.Common.DbCommand CreateCommand(string sql , params object[] parames)
         {
             var cmd = this.Connection.CreateCommand();
             if (_database.CurrentTransaction != null && cmd.Transaction == null)
@@ -268,10 +269,221 @@ namespace Way.EntityDB
             }
 
         }
-      
-     
 
-        public virtual int Update(DataItem dataitem,string condition)
+        string getMember(Expression exp)
+        {
+            var left = exp as System.Linq.Expressions.MemberExpression;
+            if (left == null)
+                throw new ParseUpdateExpressionException("左侧必须是成员表达式");
+            return this.FormatObjectName( left.Member.Name.ToLower());
+        }
+        string getCall(MethodCallExpression exp, System.Data.Common.DbCommand cmd)
+        {
+            object name = null;
+            object value = null;
+            System.Data.Common.DbParameter dbparam;
+            switch (exp.Method.Name)
+            {
+                case "Contains":
+                    name = getMember(exp.Object);
+                    value = getExpressionValue(exp.Arguments[0]);
+                    if (value == null)
+                        throw new ParseUpdateExpressionException("Contains不能为空值");
+                    value = $"%{value}%";
+
+                    break;
+                case "StartsWith":
+                    name = getMember(exp.Object);
+                    value = getExpressionValue(exp.Arguments[0]);
+                    if (value == null)
+                        throw new ParseUpdateExpressionException("StartsWith不能为空值");
+                    value = $"%{value}";
+
+                    break;
+                case "EndsWith":
+                    name = getMember(exp.Object);
+                    value = getExpressionValue(exp.Arguments[0]);
+                    if (value == null)
+                        throw new ParseUpdateExpressionException("EndsWith不能为空值");
+                    value = $"{value}%";
+                    break;
+            }
+            
+            if(value != null)
+            {
+                dbparam = cmd.CreateParameter();
+                dbparam.ParameterName = "@w_" + cmd.Parameters.Count;
+                cmd.Parameters.Add(dbparam);
+                dbparam.Value = value;
+
+                return $"{name} like {dbparam.ParameterName}";
+            }
+
+            return "";
+        }
+
+        object getExpressionValue(Expression exp)
+        {
+            if (exp is ConstantExpression constantExpression)
+            {
+                return constantExpression.Value;
+            }
+            if (exp is UnaryExpression unaryExpression)
+            {
+                if(unaryExpression.Operand is ConstantExpression ce)
+                    return ce.Value;
+            }
+            return Expression.Lambda(exp).Compile().DynamicInvoke();
+        }
+        public virtual string BuildWhereString(Expression exp, System.Data.Common.DbCommand cmd )
+        {
+            if (exp is MethodCallExpression)
+            {
+                return getCall(exp as MethodCallExpression, cmd);
+            }
+            BinaryExpression body = exp as BinaryExpression;
+            if (body == null)
+            {
+                throw new ParseUpdateExpressionException("解析表达式失败");
+            }
+
+
+            if (body.Left == null)
+                throw new ParseUpdateExpressionException("解析表达式失败");
+
+            object value;
+            object name;
+            System.Data.Common.DbParameter dbparam;
+            switch (body.NodeType)
+            {
+                case ExpressionType.Equal:
+                    name = getMember(body.Left);
+                    dbparam = cmd.CreateParameter();
+                    dbparam.ParameterName = "@w_" + cmd.Parameters.Count;
+                    dbparam.Value = getExpressionValue(body.Right);
+                    if (dbparam.Value != null)
+                    {
+                        cmd.Parameters.Add(dbparam);
+                        return $"{name}={dbparam.ParameterName}";
+                    }
+                    else
+                    {
+                        return $"{name} is null";
+                    }
+                case ExpressionType.NotEqual:
+                    name = getMember(body.Left);
+                    dbparam = cmd.CreateParameter();
+                    dbparam.ParameterName = "@w_" + cmd.Parameters.Count;
+                    dbparam.Value = getExpressionValue(body.Right);
+                    if (dbparam.Value != null)
+                    {
+                        cmd.Parameters.Add(dbparam);
+                        return $"{name}<>{dbparam.ParameterName}";
+                    }
+                    else
+                    {
+                        return $"{name} is not null";
+                    }
+                case ExpressionType.GreaterThan:
+                    name = getMember(body.Left);
+                    dbparam = cmd.CreateParameter();
+                    dbparam.ParameterName = "@w_" + cmd.Parameters.Count;
+                    cmd.Parameters.Add(dbparam);
+                    dbparam.Value = getExpressionValue(body.Right);
+                    return $"{name}>{dbparam.ParameterName}";
+                case ExpressionType.GreaterThanOrEqual:
+                    name = getMember(body.Left);
+                    dbparam = cmd.CreateParameter();
+                    dbparam.ParameterName = "@w_" + cmd.Parameters.Count;
+                    cmd.Parameters.Add(dbparam);
+                    dbparam.Value = getExpressionValue(body.Right);
+                    return $"{name}>={dbparam.ParameterName}";
+                case ExpressionType.LessThan:
+                    name = getMember(body.Left);
+                    dbparam = cmd.CreateParameter();
+                    dbparam.ParameterName = "@w_" + cmd.Parameters.Count;
+                    cmd.Parameters.Add(dbparam);
+                    dbparam.Value = getExpressionValue(body.Right);
+                    return $"{name}<{dbparam.ParameterName}";
+                case ExpressionType.LessThanOrEqual:
+                    name = getMember(body.Left);
+                    dbparam = cmd.CreateParameter();
+                    dbparam.ParameterName = "@w_" + cmd.Parameters.Count;
+                    cmd.Parameters.Add(dbparam);
+                    dbparam.Value = getExpressionValue(body.Right);
+                    return $"{name}<={dbparam.ParameterName}";
+                case ExpressionType.AndAlso:
+                    return $"({BuildWhereString(body.Left,cmd)} and {BuildWhereString(body.Right, cmd)})";
+                case ExpressionType.OrElse:
+                    return $"({BuildWhereString(body.Left, cmd)} or {BuildWhereString(body.Right, cmd)})";
+                default:
+                    throw new ParseUpdateExpressionException("解析表达式失败");
+            }
+
+        }
+
+        void CreateUpdateBody( Expression expression, StringBuilder sb,List<string> findnames, System.Data.Common.DbCommand cmd)
+        {
+            if (expression is BinaryExpression binaryExpression)
+            {
+                CreateUpdateBody(binaryExpression.Left, sb, findnames, cmd);
+
+                switch (binaryExpression.NodeType)
+                {
+                    case ExpressionType.Add:
+                        sb.Append("+");
+                        break;
+                    case ExpressionType.Divide:
+                        sb.Append("/");
+                        break;
+                    case ExpressionType.Multiply:
+                        sb.Append("*");
+                        break;
+                    case ExpressionType.Subtract:
+                        sb.Append("-");
+                        break;
+                    case ExpressionType.Equal:
+                        sb.Append("=");
+                        break;
+                    case ExpressionType.And:
+                        sb.Append(",");
+                        break;
+                    case ExpressionType.AndAlso:
+                        sb.Append(",");
+                        break;
+                    case ExpressionType.Or:
+                        sb.Append(",");
+                        break;
+                    case ExpressionType.OrElse:
+                        sb.Append(",");
+                        break;
+                    default:
+                        throw new ParseUpdateExpressionException("表达式解析错误");
+                }
+
+                CreateUpdateBody(binaryExpression.Right, sb,findnames ,cmd);
+            }
+            else if (expression is MemberExpression memberExpression)
+            {
+                var membername = memberExpression.Member.Name.ToLower();
+                if (findnames.Contains(membername) == false)
+                    findnames.Add(membername);
+                sb.Append($"{ this.FormatObjectName(membername)}");
+            }
+            else
+            {
+                var parmName = $"u_{cmd.Parameters.Count}";
+                var sqlparam = cmd.CreateParameter();
+                sqlparam.ParameterName = parmName;
+                sqlparam.Value = getExpressionValue(expression);
+                cmd.Parameters.Add(sqlparam);
+
+                sb.Append($" @{parmName}");
+            }
+        }
+
+
+        public virtual int Update<T>(T dataitem, Expression<Func<T, bool>> condition) where T : DataItem
         {
 
 
@@ -297,16 +509,27 @@ namespace Way.EntityDB
 
                 StringBuilder str_fields = new StringBuilder();
                 int parameterIndex = 1;
-               
-                
+
+                var updateExpression = dataitem.UpdateExpression as Expression<Func<T, bool>>;
+
                 using (var command = CreateCommand(null))
                 {
 
                     var fieldValues = dataitem.GetFieldValues(false);
-                    if (fieldValues.Count == 0)
+                    if (fieldValues.Count == 0 && updateExpression == null)
                         return 0;
+
+                    List<string> cancelNames = null;
+                    if(updateExpression != null)
+                    {
+                        cancelNames = new List<string>();
+                        CreateUpdateBody(updateExpression.Body, str_fields, cancelNames, command);
+                    }
+
                     foreach (var fieldValue in fieldValues)
                     {
+                        if (cancelNames != null && cancelNames.Contains(fieldValue.FieldName))
+                            continue;
 
                         if (str_fields.Length > 0)
                             str_fields.Append(',');
@@ -343,9 +566,10 @@ namespace Way.EntityDB
                         parameter.Value = pkvalue;
                         command.Parameters.Add(parameter);
 
-                        if (condition != null && condition.Length > 0)
+                        if (condition != null)
                         {
-                            command.CommandText = string.Format("update {0} set {1} where " + condition, FormatObjectName(dataitem.TableName), str_fields);
+                            var where = BuildWhereString(condition.Body, command);
+                            command.CommandText = string.Format("update {0} set {1} where " + where, FormatObjectName(dataitem.TableName), str_fields);
                         }
                         else
                         {
@@ -354,9 +578,10 @@ namespace Way.EntityDB
                     }
                     else
                     {
-                        if (condition != null && condition.Length > 0)
+                        if (condition != null)
                         {
-                            command.CommandText = string.Format("update {0} set {1} where " + condition, FormatObjectName(dataitem.TableName), str_fields);
+                            var where = BuildWhereString(condition.Body, command);
+                            command.CommandText = string.Format("update {0} set {1} where " + where, FormatObjectName(dataitem.TableName), str_fields);
                         }
                         else
                         {

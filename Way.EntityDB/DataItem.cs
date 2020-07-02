@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
@@ -162,9 +163,19 @@ namespace Way.EntityDB
     public abstract class DataItem : IDataItem, INotifyPropertyChanging, INotifyPropertyChanged, IDataValueChanged
     {
         internal bool m_notSendPropertyChanged = false;
+        internal object UpdateExpression;
         public static DateTime getdate()
         {
             return DateTime.Now;
+        }
+
+        /// <summary>
+        /// 把字段的更新，设置为一个指定的表达式值
+        /// </summary>
+        /// <param name="exp">指定的更新表达式，如 m=>m.age == m.age + 1，相当于sql语句的 age=age+1</param>
+        public virtual void SetValue<T>(Expression<Func<T,bool>> exp)
+        {
+            UpdateExpression = exp;
         }
 
         public virtual void SetValue(string columnName, object value)

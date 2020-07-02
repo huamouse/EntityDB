@@ -15,26 +15,29 @@ using System.IO;
 using Microsoft.Data.SqlClient;
 using Storm.OrderMessageCenter.Database.DB;
 using Storm.OrderMessageCenter.Database;
+using System.Linq.Expressions;
 
 namespace Way.EntityDB.Test
 { 
     [TestClass]
     public class Test
     {
-
+        
+        static int id = 2;
         [TestMethod]
         public void BuildWhere()
         {
+            string c = "abc22faew";
+
+            Expression<Func<Account, bool>> exp = m => m.NotifyUrl == "abc" + 2;
+
             MessageCenterDB db = new MessageCenterDB("data source='./test.db'", DatabaseType.Sqlite);
-            var item = new Account();
-            item.MerchantName = "jack";
-            item.NotifyUrl = "abc";
-            db.Update(item);
-
-            item.MerchantName = "jack2";
-            db.Update(item, db.Account.Where((m) => m.NotifyUrl == "abc"));
-
-            item = db.Account.FirstOrDefault();
+            var item = db.Account.FirstOrDefault();
+            item.MerchantName = "Jack.T233";
+            item.NotifyUrl = "urltest";
+            string sql = exp.ToSql(db);
+            item.SetValue<Account>(m => m.id == m.id + Test.id);
+            var ret = db.Update(item, m => m.NotifyUrl != c);
         }
     }
 

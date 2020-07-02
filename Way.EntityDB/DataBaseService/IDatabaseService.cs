@@ -25,8 +25,10 @@ namespace Way.EntityDB
         string ConvertConnectionString(string conStr);
         void OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder optionsBuilder);
         //System.Data.Common.DbConnection CreateConnection(string connectString);
+        System.Data.Common.DbCommand CreateCommand(string sql, params object[] parames);
+        string BuildWhereString(Expression exp, System.Data.Common.DbCommand cmd);
         void Insert(DataItem dataitem);
-        int Update(DataItem dataitem,string condition);
+        int Update<T>(T dataitem,Expression<Func<T,bool>> condition) where T :DataItem;
 
         void Delete(DataItem dataitem);
         /// <summary>

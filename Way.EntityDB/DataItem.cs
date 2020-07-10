@@ -235,7 +235,8 @@ namespace Way.EntityDB
         public event PropertyChangingEventHandler PropertyChanging;
 
         public event PropertyChangedEventHandler PropertyChanged;
-
+        static Dictionary<Type, string> KeyNameDict = new Dictionary<Type, string>();
+        static Dictionary<Type, string> TableNameDict = new Dictionary<Type, string>();
         DataValueChangedItemCollection _ChangedProperties = new DataValueChangedItemCollection();
         /// <summary>
         /// 被修改的属性的记录
@@ -268,10 +269,15 @@ namespace Way.EntityDB
             {
                 if (_KeyName == null)
                 {
-                    Attributes.Table myTableAttr = this.TableType.GetTypeInfo().GetCustomAttribute(typeof(Attributes.Table)) as Attributes.Table;
-                    if (myTableAttr == null)
-                        throw new Exception(this.TableType.FullName + "没有定义 Attributes.Table");
-                    _KeyName = myTableAttr.KeyName;
+                    if (KeyNameDict.ContainsKey(this.TableType))
+                        _KeyName = KeyNameDict[this.TableType];
+                    else
+                    {
+                        Attributes.Table myTableAttr = this.TableType.GetTypeInfo().GetCustomAttribute(typeof(Attributes.Table)) as Attributes.Table;
+                        if (myTableAttr == null)
+                            throw new Exception(this.TableType.FullName + "没有定义 Attributes.Table");
+                        KeyNameDict[this.TableType] = _KeyName = myTableAttr.KeyName;
+                    }
                 }
                 return _KeyName;
             }
@@ -285,10 +291,15 @@ namespace Way.EntityDB
             {
                 if (_tableName == null)
                 {
-                   var myTableAttr = this.TableType.GetTypeInfo().GetCustomAttribute(typeof(System.ComponentModel.DataAnnotations.Schema.TableAttribute)) as System.ComponentModel.DataAnnotations.Schema.TableAttribute;
-                    if (myTableAttr == null)
-                        throw new Exception(this.TableType.FullName + "没有定义 Attributes.Table");
-                    _tableName = myTableAttr.Name;
+                    if (TableNameDict.ContainsKey(this.TableType))
+                        _tableName = TableNameDict[this.TableType];
+                    else
+                    {
+                        var myTableAttr = this.TableType.GetTypeInfo().GetCustomAttribute(typeof(System.ComponentModel.DataAnnotations.Schema.TableAttribute)) as System.ComponentModel.DataAnnotations.Schema.TableAttribute;
+                        if (myTableAttr == null)
+                            throw new Exception(this.TableType.FullName + "没有定义 Attributes.Table");
+                        TableNameDict[this.TableType] = _tableName = myTableAttr.Name;
+                    }                   
                 }
                 return _tableName;
             }

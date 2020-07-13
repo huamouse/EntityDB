@@ -8,7 +8,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-
+using Way.EntityDB.DataBaseService;
+using System.Linq;
 namespace Way.EntityDB
 {
     [Attributes.DatabaseTypeAttribute(DatabaseType.SqlServer)]
@@ -20,7 +21,7 @@ namespace Way.EntityDB
         }
          public SqlServerService(DBContext dbcontext):base(dbcontext)
          {
-            
+           
         }
         public override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -44,13 +45,15 @@ namespace Way.EntityDB
             return SelectTable(sql, sqlparameters);
         }
 
-        public override void UpdateLock(string tablename, WayDBColumnAttribute[] columns, object pkValue)
-        {
-            var pkColumn = columns.FirstOrDefault(m => m.IsPrimaryKey);
-            var columnname = FormatObjectName(pkColumn.Name.ToLower());
-            this.ExecSqlString($"select {FormatObjectName(columnname)} from {FormatObjectName(tablename.ToLower())} WITH (UPDLOCK) where {columnname}=@p0" , pkValue);
-        }
 
+        public override void UpdateLock(Type tableType, object pkValue)
+        {
+            var tableSchema = SchemaManager.GetSchemaTable(tableType);
+
+            var pkColumn = tableSchema.Columns.FirstOrDefault(m => m.IsKey);
+            var columnname = FormatObjectName(pkColumn.Name.ToLower());
+            this.ExecSqlString($"select {FormatObjectName(columnname)} from {FormatObjectName(tableSchema.TableName.ToLower())} WITH (UPDLOCK) where {columnname}=@p0", pkValue);
+        }
 
         public override string FormatObjectName(string name)
         {
@@ -101,15 +104,22 @@ namespace Way.EntityDB
                     keys[i] = keys[i].Trim();
                 captions = new string[keys.Length];
 
+                var tableSchema = SchemaManager.GetSchemaTable(tableType);
+
                 for (int i = 0; i < keys.Length; i++)
                 {
-                    var pinfo = tableType.GetTypeInfo().GetProperty(keys[i]);
-                    WayDBColumnAttribute columnAtt = pinfo.GetCustomAttribute(typeof(WayDBColumnAttribute)) as WayDBColumnAttribute;
-                    captions[i] = columnAtt.Caption;
+                    var column = tableSchema.Columns.FirstOrDefault(m => m.Name == keys[i]);
+                    if (column == null)
+                    {
+                        output.Append(keys[i]);
+                        continue;
+                    }
+
+                    captions[i] = column.Display;
                     if (output.Length > 0)
                         output.Append(',');
 
-                    output.Append(columnAtt.Caption.IsNullOrEmpty() ? keys[i] : columnAtt.Caption);
+                    output.Append(column.Display.IsNullOrEmpty() ? keys[i] : column.Display);
                 }
 
             }

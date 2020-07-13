@@ -38,14 +38,18 @@ namespace Way.EntityDB
         /// <param name="allow">是否允许</param>
         void AllowIdentityInsert(string tablename ,bool allow);
 
-       /// <summary>
-       /// 开启更新锁
-       /// </summary>
-       /// <param name="tablename"></param>
-       /// <param name="columns"></param>
-       /// <param name="pkValue"></param>
-        void UpdateLock(string tablename, Way.EntityDB.WayDBColumnAttribute[] columns,object pkValue);
-
+        /// <summary>
+        /// 开启更新锁
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pkValue"></param>
+        void UpdateLock<T>(object pkValue) where T : DataItem;
+        /// <summary>
+        /// 开启更新锁
+        /// </summary>
+        /// <param name="tableType"></param>
+        /// <param name="pkValue"></param>
+        void UpdateLock(Type tableType, object pkValue);
         /// <summary>
         /// 执行sql语句
         /// </summary>

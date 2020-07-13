@@ -76,7 +76,7 @@ namespace Way.EJServer
                                         foreach (var item in data)
                                             newDataItem.SetValue(item.Key, item.Value);
 
-                                        invokingDB.Update(newDataItem);
+                                        invokingDB.Update(newDataItem,null);
                                         continue;
                                     }
                                 }

@@ -458,7 +458,7 @@ namespace Way.EJServer
                                 if (column.IsAutoIncrement == false && column.IsPKID == false)
                                     dataitem.SetValue(column.Name.ToLower(), drow[column.Name]);
                             }
-                            invokingDB.Update(dataitem);
+                            invokingDB.Update(dataitem,null);
                         }
                     }
 
@@ -1021,7 +1021,7 @@ namespace Way.EJServer
 
             var data = new Way.EntityDB.CustomDataItem("__wayeasyjob", null, null);
             data.SetValue("contentConfig", dbconfig.ToJsonString());
-            db.Update(data);
+            db.Update(data,null);
         }
 
         [RemotingMethod]
@@ -1473,7 +1473,7 @@ namespace Way.EJServer
 
                                 var obj = new Way.EntityDB.CustomDataItem("__wayeasyjob", null, null);
                                 obj.SetValue("contentConfig", dbconfig.ToJsonString());
-                                invokeDB.Update(obj);
+                                invokeDB.Update(obj,null);
 
                                 invokeDB.DBContext.CommitTransaction();
                             }

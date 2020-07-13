@@ -993,7 +993,7 @@ namespace Way.EntityDB
 
                     foreach (var idvalue in dataitems)
                     {
-                        this.Database.UpdateLock(dataType.Name, columns, idvalue);
+                        this.Database.UpdateLock(dataType, idvalue);
                     }
 
                     if (dataitems.Length < pagesize)

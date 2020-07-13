@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Way.EntityDB.DataBaseService;
 
 namespace Way.EntityDB
 {
@@ -39,11 +40,12 @@ namespace Way.EntityDB
             return SelectTable(sql, sqlparameters);
         }
 
-        public override void UpdateLock(string tablename, WayDBColumnAttribute[] columns, object pkValue)
+        public override void UpdateLock(Type tableType, object pkValue)
         {
-            var pkColumn = columns.FirstOrDefault(m => m.IsPrimaryKey);
+            var tableSchema = SchemaManager.GetSchemaTable(tableType);
+            var pkColumn = tableSchema.Columns.FirstOrDefault(m => m.IsKey);
             var columnname = FormatObjectName(pkColumn.Name.ToLower());
-            this.ExecSqlString($"select {FormatObjectName(columnname)} from {FormatObjectName(tablename.ToLower())} where {columnname}=@p0 for update", pkValue);
+            this.ExecSqlString($"select {FormatObjectName(columnname)} from {FormatObjectName(tableSchema.TableName.ToLower())} where {columnname}=@p0 for update", pkValue);
         }
 
         public override string FormatObjectName(string name)
@@ -75,6 +77,7 @@ namespace Way.EntityDB
             try
             {
                 string msg = nerror.Detail;
+                var tableSchema = SchemaManager.GetSchemaTable(tableType);
 
 
                 try
@@ -91,14 +94,18 @@ namespace Way.EntityDB
 
                         for (int i = 0; i < keys.Length; i++)
                         {
-                            var pinfo = tableType.GetTypeInfo().GetProperty(keys[i]);
+                            var column = tableSchema.Columns.FirstOrDefault(m => m.Name == keys[i]);
+                            if (column == null)
+                            {
+                                output.Append(keys[i]);
+                                continue;
+                            }
 
-                            WayDBColumnAttribute columnAtt = pinfo.GetCustomAttribute(typeof(WayDBColumnAttribute)) as WayDBColumnAttribute;
-                            captions[i] = columnAtt.Caption;
+                            captions[i] = column.Display;
                             if (output.Length > 0)
                                 output.Append(',');
 
-                            output.Append(columnAtt.Caption.IsNullOrEmpty() ? keys[i] : columnAtt.Caption);
+                            output.Append(column.Display.IsNullOrEmpty() ? keys[i] : column.Display);
                         }
                     }
                 }

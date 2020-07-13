@@ -30,7 +30,9 @@ namespace Storm.OrderMessageCenter.Database{
         /// <summary>
         /// 
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
+        [System.ComponentModel.DataAnnotations.Display(Name = "创建时间")]
+        [System.ComponentModel.DataAnnotations.Key]
+        [System.ComponentModel.DataAnnotations.Schema.DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity)]//添加时自动增长
         [System.ComponentModel.DataAnnotations.Schema.Column("id")]
         [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
         public virtual System.Nullable<Int32> id

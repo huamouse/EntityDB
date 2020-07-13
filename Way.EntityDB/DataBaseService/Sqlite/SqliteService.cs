@@ -12,6 +12,7 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq.Expressions;
 using Way.EntityDB.Exceptons;
+using Way.EntityDB.DataBaseService;
 
 namespace Way.EntityDB
 {
@@ -50,11 +51,17 @@ namespace Way.EntityDB
 
         }
 
-        public virtual void UpdateLock(string tablename, Way.EntityDB.WayDBColumnAttribute[] columns, object pkValue)
+        public virtual void UpdateLock<T>(object pkValue) where T : DataItem
         {
-            var pkColumn = columns.FirstOrDefault(m => m.IsPrimaryKey);
+            this.UpdateLock(typeof(T), pkValue);
+        }
+        public virtual void UpdateLock(Type tableType, object pkValue)
+        {
+            var tableSchema = SchemaManager.GetSchemaTable(tableType);
+
+            var pkColumn = tableSchema.Columns.FirstOrDefault(m => m.IsKey);
             var columnname = FormatObjectName(pkColumn.Name.ToLower());
-            this.ExecSqlString($"update {FormatObjectName(tablename.ToLower())} set {columnname}={columnname} where {columnname}=@p0", pkValue);
+            this.ExecSqlString($"update {FormatObjectName(tableSchema.TableName.ToLower())} set {columnname}={columnname} where {columnname}=@p0", pkValue);
         }
 
         public virtual string FormatObjectName(string name)
@@ -125,6 +132,7 @@ namespace Way.EntityDB
             try
             {
                 string msg = ex.Message.Substring(ex.Message.IndexOf("UNIQUE constraint failed:") + "UNIQUE constraint failed:".Length);
+                var tableSchema = SchemaManager.GetSchemaTable(tableType);
 
                 try
                 {
@@ -142,13 +150,18 @@ namespace Way.EntityDB
 
                     for (int i = 0; i < keys.Count; i++)
                     {
-                        var pinfo = tableType.GetProperty(keys[i]);
-                        WayDBColumnAttribute columnAtt = pinfo.GetCustomAttribute(typeof(WayDBColumnAttribute)) as WayDBColumnAttribute;
-                        captions[i] = columnAtt.Caption;
+                        var column = tableSchema.Columns.FirstOrDefault(m => m.Name == keys[i]);
+                        if (column == null)
+                        {
+                            output.Append(keys[i]);
+                            continue;
+                        }
+
+                        captions[i] = column.Display;
                         if (output.Length > 0)
                             output.Append(',');
 
-                        output.Append(columnAtt.Caption.IsNullOrEmpty() ? keys[i] : columnAtt.Caption);
+                        output.Append(column.Display.IsNullOrEmpty() ? keys[i] : column.Display);
                     }
 
                 }
@@ -174,24 +187,13 @@ namespace Way.EntityDB
                 this.Connection.Open();
             }
 
-            Attributes.Table myTableAttr = dataitem.GetType().GetCustomAttribute(typeof(Attributes.Table)) as Attributes.Table;
+            var tableSchema = SchemaManager.GetSchemaTable(dataitem.GetType());
 
-            string pkid = myTableAttr.KeyName;
+            string pkid = tableSchema.KeyName;
             var fieldValues = dataitem.GetFieldValues(true);
             if (fieldValues.Count == 0)
                 return;
 
-            if (myTableAttr.AutoSetPropertyNameOnInsert != null)
-            {
-                var fv = fieldValues.FirstOrDefault(m => m.FieldName == myTableAttr.AutoSetPropertyNameOnInsert);
-                if (fv == null)
-                {
-                    fieldValues.Add(new FieldValue() { 
-                        FieldName = myTableAttr.AutoSetPropertyNameOnInsert,
-                        Value = myTableAttr.AutoSetPropertyValueOnInsert
-                    });
-                }
-            }
 
             StringBuilder str_fields = new StringBuilder();
             StringBuilder str_values = new StringBuilder();

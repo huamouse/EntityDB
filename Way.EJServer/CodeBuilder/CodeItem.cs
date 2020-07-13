@@ -31,6 +31,17 @@ namespace Way.EJServer
             item.SetParent(this);
         }
 
+        public void AddComment(string comment)
+        {
+            this.AddItem(new CodeItem("/// <summary>"));
+            this.AddItem(new CodeItem($"/// {comment}"));
+            this.AddItem(new CodeItem("/// </summary>"));
+        }
+        public void AddString(string text)
+        {
+            this.AddItem(new CodeItem(text));
+        }
+
         string getStartBlank()
         {
             return "".PadLeft(_level, '\t');
@@ -50,16 +61,24 @@ namespace Way.EJServer
                 return buffer.ToString();
             }
 
-            buffer.Append(getStartBlank());
-            buffer.AppendLine("{");
+            if (!string.IsNullOrEmpty(this.Body))
+            {
+                buffer.Append(getStartBlank());
+                buffer.AppendLine("{");
+            }
 
             foreach(var item in _Items )
             {
                 buffer.Append(item.Build());
             }
             buffer.AppendLine("");
-            buffer.Append(getStartBlank());
-            buffer.AppendLine("}");
+
+
+            if (!string.IsNullOrEmpty(this.Body))
+            {
+                buffer.Append(getStartBlank());
+                buffer.AppendLine("}");
+            }
 
             return buffer.ToString();
         }

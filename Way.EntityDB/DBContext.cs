@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Way.EntityDB.DataBaseService;
 
 namespace Way.EntityDB
 {
@@ -789,7 +791,17 @@ namespace Way.EntityDB
 
 
         #region 数据更新、添加、删除操作
-       
+
+        public new void Update(DataItem entity)
+        {
+            this.Update(entity, null);
+        }
+
+        public new void Update<T>(T dataitem) where T : DataItem
+        {
+            this.Update(dataitem, null);
+        }
+
         /// <summary>
         /// 更新对象数据到数据库
         /// </summary>
@@ -941,49 +953,13 @@ namespace Way.EntityDB
 
            Type dataType = items.GetType().GetGenericArguments()[0];
 
-            string pkid = null;
-            Attributes.Table tableAttr = null;
-            if (dataType != null)
-            {
-                try
-                {
-                    tableAttr = dataType.GetTypeInfo().GetCustomAttribute(typeof(Attributes.Table)) as Attributes.Table;
-                    if (tableAttr != null)
-                        pkid = tableAttr.KeyName;
-                }
-                catch
-                {
-                }
-            }
-            if (pkid == null)
+            var tableSchema = SchemaManager.GetSchemaTable(dataType);
+
+            if (tableSchema.KeyColumn == null)
                 throw new Exception(dataType.Name + "没有定义主键");
 
-            WayDBColumnAttribute[] columns = null;
-            Attributes.Table.DataTypeColumns.TryGetValue(dataType, out columns);
-            if (columns == null)
-            {
-                var properties = dataType.GetProperties();
-                List<WayDBColumnAttribute> allcolumns = new List<WayDBColumnAttribute>();
-                foreach (var pro in properties)
-                {
-                    var attr = pro.GetCustomAttribute<WayDBColumnAttribute>();
-                    if (attr != null)
-                        allcolumns.Add(attr);
-                }
-                columns = allcolumns.ToArray();
-                try
-                {
-                    Attributes.Table.DataTypeColumns[dataType] = columns;
-                }
-                catch
-                {
-                    //并发时可能报错
-                }
-               
-            }
-           
             int pagesize = 100;
-                var query = InvokeSelect(items, pkid);
+                var query = InvokeSelect(items, tableSchema.KeyColumn.PropertyName);
                 int skip = 0;
                 while (true)
                 {
@@ -1013,20 +989,9 @@ namespace Way.EntityDB
         {
             Type dataType = items.GetType().GetGenericArguments()[0];
 
-            string pkid = null;
-            if (dataType != null)
-            {
-                try
-                {
-                    var att = dataType.GetTypeInfo().GetCustomAttribute(typeof(Attributes.Table)) as Attributes.Table;
-                    if(att != null)
-                        pkid = att.KeyName;
-                }
-                catch
-                {
-                }
-            }
-            if (pkid == null)
+            var tableSchema = SchemaManager.GetSchemaTable(dataType);
+
+            if (tableSchema.KeyColumn == null)
                 throw new Exception(dataType.Name + "没有定义主键");
 
 
@@ -1040,7 +1005,7 @@ namespace Way.EntityDB
             int pagesize = 100;
             try
             {
-                var query = InvokeSelect(items, pkid);
+                var query = InvokeSelect(items, tableSchema.KeyColumn.PropertyName);
                 while (true)
                 {
                     var data1 = InvokeTake(query, pagesize);
@@ -1049,7 +1014,7 @@ namespace Way.EntityDB
                     foreach (var idvalue in dataitems)
                     {
                         var deldataItem = (DataItem)Activator.CreateInstance(dataType);
-                        deldataItem.SetValue(pkid, idvalue);
+                        deldataItem.SetValue(tableSchema.KeyColumn.PropertyName, idvalue);
                         Delete(deldataItem);
                     }
 

@@ -407,12 +407,12 @@ namespace "+nameSpace+@".DB{
             Dictionary<string, StringBuilder> otherClassCode = new Dictionary<string, StringBuilder>();
             var discriminatorColumn = columns.FirstOrDefault(m => m.IsDiscriminator == true && !string.IsNullOrEmpty(m.EnumDefine?.Trim()));
 
-            string tableAttString = @"[Way.EntityDB.Attributes.Table(""" + (pkcolumn == null ? "" : pkcolumn.Name.Trim()) + @""")]";
+            string tableAttString = @"[TableConfig]";
             ClassName[] classNames = null;
             if(discriminatorColumn != null && columns.Any(m=>!string.IsNullOrEmpty(m.ClassName?.Trim())))
             {
                 classNames = ParseNames(discriminatorColumn.EnumDefine).ToArray();
-                   tableAttString = @"[Way.EntityDB.Attributes.Table(""" + (pkcolumn == null ? "" : pkcolumn.Name.Trim()) + @""", AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name + @""" , AutoSetPropertyValueOnInsert=(" + table.Name + "_" + discriminatorColumn.Name + @"Enum)0)]";
+                   tableAttString = @"[TableConfig( AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name + @""" , AutoSetPropertyValueOnInsert=(" + table.Name + "_" + discriminatorColumn.Name + @"Enum)0)]";
             }
 
             result.Append(@"
@@ -420,7 +420,7 @@ namespace "+nameSpace+@".DB{
     /// <summary>
 	/// " + table.caption + @"
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("""+ table.Name.ToLower() +@""")]
+    [Table("""+ table.Name.ToLower() +@""")]
     "+ tableAttString + @"
     public class " + table.Name + @" :Way.EntityDB.DataItem
     {
@@ -442,14 +442,14 @@ namespace "+nameSpace+@".DB{
                     if(otherClassCode.ContainsKey(column.ClassName) == false)
                     {
                         var classnameitem = classNames.FirstOrDefault(m=>m.Name == column.ClassName);
-                        //[Way.EntityDB.Attributes.Table("id", AutoSetPropertyNameOnInsert = "Discriminator", AutoSetPropertyValueOnInsert = UserInfo_DiscriminatorEnum.SuperUser)]
+                        //[TableConfig(AutoSetPropertyNameOnInsert = "Discriminator", AutoSetPropertyValueOnInsert = UserInfo_DiscriminatorEnum.SuperUser)]
                         var buffer = otherClassCode[column.ClassName] = new StringBuilder();
                         buffer.Append(@"
 
     /// <summary>
 	/// " + table.caption + @"
 	/// </summary>
-     [Way.EntityDB.Attributes.Table(""" + (pkcolumn == null ? "" : pkcolumn.Name.Trim()) + @""", AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name +   @""" , AutoSetPropertyValueOnInsert=" + table.Name + "_" + discriminatorColumn.Name + @"Enum."+ column.ClassName +@")]
+     [TableConfig(AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name +   @""" , AutoSetPropertyValueOnInsert=" + table.Name + "_" + discriminatorColumn.Name + @"Enum."+ column.ClassName +@")]
     public class " + column.ClassName + @" :" + ((classnameitem == null || classnameitem.BaseName==null) ? table.Name : classnameitem.BaseName) + @"
     {
 
@@ -480,35 +480,7 @@ namespace "+nameSpace+@".DB{
                 }
 
                 string dataType = GetLinqTypeString(column.dbType);
-                string att = ",DbType=\"" + column.dbType;
-                if (string.IsNullOrEmpty(column.length))
-                {
-                    if (column.dbType.Contains("char"))
-                    {
-                        att += "(50)";
-                    }
-                }
-                else
-                {
-                    if (column.dbType.Contains("char"))
-                    {
-                        att += "(" + column.length + ")";
-                    }
-                }
-                att += "\"";
-                if (column.IsPKID == true)
-                {
-                    //,AutoSync= AutoSync.OnInsert ,IsPrimaryKey=true,IsDbGenerated=true
-                    att += " ,IsPrimaryKey=true";
-                }
-                if (column.IsAutoIncrement == true)
-                {
-                    att += ",IsDbGenerated=true";
-                }
-                if (column.CanNull == false)
-                {
-                    att += ",CanBeNull=false";
-                }
+
 
                 string eqString = "";
                 if (!string.IsNullOrEmpty(column.EnumDefine) && column.dbType == "int")
@@ -599,16 +571,26 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                 string otherAttrs = "";
                 if(column.IsPKID == true)
                 {
-                    otherAttrs = "\r\n[System.ComponentModel.DataAnnotations.Key]";
+                    otherAttrs += "\r\n[Key]";
                 }
-
+                if(column.IsAutoIncrement == true)
+                {
+                    otherAttrs += "\r\n[DatabaseGenerated(DatabaseGeneratedOption.Identity)]";
+                }
+                if (column.CanNull == false)
+                {
+                    otherAttrs += "\r\n[Required]";
+                }
+                if ( !string.IsNullOrEmpty( column.caption ))
+                {
+                    otherAttrs += $"\r\n[Display(Name = \"{column.caption.Replace("\"" , "\\\"")}\")]";
+                }
                 curcodeBuffer.Append(@"
         " + dataType + @" _" + column.Name + eqString  + @";
         /// <summary>
         /// " + column.caption + @"
         /// </summary>"+ otherAttrs + @"
-        [System.ComponentModel.DataAnnotations.Schema.Column("""+ column.Name.ToLower() + @""")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="""+column.Name.ToLower()+@""",Comment="""",Caption=""" + caption + @""",Storage = ""_" + column.Name.Trim() + @"""" + att + @")]
+        [Column("""+ column.Name.ToLower() + @""")]
         public virtual " + dataType + @" " + column.Name + @"
         {
             get
@@ -643,7 +625,7 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                         if ( column != null && column.TableID == table.id)
                         {
                             result.Append(@"
-        [System.ComponentModel.DataAnnotations.Schema.ForeignKey(""" + column.Name + @""")]
+        [ForeignKey(""" + column.Name + @""")]
         public virtual " + foreign_table.Name + @" " + pro.name + @" { get; set; }
 ");
                         }
@@ -662,7 +644,7 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
 
                             //与其他表多对一
                             result.Append(@"
-        [System.ComponentModel.DataAnnotations.Schema.ForeignKey(""" + column.Name + @""")]
+        [ForeignKey(""" + column.Name + @""")]
         public virtual ICollection<" + foreign_table.Name + @"> " + pro.name + @" { get; set; }
 ");
                         }

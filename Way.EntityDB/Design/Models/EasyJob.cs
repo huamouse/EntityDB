@@ -6,15 +6,17 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Text;
-
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Way.EntityDB.Attributes;
 namespace EJ{
 
 
     /// <summary>
 	/// 项目
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("project")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("project")]
+    [TableConfig]
     public class Project :Way.EntityDB.DataItem
     {
 
@@ -30,9 +32,10 @@ namespace EJ{
         /// <summary>
         /// id
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="id",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Display(Name = "id")]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -55,8 +58,8 @@ namespace EJ{
         /// <summary>
         /// Name
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("name")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="name",Comment="",Caption="Name",Storage = "_Name",DbType="varchar(50)")]
+[Display(Name = "Name")]
+        [Column("name")]
         public virtual String Name
         {
             get
@@ -105,8 +108,8 @@ PostgreSql=4
     /// <summary>
 	/// 数据库
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("databases")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("databases")]
+    [TableConfig]
     public class Databases :Way.EntityDB.DataItem
     {
 
@@ -122,9 +125,10 @@ PostgreSql=4
         /// <summary>
         /// id
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="id",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Display(Name = "id")]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -147,8 +151,8 @@ PostgreSql=4
         /// <summary>
         /// 项目ID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("projectid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="projectid",Comment="",Caption="项目ID",Storage = "_ProjectID",DbType="int")]
+[Display(Name = "项目ID")]
+        [Column("projectid")]
         public virtual System.Nullable<Int32> ProjectID
         {
             get
@@ -171,8 +175,8 @@ PostgreSql=4
         /// <summary>
         /// Name
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("name")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="name",Comment="",Caption="Name",Storage = "_Name",DbType="varchar(50)")]
+[Display(Name = "Name")]
+        [Column("name")]
         public virtual String Name
         {
             get
@@ -195,8 +199,8 @@ PostgreSql=4
         /// <summary>
         /// 数据库类型
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("dbtype")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="dbtype",Comment="",Caption="数据库类型",Storage = "_dbType",DbType="int")]
+[Display(Name = "数据库类型")]
+        [Column("dbtype")]
         public virtual System.Nullable<Databases_dbTypeEnum> dbType
         {
             get
@@ -219,8 +223,8 @@ PostgreSql=4
         /// <summary>
         /// 连接字符串
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("constr")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="constr",Comment="",Caption="连接字符串",Storage = "_conStr",DbType="varchar(200)")]
+[Display(Name = "连接字符串")]
+        [Column("constr")]
         public virtual String conStr
         {
             get
@@ -243,8 +247,8 @@ PostgreSql=4
         /// <summary>
         /// dll生成文件夹
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("dllpath")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="dllpath",Comment="",Caption="dll生成文件夹",Storage = "_dllPath",DbType="varchar(100)")]
+[Display(Name = "dll生成文件夹")]
+        [Column("dllpath")]
         public virtual String dllPath
         {
             get
@@ -267,8 +271,8 @@ PostgreSql=4
         /// <summary>
         /// iLock
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("ilock")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="ilock",Comment="",Caption="iLock",Storage = "_iLock",DbType="int")]
+[Display(Name = "iLock")]
+        [Column("ilock")]
         public virtual System.Nullable<Int32> iLock
         {
             get
@@ -291,8 +295,8 @@ PostgreSql=4
         /// <summary>
         /// NameSpace
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("namespace")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="namespace",Comment="",Caption="NameSpace",Storage = "_NameSpace",DbType="varchar(50)")]
+[Display(Name = "NameSpace")]
+        [Column("namespace")]
         public virtual String NameSpace
         {
             get
@@ -315,8 +319,8 @@ PostgreSql=4
         /// <summary>
         /// 唯一标示ID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("guid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="guid",Comment="",Caption="唯一标示ID",Storage = "_Guid",DbType="varchar(50)")]
+[Display(Name = "唯一标示ID")]
+        [Column("guid")]
         public virtual String Guid
         {
             get
@@ -369,8 +373,8 @@ public enum User_RoleEnum:int
     /// <summary>
 	/// 系统用户
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("user")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("user")]
+    [TableConfig]
     public class User :Way.EntityDB.DataItem
     {
 
@@ -386,9 +390,10 @@ public enum User_RoleEnum:int
         /// <summary>
         /// id
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="id",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Display(Name = "id")]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -411,8 +416,8 @@ public enum User_RoleEnum:int
         /// <summary>
         /// 角色
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("role")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="role",Comment="",Caption="角色",Storage = "_Role",DbType="int")]
+[Display(Name = "角色")]
+        [Column("role")]
         public virtual System.Nullable<User_RoleEnum> Role
         {
             get
@@ -435,8 +440,8 @@ public enum User_RoleEnum:int
         /// <summary>
         /// Name
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("name")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="name",Comment="",Caption="Name",Storage = "_Name",DbType="varchar(50)")]
+[Display(Name = "Name")]
+        [Column("name")]
         public virtual String Name
         {
             get
@@ -459,8 +464,8 @@ public enum User_RoleEnum:int
         /// <summary>
         /// Password
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("password")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="password",Comment="",Caption="Password",Storage = "_Password",DbType="varchar(50)")]
+[Display(Name = "Password")]
+        [Column("password")]
         public virtual String Password
         {
             get
@@ -501,8 +506,8 @@ public enum DBPower_PowerEnum:int
     /// <summary>
 	/// 数据库权限
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("dbpower")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("dbpower")]
+    [TableConfig]
     public class DBPower :Way.EntityDB.DataItem
     {
 
@@ -518,9 +523,10 @@ public enum DBPower_PowerEnum:int
         /// <summary>
         /// id
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="id",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Display(Name = "id")]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -543,8 +549,8 @@ public enum DBPower_PowerEnum:int
         /// <summary>
         /// 用户
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("userid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="userid",Comment="",Caption="用户",Storage = "_UserID",DbType="int")]
+[Display(Name = "用户")]
+        [Column("userid")]
         public virtual System.Nullable<Int32> UserID
         {
             get
@@ -567,8 +573,8 @@ public enum DBPower_PowerEnum:int
         /// <summary>
         /// 权限
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("power")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="power",Comment="",Caption="权限",Storage = "_Power",DbType="int")]
+[Display(Name = "权限")]
+        [Column("power")]
         public virtual System.Nullable<DBPower_PowerEnum> Power
         {
             get
@@ -591,8 +597,8 @@ public enum DBPower_PowerEnum:int
         /// <summary>
         /// 数据库ID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("databaseid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="databaseid",Comment="",Caption="数据库ID",Storage = "_DatabaseID",DbType="int")]
+[Display(Name = "数据库ID")]
+        [Column("databaseid")]
         public virtual System.Nullable<Int32> DatabaseID
         {
             get
@@ -637,8 +643,8 @@ public enum Bug_StatusEnum:int
     /// <summary>
 	/// 错误报告
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("bug")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("bug")]
+    [TableConfig]
     public class Bug :Way.EntityDB.DataItem
     {
 
@@ -654,9 +660,10 @@ public enum Bug_StatusEnum:int
         /// <summary>
         /// id
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="id",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Display(Name = "id")]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -679,8 +686,8 @@ public enum Bug_StatusEnum:int
         /// <summary>
         /// 标题
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("title")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="title",Comment="",Caption="标题",Storage = "_Title",DbType="varchar(50)")]
+[Display(Name = "标题")]
+        [Column("title")]
         public virtual String Title
         {
             get
@@ -703,8 +710,8 @@ public enum Bug_StatusEnum:int
         /// <summary>
         /// 提交者ID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("submituserid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="submituserid",Comment="",Caption="提交者ID",Storage = "_SubmitUserID",DbType="int")]
+[Display(Name = "提交者ID")]
+        [Column("submituserid")]
         public virtual System.Nullable<Int32> SubmitUserID
         {
             get
@@ -727,8 +734,8 @@ public enum Bug_StatusEnum:int
         /// <summary>
         /// 提交时间
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("submittime")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="submittime",Comment="",Caption="提交时间",Storage = "_SubmitTime",DbType="datetime")]
+[Display(Name = "提交时间")]
+        [Column("submittime")]
         public virtual System.Nullable<DateTime> SubmitTime
         {
             get
@@ -751,8 +758,8 @@ public enum Bug_StatusEnum:int
         /// <summary>
         /// 处理者ID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("handlerid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="handlerid",Comment="",Caption="处理者ID",Storage = "_HandlerID",DbType="int")]
+[Display(Name = "处理者ID")]
+        [Column("handlerid")]
         public virtual System.Nullable<Int32> HandlerID
         {
             get
@@ -775,8 +782,8 @@ public enum Bug_StatusEnum:int
         /// <summary>
         /// 最后反馈时间
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("lastdate")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="lastdate",Comment="",Caption="最后反馈时间",Storage = "_LastDate",DbType="datetime")]
+[Display(Name = "最后反馈时间")]
+        [Column("lastdate")]
         public virtual System.Nullable<DateTime> LastDate
         {
             get
@@ -799,8 +806,8 @@ public enum Bug_StatusEnum:int
         /// <summary>
         /// 处理完毕时间
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("finishtime")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="finishtime",Comment="",Caption="处理完毕时间",Storage = "_FinishTime",DbType="datetime")]
+[Display(Name = "处理完毕时间")]
+        [Column("finishtime")]
         public virtual System.Nullable<DateTime> FinishTime
         {
             get
@@ -823,8 +830,8 @@ public enum Bug_StatusEnum:int
         /// <summary>
         /// 当前状态
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("status")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="status",Comment="",Caption="当前状态",Storage = "_Status",DbType="int")]
+[Display(Name = "当前状态")]
+        [Column("status")]
         public virtual System.Nullable<Bug_StatusEnum> Status
         {
             get
@@ -849,8 +856,8 @@ namespace EJ{
     /// <summary>
 	/// 数据表
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("dbtable")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("dbtable")]
+    [TableConfig]
     public class DBTable :Way.EntityDB.DataItem
     {
 
@@ -866,9 +873,10 @@ namespace EJ{
         /// <summary>
         /// id
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="id",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Display(Name = "id")]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -891,8 +899,8 @@ namespace EJ{
         /// <summary>
         /// caption
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("caption")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="caption",Comment="",Caption="caption",Storage = "_caption",DbType="varchar(50)")]
+[Display(Name = "caption")]
+        [Column("caption")]
         public virtual String caption
         {
             get
@@ -915,8 +923,8 @@ namespace EJ{
         /// <summary>
         /// Name
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("name")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="name",Comment="",Caption="Name",Storage = "_Name",DbType="varchar(50)")]
+[Display(Name = "Name")]
+        [Column("name")]
         public virtual String Name
         {
             get
@@ -939,8 +947,8 @@ namespace EJ{
         /// <summary>
         /// DatabaseID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("databaseid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="databaseid",Comment="",Caption="DatabaseID",Storage = "_DatabaseID",DbType="int")]
+[Display(Name = "DatabaseID")]
+        [Column("databaseid")]
         public virtual System.Nullable<Int32> DatabaseID
         {
             get
@@ -963,8 +971,8 @@ namespace EJ{
         /// <summary>
         /// iLock
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("ilock")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="ilock",Comment="",Caption="iLock",Storage = "_iLock",DbType="int")]
+[Display(Name = "iLock")]
+        [Column("ilock")]
         public virtual System.Nullable<Int32> iLock
         {
             get
@@ -989,8 +997,8 @@ namespace EJ{
     /// <summary>
 	/// 字段
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("dbcolumn")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("dbcolumn")]
+    [TableConfig]
     public class DBColumn :Way.EntityDB.DataItem
     {
 
@@ -1006,9 +1014,10 @@ namespace EJ{
         /// <summary>
         /// id
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="id",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Display(Name = "id")]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -1031,8 +1040,8 @@ namespace EJ{
         /// <summary>
         /// caption
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("caption")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="caption",Comment="",Caption="caption",Storage = "_caption",DbType="varchar(200)")]
+[Display(Name = "caption")]
+        [Column("caption")]
         public virtual String caption
         {
             get
@@ -1055,8 +1064,8 @@ namespace EJ{
         /// <summary>
         /// Name
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("name")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="name",Comment="",Caption="Name",Storage = "_Name",DbType="varchar(50)")]
+[Display(Name = "Name")]
+        [Column("name")]
         public virtual String Name
         {
             get
@@ -1079,8 +1088,8 @@ namespace EJ{
         /// <summary>
         /// 自增长
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("isautoincrement")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="isautoincrement",Comment="",Caption="自增长",Storage = "_IsAutoIncrement",DbType="bit")]
+[Display(Name = "自增长")]
+        [Column("isautoincrement")]
         public virtual System.Nullable<Boolean> IsAutoIncrement
         {
             get
@@ -1103,8 +1112,8 @@ namespace EJ{
         /// <summary>
         /// 可以为空
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("cannull")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="cannull",Comment="",Caption="可以为空",Storage = "_CanNull",DbType="bit")]
+[Display(Name = "可以为空")]
+        [Column("cannull")]
         public virtual System.Nullable<Boolean> CanNull
         {
             get
@@ -1127,8 +1136,8 @@ namespace EJ{
         /// <summary>
         /// 数据库字段类型
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("dbtype")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="dbtype",Comment="",Caption="数据库字段类型",Storage = "_dbType",DbType="varchar(50)")]
+[Display(Name = "数据库字段类型")]
+        [Column("dbtype")]
         public virtual String dbType
         {
             get
@@ -1151,8 +1160,8 @@ namespace EJ{
         /// <summary>
         /// c#类型
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("type")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="type",Comment="",Caption="c#类型",Storage = "_Type",DbType="varchar(50)")]
+[Display(Name = "c#类型")]
+        [Column("type")]
         public virtual String Type
         {
             get
@@ -1175,8 +1184,8 @@ namespace EJ{
         /// <summary>
         /// Enum定义
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("enumdefine")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="enumdefine",Comment="",Caption="Enum定义",Storage = "_EnumDefine",DbType="varchar(300)")]
+[Display(Name = "Enum定义")]
+        [Column("enumdefine")]
         public virtual String EnumDefine
         {
             get
@@ -1199,8 +1208,8 @@ namespace EJ{
         /// <summary>
         /// 长度
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("length")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="length",Comment="",Caption="长度",Storage = "_length",DbType="varchar(50)")]
+[Display(Name = "长度")]
+        [Column("length")]
         public virtual String length
         {
             get
@@ -1223,8 +1232,8 @@ namespace EJ{
         /// <summary>
         /// 默认值
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("defaultvalue")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="defaultvalue",Comment="",Caption="默认值",Storage = "_defaultValue",DbType="varchar(200)")]
+[Display(Name = "默认值")]
+        [Column("defaultvalue")]
         public virtual String defaultValue
         {
             get
@@ -1247,8 +1256,8 @@ namespace EJ{
         /// <summary>
         /// TableID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("tableid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="tableid",Comment="",Caption="TableID",Storage = "_TableID",DbType="int")]
+[Display(Name = "TableID")]
+        [Column("tableid")]
         public virtual System.Nullable<Int32> TableID
         {
             get
@@ -1271,8 +1280,8 @@ namespace EJ{
         /// <summary>
         /// 是否是主键
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("ispkid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="ispkid",Comment="",Caption="是否是主键",Storage = "_IsPKID",DbType="bit")]
+[Display(Name = "是否是主键")]
+        [Column("ispkid")]
         public virtual System.Nullable<Boolean> IsPKID
         {
             get
@@ -1295,8 +1304,8 @@ namespace EJ{
         /// <summary>
         /// orderid
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("orderid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="orderid",Comment="",Caption="orderid",Storage = "_orderid",DbType="int")]
+[Display(Name = "orderid")]
+        [Column("orderid")]
         public virtual System.Nullable<Int32> orderid
         {
             get
@@ -1319,8 +1328,8 @@ namespace EJ{
         /// <summary>
         /// 是否是Discriminator字段
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("isdiscriminator")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="isdiscriminator",Comment="",Caption="是否是Discriminator字段",Storage = "_IsDiscriminator",DbType="bit")]
+[Display(Name = "是否是Discriminator字段")]
+        [Column("isdiscriminator")]
         public virtual System.Nullable<Boolean> IsDiscriminator
         {
             get
@@ -1343,8 +1352,8 @@ namespace EJ{
         /// <summary>
         /// 派生类的类名
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("classname")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="classname",Comment="",Caption="派生类的类名",Storage = "_ClassName",DbType="varchar(120)")]
+[Display(Name = "派生类的类名")]
+        [Column("classname")]
         public virtual String ClassName
         {
             get
@@ -1369,8 +1378,8 @@ namespace EJ{
     /// <summary>
 	/// 数据表权限
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("tablepower")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("tablepower")]
+    [TableConfig]
     public class TablePower :Way.EntityDB.DataItem
     {
 
@@ -1386,9 +1395,10 @@ namespace EJ{
         /// <summary>
         /// id
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="id",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Display(Name = "id")]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -1411,8 +1421,8 @@ namespace EJ{
         /// <summary>
         /// UserID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("userid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="userid",Comment="",Caption="UserID",Storage = "_UserID",DbType="int")]
+[Display(Name = "UserID")]
+        [Column("userid")]
         public virtual System.Nullable<Int32> UserID
         {
             get
@@ -1435,8 +1445,8 @@ namespace EJ{
         /// <summary>
         /// TableID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("tableid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="tableid",Comment="",Caption="TableID",Storage = "_TableID",DbType="int")]
+[Display(Name = "TableID")]
+        [Column("tableid")]
         public virtual System.Nullable<Int32> TableID
         {
             get
@@ -1461,8 +1471,8 @@ namespace EJ{
     /// <summary>
 	/// 项目权限
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("projectpower")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("projectpower")]
+    [TableConfig]
     public class ProjectPower :Way.EntityDB.DataItem
     {
 
@@ -1478,9 +1488,10 @@ namespace EJ{
         /// <summary>
         /// id
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="id",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Display(Name = "id")]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -1503,8 +1514,8 @@ namespace EJ{
         /// <summary>
         /// ProjectID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("projectid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="projectid",Comment="",Caption="ProjectID",Storage = "_ProjectID",DbType="int")]
+[Display(Name = "ProjectID")]
+        [Column("projectid")]
         public virtual System.Nullable<Int32> ProjectID
         {
             get
@@ -1527,8 +1538,8 @@ namespace EJ{
         /// <summary>
         /// UserID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("userid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="userid",Comment="",Caption="UserID",Storage = "_UserID",DbType="int")]
+[Display(Name = "UserID")]
+        [Column("userid")]
         public virtual System.Nullable<Int32> UserID
         {
             get
@@ -1553,8 +1564,8 @@ namespace EJ{
     /// <summary>
 	/// 数据模块
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("dbmodule")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("dbmodule")]
+    [TableConfig]
     public class DBModule :Way.EntityDB.DataItem
     {
 
@@ -1570,9 +1581,10 @@ namespace EJ{
         /// <summary>
         /// id
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="id",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Display(Name = "id")]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -1595,8 +1607,8 @@ namespace EJ{
         /// <summary>
         /// Name
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("name")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="name",Comment="",Caption="Name",Storage = "_Name",DbType="varchar(50)")]
+[Display(Name = "Name")]
+        [Column("name")]
         public virtual String Name
         {
             get
@@ -1619,8 +1631,8 @@ namespace EJ{
         /// <summary>
         /// DatabaseID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("databaseid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="databaseid",Comment="",Caption="DatabaseID",Storage = "_DatabaseID",DbType="int")]
+[Display(Name = "DatabaseID")]
+        [Column("databaseid")]
         public virtual System.Nullable<Int32> DatabaseID
         {
             get
@@ -1643,8 +1655,8 @@ namespace EJ{
         /// <summary>
         /// IsFolder
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("isfolder")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="isfolder",Comment="",Caption="IsFolder",Storage = "_IsFolder",DbType="bit")]
+[Display(Name = "IsFolder")]
+        [Column("isfolder")]
         public virtual System.Nullable<Boolean> IsFolder
         {
             get
@@ -1667,8 +1679,8 @@ namespace EJ{
         /// <summary>
         /// parentID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("parentid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="parentid",Comment="",Caption="parentID",Storage = "_parentID",DbType="int")]
+[Display(Name = "parentID")]
+        [Column("parentid")]
         public virtual System.Nullable<Int32> parentID
         {
             get
@@ -1693,8 +1705,8 @@ namespace EJ{
     /// <summary>
 	/// 级联删除
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("dbdeleteconfig")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("dbdeleteconfig")]
+    [TableConfig]
     public class DBDeleteConfig :Way.EntityDB.DataItem
     {
 
@@ -1710,9 +1722,10 @@ namespace EJ{
         /// <summary>
         /// id
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="id",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Display(Name = "id")]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -1735,8 +1748,8 @@ namespace EJ{
         /// <summary>
         /// TableID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("tableid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="tableid",Comment="",Caption="TableID",Storage = "_TableID",DbType="int")]
+[Display(Name = "TableID")]
+        [Column("tableid")]
         public virtual System.Nullable<Int32> TableID
         {
             get
@@ -1759,8 +1772,8 @@ namespace EJ{
         /// <summary>
         /// 关联表ID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("relatableid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="relatableid",Comment="",Caption="关联表ID",Storage = "_RelaTableID",DbType="int")]
+[Display(Name = "关联表ID")]
+        [Column("relatableid")]
         public virtual System.Nullable<Int32> RelaTableID
         {
             get
@@ -1783,8 +1796,8 @@ namespace EJ{
         /// <summary>
         /// RelaTable_Desc
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("relatable_desc")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="relatable_desc",Comment="",Caption="RelaTable_Desc",Storage = "_RelaTable_Desc",DbType="varchar(50)")]
+[Display(Name = "RelaTable_Desc")]
+        [Column("relatable_desc")]
         public virtual String RelaTable_Desc
         {
             get
@@ -1807,8 +1820,8 @@ namespace EJ{
         /// <summary>
         /// 关联字段的ID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("relacolumid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="relacolumid",Comment="",Caption="关联字段的ID",Storage = "_RelaColumID",DbType="int")]
+[Display(Name = "关联字段的ID")]
+        [Column("relacolumid")]
         public virtual System.Nullable<Int32> RelaColumID
         {
             get
@@ -1831,8 +1844,8 @@ namespace EJ{
         /// <summary>
         /// RelaColumn_Desc
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("relacolumn_desc")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="relacolumn_desc",Comment="",Caption="RelaColumn_Desc",Storage = "_RelaColumn_Desc",DbType="varchar(50)")]
+[Display(Name = "RelaColumn_Desc")]
+        [Column("relacolumn_desc")]
         public virtual String RelaColumn_Desc
         {
             get
@@ -1857,8 +1870,8 @@ namespace EJ{
     /// <summary>
 	/// TableInModule
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("tableinmodule")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("tableinmodule")]
+    [TableConfig]
     public class TableInModule :Way.EntityDB.DataItem
     {
 
@@ -1874,9 +1887,10 @@ namespace EJ{
         /// <summary>
         /// id
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="id",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Display(Name = "id")]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -1899,8 +1913,8 @@ namespace EJ{
         /// <summary>
         /// TableID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("tableid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="tableid",Comment="",Caption="TableID",Storage = "_TableID",DbType="int")]
+[Display(Name = "TableID")]
+        [Column("tableid")]
         public virtual System.Nullable<Int32> TableID
         {
             get
@@ -1923,8 +1937,8 @@ namespace EJ{
         /// <summary>
         /// ModuleID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("moduleid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="moduleid",Comment="",Caption="ModuleID",Storage = "_ModuleID",DbType="int")]
+[Display(Name = "ModuleID")]
+        [Column("moduleid")]
         public virtual System.Nullable<Int32> ModuleID
         {
             get
@@ -1947,8 +1961,8 @@ namespace EJ{
         /// <summary>
         /// x
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("x")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="x",Comment="",Caption="x",Storage = "_x",DbType="int")]
+[Display(Name = "x")]
+        [Column("x")]
         public virtual System.Nullable<Int32> x
         {
             get
@@ -1971,8 +1985,8 @@ namespace EJ{
         /// <summary>
         /// y
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("y")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="y",Comment="",Caption="y",Storage = "_y",DbType="int")]
+[Display(Name = "y")]
+        [Column("y")]
         public virtual System.Nullable<Int32> y
         {
             get
@@ -1995,8 +2009,8 @@ namespace EJ{
         /// <summary>
         /// 临时变量
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("flag")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="flag",Comment="",Caption="临时变量",Storage = "_flag",DbType="varchar(50)")]
+[Display(Name = "临时变量")]
+        [Column("flag")]
         public virtual String flag
         {
             get
@@ -2019,8 +2033,8 @@ namespace EJ{
         /// <summary>
         /// flag2
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("flag2")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="flag2",Comment="",Caption="flag2",Storage = "_flag2",DbType="varchar(50)")]
+[Display(Name = "flag2")]
+        [Column("flag2")]
         public virtual String flag2
         {
             get
@@ -2045,8 +2059,8 @@ namespace EJ{
     /// <summary>
 	/// 唯一值索引
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("idxindex")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("idxindex")]
+    [TableConfig]
     public class IDXIndex :Way.EntityDB.DataItem
     {
 
@@ -2062,9 +2076,10 @@ namespace EJ{
         /// <summary>
         /// id
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="id",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Display(Name = "id")]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -2087,8 +2102,8 @@ namespace EJ{
         /// <summary>
         /// TableID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("tableid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="tableid",Comment="",Caption="TableID",Storage = "_TableID",DbType="int")]
+[Display(Name = "TableID")]
+        [Column("tableid")]
         public virtual System.Nullable<Int32> TableID
         {
             get
@@ -2111,8 +2126,8 @@ namespace EJ{
         /// <summary>
         /// Keys
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("keys")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="keys",Comment="",Caption="Keys",Storage = "_Keys",DbType="varchar(100)")]
+[Display(Name = "Keys")]
+        [Column("keys")]
         public virtual String Keys
         {
             get
@@ -2135,8 +2150,8 @@ namespace EJ{
         /// <summary>
         /// 是否唯一索引
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("isunique")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="isunique",Comment="",Caption="是否唯一索引",Storage = "_IsUnique",DbType="bit")]
+[Display(Name = "是否唯一索引")]
+        [Column("isunique")]
         public virtual System.Nullable<Boolean> IsUnique
         {
             get
@@ -2159,8 +2174,8 @@ namespace EJ{
         /// <summary>
         /// 是否聚焦
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("isclustered")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="isclustered",Comment="",Caption="是否聚焦",Storage = "_IsClustered",DbType="bit")]
+[Display(Name = "是否聚焦")]
+        [Column("isclustered")]
         public virtual System.Nullable<Boolean> IsClustered
         {
             get
@@ -2185,8 +2200,8 @@ namespace EJ{
     /// <summary>
 	/// Bug处理历史记录
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("bughandlehistory")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("bughandlehistory")]
+    [TableConfig]
     public class BugHandleHistory :Way.EntityDB.DataItem
     {
 
@@ -2202,9 +2217,10 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Required]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -2227,8 +2243,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("bugid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="bugid",Comment="",Caption="",Storage = "_BugID",DbType="int")]
+        [Column("bugid")]
         public virtual System.Nullable<Int32> BugID
         {
             get
@@ -2251,8 +2266,8 @@ namespace EJ{
         /// <summary>
         /// 发标者ID
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("userid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="userid",Comment="",Caption="发标者ID",Storage = "_UserID",DbType="int")]
+[Display(Name = "发标者ID")]
+        [Column("userid")]
         public virtual System.Nullable<Int32> UserID
         {
             get
@@ -2275,8 +2290,8 @@ namespace EJ{
         /// <summary>
         /// 内容
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("content")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="content",Comment="",Caption="内容",Storage = "_content",DbType="image")]
+[Display(Name = "内容")]
+        [Column("content")]
         public virtual Byte[] content
         {
             get
@@ -2299,8 +2314,8 @@ namespace EJ{
         /// <summary>
         /// 发表时间
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("sendtime")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="sendtime",Comment="",Caption="发表时间",Storage = "_SendTime",DbType="datetime")]
+[Display(Name = "发表时间")]
+        [Column("sendtime")]
         public virtual System.Nullable<DateTime> SendTime
         {
             get
@@ -2325,8 +2340,8 @@ namespace EJ{
     /// <summary>
 	/// Bug附带截图
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("bugimages")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("bugimages")]
+    [TableConfig]
     public class BugImages :Way.EntityDB.DataItem
     {
 
@@ -2342,9 +2357,10 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Required]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -2367,8 +2383,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("bugid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="bugid",Comment="",Caption="",Storage = "_BugID",DbType="int")]
+        [Column("bugid")]
         public virtual System.Nullable<Int32> BugID
         {
             get
@@ -2391,8 +2406,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("content")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="content",Comment="",Caption="",Storage = "_content",DbType="image")]
+        [Column("content")]
         public virtual Byte[] content
         {
             get
@@ -2415,8 +2429,8 @@ namespace EJ{
         /// <summary>
         /// 排序
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("orderid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="orderid",Comment="",Caption="排序",Storage = "_orderID",DbType="int")]
+[Display(Name = "排序")]
+        [Column("orderid")]
         public virtual System.Nullable<Int32> orderID
         {
             get
@@ -2441,8 +2455,8 @@ namespace EJ{
     /// <summary>
 	/// 引入的dll
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("dllimport")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("dllimport")]
+    [TableConfig]
     public class DLLImport :Way.EntityDB.DataItem
     {
 
@@ -2458,9 +2472,10 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Required]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -2483,8 +2498,8 @@ namespace EJ{
         /// <summary>
         /// dll文件路径
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("path")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="path",Comment="",Caption="dll文件路径",Storage = "_path",DbType="varchar(200)")]
+[Display(Name = "dll文件路径")]
+        [Column("path")]
         public virtual String path
         {
             get
@@ -2507,8 +2522,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("projectid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="projectid",Comment="",Caption="",Storage = "_ProjectID",DbType="int")]
+        [Column("projectid")]
         public virtual System.Nullable<Int32> ProjectID
         {
             get
@@ -2533,8 +2547,8 @@ namespace EJ{
     /// <summary>
 	/// 接口设计的目录结构
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("interfacemodule")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("interfacemodule")]
+    [TableConfig]
     public class InterfaceModule :Way.EntityDB.DataItem
     {
 
@@ -2550,9 +2564,10 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Required]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -2575,8 +2590,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("projectid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="projectid",Comment="",Caption="",Storage = "_ProjectID",DbType="int")]
+        [Column("projectid")]
         public virtual System.Nullable<Int32> ProjectID
         {
             get
@@ -2599,8 +2613,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("name")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="name",Comment="",Caption="",Storage = "_Name",DbType="varchar(50)")]
+        [Column("name")]
         public virtual String Name
         {
             get
@@ -2623,8 +2636,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("parentid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="parentid",Comment="",Caption="",Storage = "_ParentID",DbType="int")]
+        [Column("parentid")]
         public virtual System.Nullable<Int32> ParentID
         {
             get
@@ -2647,8 +2659,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("isfolder")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="isfolder",Comment="",Caption="",Storage = "_IsFolder",DbType="bit")]
+        [Column("isfolder")]
         public virtual System.Nullable<Boolean> IsFolder
         {
             get
@@ -2671,8 +2682,8 @@ namespace EJ{
         /// <summary>
         /// 已经被某人锁定
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("lockuserid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="lockuserid",Comment="",Caption="已经被某人锁定",Storage = "_LockUserId",DbType="int")]
+[Display(Name = "已经被某人锁定")]
+        [Column("lockuserid")]
         public virtual System.Nullable<Int32> LockUserId
         {
             get
@@ -2697,8 +2708,8 @@ namespace EJ{
     /// <summary>
 	/// 
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("interfaceinmodule")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("interfaceinmodule")]
+    [TableConfig]
     public class InterfaceInModule :Way.EntityDB.DataItem
     {
 
@@ -2714,9 +2725,10 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Required]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -2739,8 +2751,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("moduleid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="moduleid",Comment="",Caption="",Storage = "_ModuleID",DbType="int")]
+        [Column("moduleid")]
         public virtual System.Nullable<Int32> ModuleID
         {
             get
@@ -2763,8 +2774,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("x")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="x",Comment="",Caption="",Storage = "_x",DbType="int")]
+        [Column("x")]
         public virtual System.Nullable<Int32> x
         {
             get
@@ -2787,8 +2797,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("y")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="y",Comment="",Caption="",Storage = "_y",DbType="int")]
+        [Column("y")]
         public virtual System.Nullable<Int32> y
         {
             get
@@ -2811,8 +2820,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("type")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="type",Comment="",Caption="",Storage = "_Type",DbType="varchar(100)")]
+        [Column("type")]
         public virtual String Type
         {
             get
@@ -2835,8 +2843,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("jsondata")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="jsondata",Comment="",Caption="",Storage = "_JsonData",DbType="text")]
+        [Column("jsondata")]
         public virtual String JsonData
         {
             get
@@ -2859,8 +2866,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("width")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="width",Comment="",Caption="",Storage = "_width",DbType="int")]
+        [Column("width")]
         public virtual System.Nullable<Int32> width
         {
             get
@@ -2883,8 +2889,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("height")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="height",Comment="",Caption="",Storage = "_height",DbType="int")]
+        [Column("height")]
         public virtual System.Nullable<Int32> height
         {
             get
@@ -2909,8 +2914,8 @@ namespace EJ{
     /// <summary>
 	/// InterfaceModule权限设定表
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("interfacemodulepower")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("interfacemodulepower")]
+    [TableConfig]
     public class InterfaceModulePower :Way.EntityDB.DataItem
     {
 
@@ -2926,9 +2931,10 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Required]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -2951,8 +2957,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("userid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="userid",Comment="",Caption="",Storage = "_UserID",DbType="int")]
+        [Column("userid")]
         public virtual System.Nullable<Int32> UserID
         {
             get
@@ -2975,8 +2980,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("moduleid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="moduleid",Comment="",Caption="",Storage = "_ModuleID",DbType="int")]
+        [Column("moduleid")]
         public virtual System.Nullable<Int32> ModuleID
         {
             get
@@ -3001,8 +3005,8 @@ namespace EJ{
     /// <summary>
 	/// 
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("classproperty")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("classproperty")]
+    [TableConfig]
     public class classproperty :Way.EntityDB.DataItem
     {
 
@@ -3018,9 +3022,10 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Required]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -3043,8 +3048,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("tableid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="tableid",Comment="",Caption="",Storage = "_tableid",DbType="int")]
+        [Column("tableid")]
         public virtual System.Nullable<Int32> tableid
         {
             get
@@ -3067,8 +3071,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("name")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="name",Comment="",Caption="",Storage = "_name",DbType="varchar(50)")]
+        [Column("name")]
         public virtual String name
         {
             get
@@ -3091,8 +3094,8 @@ namespace EJ{
         /// <summary>
         /// 属性的类型
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("foreignkey_tableid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="foreignkey_tableid",Comment="",Caption="属性的类型",Storage = "_foreignkey_tableid",DbType="int")]
+[Display(Name = "属性的类型")]
+        [Column("foreignkey_tableid")]
         public virtual System.Nullable<Int32> foreignkey_tableid
         {
             get
@@ -3115,8 +3118,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("foreignkey_columnid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="foreignkey_columnid",Comment="",Caption="",Storage = "_foreignkey_columnid",DbType="int")]
+        [Column("foreignkey_columnid")]
         public virtual System.Nullable<Int32> foreignkey_columnid
         {
             get
@@ -3139,8 +3141,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("iscollection")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="iscollection",Comment="",Caption="",Storage = "_iscollection",DbType="bit")]
+        [Column("iscollection")]
         public virtual System.Nullable<Boolean> iscollection
         {
             get
@@ -3165,8 +3166,8 @@ namespace EJ{
     /// <summary>
 	/// 
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("designhistory")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("designhistory")]
+    [TableConfig]
     public class DesignHistory :Way.EntityDB.DataItem
     {
 
@@ -3182,9 +3183,10 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Required]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -3207,8 +3209,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("databaseid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="databaseid",Comment="",Caption="",Storage = "_DatabaseId",DbType="int")]
+        [Column("databaseid")]
         public virtual System.Nullable<Int32> DatabaseId
         {
             get
@@ -3231,8 +3232,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("actionid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="actionid",Comment="",Caption="",Storage = "_ActionId",DbType="int")]
+        [Column("actionid")]
         public virtual System.Nullable<Int32> ActionId
         {
             get
@@ -3255,8 +3255,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("type")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="type",Comment="",Caption="",Storage = "_Type",DbType="varchar(100)")]
+        [Column("type")]
         public virtual String Type
         {
             get
@@ -3279,8 +3278,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("content")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="content",Comment="",Caption="",Storage = "_Content",DbType="text")]
+        [Column("content")]
         public virtual String Content
         {
             get
@@ -3305,8 +3303,8 @@ namespace EJ{
     /// <summary>
 	/// 
 	/// </summary>
-    [System.ComponentModel.DataAnnotations.Schema.Table("syslog")]
-    [Way.EntityDB.Attributes.Table("id")]
+    [Table("syslog")]
+    [TableConfig]
     public class SysLog :Way.EntityDB.DataItem
     {
 
@@ -3322,9 +3320,10 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-[System.ComponentModel.DataAnnotations.Key]
-        [System.ComponentModel.DataAnnotations.Schema.Column("id")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="id",Comment="",Caption="",Storage = "_id",DbType="int" ,IsPrimaryKey=true,IsDbGenerated=true,CanBeNull=false)]
+[Key]
+[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+[Required]
+        [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
@@ -3347,8 +3346,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("databaseid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="databaseid",Comment="",Caption="",Storage = "_DatabaseId",DbType="int")]
+        [Column("databaseid")]
         public virtual System.Nullable<Int32> DatabaseId
         {
             get
@@ -3371,8 +3369,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("userid")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="userid",Comment="",Caption="",Storage = "_UserId",DbType="int")]
+        [Column("userid")]
         public virtual System.Nullable<Int32> UserId
         {
             get
@@ -3395,8 +3392,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("time")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="time",Comment="",Caption="",Storage = "_Time",DbType="datetime")]
+        [Column("time")]
         public virtual System.Nullable<DateTime> Time
         {
             get
@@ -3419,8 +3415,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("type")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="type",Comment="",Caption="",Storage = "_Type",DbType="varchar(100)")]
+        [Column("type")]
         public virtual String Type
         {
             get
@@ -3443,8 +3438,7 @@ namespace EJ{
         /// <summary>
         /// 
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Schema.Column("content")]
-        [Way.EntityDB.WayDBColumnAttribute(Name="content",Comment="",Caption="",Storage = "_Content",DbType="text")]
+        [Column("content")]
         public virtual String Content
         {
             get
@@ -4346,29 +4340,30 @@ result.Append("4qdSsUNH0nHuUBp872qKjwqJI0Iycu7/fkvOYHaUAAA=");
 return result.ToString();}
 }}
 /*<design>
-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
-RSvDvXL0VYNV/7bYs/8HW/demoxkAAA=
+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
+KIxwAAA=
 <design>*/

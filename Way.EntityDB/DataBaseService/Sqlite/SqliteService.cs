@@ -189,11 +189,23 @@ namespace Way.EntityDB
 
             var tableSchema = SchemaManager.GetSchemaTable(dataitem.GetType());
 
-            string pkid = tableSchema.KeyName;
+            string pkid = tableSchema.KeyColumn.PropertyName;
             var fieldValues = dataitem.GetFieldValues(true);
             if (fieldValues.Count == 0)
                 return;
 
+            if (tableSchema.AutoSetPropertyNameOnInsert != null)
+            {
+                var fv = fieldValues.FirstOrDefault(m => m.FieldName == tableSchema.AutoSetPropertyNameOnInsert);
+                if (fv == null)
+                {
+                    fieldValues.Add(new FieldValue()
+                    {
+                        FieldName = tableSchema.AutoSetPropertyNameOnInsert,
+                        Value = tableSchema.AutoSetPropertyValueOnInsert
+                    });
+                }
+            }
 
             StringBuilder str_fields = new StringBuilder();
             StringBuilder str_values = new StringBuilder();

@@ -269,7 +269,7 @@ namespace Way.EntityDB
             {
                 if (_KeyName == null)
                 {
-                    _KeyName = SchemaManager.GetSchemaTable(this.TableType).KeyName;
+                    _KeyName = SchemaManager.GetSchemaTable(this.TableType).KeyColumn.PropertyName;
                 }
                 return _KeyName;
             }
@@ -297,69 +297,68 @@ namespace Way.EntityDB
             {
                 if (_pkvalue == null)
                 {
-                    _pkvalue = this.GetValue(this.KeyName);
+                    var changed = this.ChangedProperties[this.KeyName];
+                    if (changed != null)
+                    {
+                        _pkvalue = changed.OriginalValue;
+                    }
+                    else
+                    {
+                        var schema = SchemaManager.GetSchemaTable(this.TableType);
+                        if (schema.KeyColumn == null)
+                            return null;
+
+                        _pkvalue = schema.KeyColumn.PropertyInfo.GetValue(this);
+                    }
                 }
                 return _pkvalue;
             }
         }
 
+      
         internal virtual List<FieldValue> GetFieldValues(bool isInsert)
         {
             List<FieldValue> fields = new List<FieldValue>();
+            var tableSchema = SchemaManager.GetSchemaTable(this.GetType());
+
             if (isInsert)
             {
-                var pinfos = this.GetType().GetProperties();
 
-                foreach (var pinfo in pinfos)
+                foreach (var column in tableSchema.Columns)
                 {
-                    var databaseGeneratedAttr = pinfo.GetCustomAttribute(typeof(DatabaseGeneratedAttribute)) as DatabaseGeneratedAttribute;
-                    if (databaseGeneratedAttr == null)
+                    if (column.IsDatabaseGenerated)
                         continue;
-
-                    if (databaseGeneratedAttr.DatabaseGeneratedOption != DatabaseGeneratedOption.None)
-                        continue;
-                    object value = pinfo.GetValue(this);
+                    object value = column.PropertyInfo.GetValue(this);
                     if (value == null)
                         continue;
 
-                    var typeinfo = pinfo.PropertyType.GetTypeInfo();
+                    var typeinfo = column.PropertyInfo.PropertyType.GetTypeInfo();
                     if (typeinfo.IsEnum)
                         value = Convert.ToInt32(value);
-                    else if(typeinfo.IsGenericType && typeinfo.GetGenericArguments()[0].GetTypeInfo().IsEnum)
+                    else if (typeinfo.IsGenericType && typeinfo.GetGenericArguments()[0].GetTypeInfo().IsEnum)
                         value = Convert.ToInt32(value);
 
 
                     fields.Add(new FieldValue()
-                        {
-                            FieldName = pinfo.Name.ToLower(),
-                            Value = value,
-                        });
+                    {
+                        FieldName = column.Name,
+                        Value = value,
+                    });
                 }
             }
             else
             {
-                Type tableType = this.GetType();
                 foreach (var changeItem in this.ChangedProperties)
                 {
-                    var pinfo = tableType.GetProperty(changeItem.Key);
+                    var column = tableSchema.Columns.FirstOrDefault(m=>m.PropertyName == changeItem.Key);
 
-                    var databaseGeneratedAttr = pinfo.GetCustomAttribute(typeof(DatabaseGeneratedAttribute)) as DatabaseGeneratedAttribute;
-                    if (databaseGeneratedAttr == null)
+                    if (column == null)
                         continue;
 
-                    if(databaseGeneratedAttr.DatabaseGeneratedOption != DatabaseGeneratedOption.None)
-                    {
-                        //如果是自增长字段
-                        if(changeItem.Value.OriginalValue == null)
-                        {
-                            //如果主键原来是null，表示不是刻意更新这个字段，给id赋值，只是为了让数据库知道当前更新哪条记录
-                            continue;
-                        }
-                    }
 
-                    object value = pinfo.GetValue(this);
+                    object value = column.PropertyInfo.GetValue(this);
 
-                    var typeinfo = pinfo.PropertyType.GetTypeInfo();
+                    var typeinfo = column.PropertyInfo.PropertyType.GetTypeInfo();
                     if (typeinfo.IsEnum)
                         value = Convert.ToInt32(value);
                     else if (typeinfo.IsGenericType && typeinfo.GetGenericArguments()[0].GetTypeInfo().IsEnum)
@@ -367,7 +366,7 @@ namespace Way.EntityDB
 
                     fields.Add(new FieldValue()
                     {
-                        FieldName = pinfo.Name.ToLower(),
+                        FieldName = column.Name,
                         Value = value,
                     });
                 }

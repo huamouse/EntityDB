@@ -20,8 +20,11 @@ namespace Way.EntityDB.DataBaseService
             else
             {
                 ret = new SchemaTable();
+                var wayAttr = tableType.GetCustomAttribute<Way.EntityDB.Attributes.TableConfigAttribute>();
                 var tableAttr = tableType.GetCustomAttribute<TableAttribute>();
                 ret.TableName = tableAttr.Name;
+                ret.AutoSetPropertyNameOnInsert = wayAttr.AutoSetPropertyNameOnInsert;
+                ret.AutoSetPropertyValueOnInsert = wayAttr.AutoSetPropertyValueOnInsert;
 
                 var proInfos = tableType.GetProperties();
                 foreach( var pro in proInfos )
@@ -32,8 +35,8 @@ namespace Way.EntityDB.DataBaseService
                         var column = new SchemaColumn();
                         column.Name = columnAttr.Name;
                         column.IsKey = pro.GetCustomAttribute<KeyAttribute>() != null;
-                        if (column.IsKey && ret.KeyName == null)
-                            ret.KeyName = column.Name;
+                        if (column.IsKey && ret.KeyColumn == null)
+                            ret.KeyColumn = column;
 
                         var attr = pro.GetCustomAttribute<DatabaseGeneratedAttribute>();
                         if (attr != null && attr.DatabaseGeneratedOption != DatabaseGeneratedOption.None)
@@ -42,7 +45,8 @@ namespace Way.EntityDB.DataBaseService
                         var displayAttr = pro.GetCustomAttribute<DisplayAttribute>();
                         if (displayAttr != null)
                             column.Display = displayAttr.Name;
-
+                        column.PropertyName = pro.Name;
+                        column.PropertyInfo = pro;
                         ret.Columns.Add(column);
                     }
                 }
@@ -56,17 +60,21 @@ namespace Way.EntityDB.DataBaseService
     class SchemaTable
     {
         public string TableName;
-        public string KeyName;
+        public string AutoSetPropertyNameOnInsert;
+        public object AutoSetPropertyValueOnInsert;
+        public SchemaColumn KeyColumn;
         public List<SchemaColumn> Columns = new List<SchemaColumn>();
     }
     class SchemaColumn
     {
-        public string Name { get; set; }
-        public string Display { get; set; }
-        public bool IsKey { get; set; }
+        public PropertyInfo PropertyInfo;
+        public string PropertyName;
+        public string Name;
+        public string Display;
+        public bool IsKey;
         /// <summary>
         /// 自增长
         /// </summary>
-        public bool IsDatabaseGenerated { get; set; }
+        public bool IsDatabaseGenerated;
     }
 }

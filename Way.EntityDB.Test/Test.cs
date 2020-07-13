@@ -32,6 +32,8 @@ namespace Way.EntityDB.Test
             Expression<Func<Account, bool>> exp = m => m.NotifyUrl == "abc" + 2;
 
             MessageCenterDB db = new MessageCenterDB("data source='./test.db'", DatabaseType.Sqlite);
+            var messageMission = db.MessageMission.Include(m => m.Merchant).FirstOrDefault();
+
             var item = db.Account.FirstOrDefault();
             item.MerchantName = "Jack.T233";
             item.NotifyUrl = "urltest";

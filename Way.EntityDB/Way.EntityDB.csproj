@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>3.1.1.10</Version>
+    <Version>3.1.2.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/simpleway2016/EntityDB</PackageProjectUrl>
     <Description>Way.EntityDB是一个基于EF Core的数据层框架，它取消了EF Core的Migration机制，取消了数据跟踪机制。
@@ -10,6 +10,7 @@ EntityDB内置建模工具，通过图形化建表，生成Model对象代码，�
     <Authors>Jack</Authors>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageId>Way.EntityDB</PackageId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

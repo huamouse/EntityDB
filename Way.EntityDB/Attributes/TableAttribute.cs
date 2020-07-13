@@ -5,14 +5,8 @@ using System.Text;
 
 namespace Way.EntityDB.Attributes
 {
-    public class Table:Attribute
+    public class TableConfigAttribute : Attribute
     {
-        internal static Dictionary<Type, WayDBColumnAttribute[]> DataTypeColumns = new Dictionary<Type, WayDBColumnAttribute[]>();
-        public string KeyName
-        {
-            get;
-            set;
-        }
         public string AutoSetPropertyNameOnInsert
         {
             get;
@@ -22,11 +16,6 @@ namespace Way.EntityDB.Attributes
         {
             get;
             set;
-        }
-        public Table( string keyname)
-        {
-
-            this.KeyName = keyname;
         }
     }
 }

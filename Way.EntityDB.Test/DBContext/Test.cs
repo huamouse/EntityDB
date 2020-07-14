@@ -1,4 +1,3 @@
-
 using System;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -9,413 +8,297 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Way.EntityDB.Attributes;
-namespace TestDB{
 
-
+namespace TestDB
+{
     /// <summary>
-	/// 
-	/// </summary>
-    [Table("user")]
+    /// 用户信息
+    /// </summary>
     [TableConfig]
+    [Table("user")]
     public class User :Way.EntityDB.DataItem
     {
-
-        /// <summary>
-	    /// 
-	    /// </summary>
-        public  User()
-        {
-        }
-
-
         System.Nullable<Int32> _id;
-        /// <summary>
-        /// 
-        /// </summary>
-[Key]
-[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-[Required]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Required]
         [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
             {
-                return this._id;
+                return _id;
             }
             set
             {
-                if ((this._id != value))
+                if ((_id != value))
                 {
-                    this.SendPropertyChanging("id",this._id,value);
-                    this._id = value;
-                    this.SendPropertyChanged("id");
-
+                    SendPropertyChanging("id",_id,value);
+                    _id = value;
+                    SendPropertyChanged("id");
                 }
             }
         }
-
         String _Name;
         /// <summary>
-        /// 
+        /// 姓名
         /// </summary>
+        [Display(Name = "姓名")]
         [Column("name")]
         public virtual String Name
         {
             get
             {
-                return this._Name;
+                return _Name;
             }
             set
             {
-                if ((this._Name != value))
+                if ((_Name != value))
                 {
-                    this.SendPropertyChanging("Name",this._Name,value);
-                    this._Name = value;
-                    this.SendPropertyChanged("Name");
-
+                    SendPropertyChanging("Name",_Name,value);
+                    _Name = value;
+                    SendPropertyChanged("Name");
                 }
             }
         }
-
         System.Nullable<DateTime> _Birthday;
         /// <summary>
-        /// 
+        /// 生日
         /// </summary>
+        [Display(Name = "生日")]
         [Column("birthday")]
         public virtual System.Nullable<DateTime> Birthday
         {
             get
             {
-                return this._Birthday;
+                return _Birthday;
             }
             set
             {
-                if ((this._Birthday != value))
+                if ((_Birthday != value))
                 {
-                    this.SendPropertyChanging("Birthday",this._Birthday,value);
-                    this._Birthday = value;
-                    this.SendPropertyChanged("Birthday");
-
+                    SendPropertyChanging("Birthday",_Birthday,value);
+                    _Birthday = value;
+                    SendPropertyChanged("Birthday");
                 }
             }
         }
-
         System.Nullable<Int32> _IntColumn1;
-        /// <summary>
-        /// 
-        /// </summary>
         [Column("intcolumn1")]
         public virtual System.Nullable<Int32> IntColumn1
         {
             get
             {
-                return this._IntColumn1;
+                return _IntColumn1;
             }
             set
             {
-                if ((this._IntColumn1 != value))
+                if ((_IntColumn1 != value))
                 {
-                    this.SendPropertyChanging("IntColumn1",this._IntColumn1,value);
-                    this._IntColumn1 = value;
-                    this.SendPropertyChanged("IntColumn1");
-
+                    SendPropertyChanging("IntColumn1",_IntColumn1,value);
+                    _IntColumn1 = value;
+                    SendPropertyChanged("IntColumn1");
                 }
             }
         }
-}}
-namespace TestDB{
-
-/// <summary>
-/// 
-/// </summary>
-public enum Log_TypeEnum:int
-{
-    
-
-/// <summary>
-/// </summary>
-SysLog = 1,
-
-/// <summary>
-/// </summary>
-UserLog = 1<<1,
-
-/// <summary>
-/// </summary>
-AdminLog = 1 << 2
-}
-
-
-    /// <summary>
-	/// 
-	/// </summary>
-     [TableConfig(AutoSetPropertyNameOnInsert = "Type" , AutoSetPropertyValueOnInsert=Log_TypeEnum.AdminLog)]
-    public class AdminLog :Log
-    {
-
-        /// <summary>
-	    /// 
-	    /// </summary>
-        public  AdminLog()
-        {
-        }
-
-
-        String _AdminId;
-        /// <summary>
-        /// 
-        /// </summary>
-        [Column("adminid")]
-        public virtual String AdminId
-        {
-            get
-            {
-                return this._AdminId;
-            }
-            set
-            {
-                if ((this._AdminId != value))
-                {
-                    this.SendPropertyChanging("AdminId",this._AdminId,value);
-                    this._AdminId = value;
-                    this.SendPropertyChanged("AdminId");
-
-                }
-            }
-        }
-}
-
-
-    /// <summary>
-	/// 
-	/// </summary>
-     [TableConfig(AutoSetPropertyNameOnInsert = "Type" , AutoSetPropertyValueOnInsert=Log_TypeEnum.UserLog)]
-    public class UserLog :Log
-    {
-
-        /// <summary>
-	    /// 
-	    /// </summary>
-        public  UserLog()
-        {
-        }
-
-
-        String _PeopleName;
-        /// <summary>
-        /// 
-        /// </summary>
-        [Column("peoplename")]
-        public virtual String PeopleName
-        {
-            get
-            {
-                return this._PeopleName;
-            }
-            set
-            {
-                if ((this._PeopleName != value))
-                {
-                    this.SendPropertyChanging("PeopleName",this._PeopleName,value);
-                    this._PeopleName = value;
-                    this.SendPropertyChanged("PeopleName");
-
-                }
-            }
-        }
-}
-
-
-    /// <summary>
-	/// 
-	/// </summary>
-     [TableConfig(AutoSetPropertyNameOnInsert = "Type" , AutoSetPropertyValueOnInsert=Log_TypeEnum.SysLog)]
-    public class SysLog :Log
-    {
-
-        /// <summary>
-	    /// 
-	    /// </summary>
-        public  SysLog()
-        {
-        }
-
-
-        String _SystemPath;
-        /// <summary>
-        /// 
-        /// </summary>
-        [Column("systempath")]
-        public virtual String SystemPath
-        {
-            get
-            {
-                return this._SystemPath;
-            }
-            set
-            {
-                if ((this._SystemPath != value))
-                {
-                    this.SendPropertyChanging("SystemPath",this._SystemPath,value);
-                    this._SystemPath = value;
-                    this.SendPropertyChanged("SystemPath");
-
-                }
-            }
-        }
-
-        String _SysId;
-        /// <summary>
-        /// 
-        /// </summary>
-        [Column("sysid")]
-        public virtual String SysId
-        {
-            get
-            {
-                return this._SysId;
-            }
-            set
-            {
-                if ((this._SysId != value))
-                {
-                    this.SendPropertyChanging("SysId",this._SysId,value);
-                    this._SysId = value;
-                    this.SendPropertyChanged("SysId");
-
-                }
-            }
-        }
-}
-
-
-    /// <summary>
-	/// 
-	/// </summary>
-    [Table("log")]
+    }
     [TableConfig( AutoSetPropertyNameOnInsert = "Type" , AutoSetPropertyValueOnInsert=(Log_TypeEnum)0)]
+    [Table("log")]
     public class Log :Way.EntityDB.DataItem
     {
-
-        /// <summary>
-	    /// 
-	    /// </summary>
-        public  Log()
-        {
-        }
-
-
         System.Nullable<Int32> _id;
-        /// <summary>
-        /// 
-        /// </summary>
-[Key]
-[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-[Required]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Required]
         [Column("id")]
         public virtual System.Nullable<Int32> id
         {
             get
             {
-                return this._id;
+                return _id;
             }
             set
             {
-                if ((this._id != value))
+                if ((_id != value))
                 {
-                    this.SendPropertyChanging("id",this._id,value);
-                    this._id = value;
-                    this.SendPropertyChanged("id");
-
+                    SendPropertyChanging("id",_id,value);
+                    _id = value;
+                    SendPropertyChanged("id");
                 }
             }
         }
-
         System.Nullable<Int32> _UserId;
         /// <summary>
-        /// 
+        /// 用户id
         /// </summary>
+        [Display(Name = "用户id")]
         [Column("userid")]
         public virtual System.Nullable<Int32> UserId
         {
             get
             {
-                return this._UserId;
+                return _UserId;
             }
             set
             {
-                if ((this._UserId != value))
+                if ((_UserId != value))
                 {
-                    this.SendPropertyChanging("UserId",this._UserId,value);
-                    this._UserId = value;
-                    this.SendPropertyChanged("UserId");
-
+                    SendPropertyChanging("UserId",_UserId,value);
+                    _UserId = value;
+                    SendPropertyChanged("UserId");
                 }
             }
         }
-
         System.Nullable<DateTime> _Time;
         /// <summary>
-        /// 
+        /// 时间
         /// </summary>
+        [Display(Name = "时间")]
         [Column("time")]
         public virtual System.Nullable<DateTime> Time
         {
             get
             {
-                return this._Time;
+                return _Time;
             }
             set
             {
-                if ((this._Time != value))
+                if ((_Time != value))
                 {
-                    this.SendPropertyChanging("Time",this._Time,value);
-                    this._Time = value;
-                    this.SendPropertyChanged("Time");
-
+                    SendPropertyChanging("Time",_Time,value);
+                    _Time = value;
+                    SendPropertyChanged("Time");
                 }
             }
         }
-
-        System.Nullable<Log_TypeEnum> _Type;
-        /// <summary>
-        /// 
-        /// </summary>
+        Log_TypeEnum? _Type;
         [Column("type")]
-        public virtual System.Nullable<Log_TypeEnum> Type
+        public virtual Log_TypeEnum? Type
         {
             get
             {
-                return this._Type;
+                return _Type;
             }
             set
             {
-                if ((this._Type != value))
+                if ((_Type != value))
                 {
-                    this.SendPropertyChanging("Type",this._Type,value);
-                    this._Type = value;
-                    this.SendPropertyChanged("Type");
-
+                    SendPropertyChanging("Type",_Type,value);
+                    _Type = value;
+                    SendPropertyChanged("Type");
                 }
             }
         }
-
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
-}}
-
-namespace TestDB.DB{
-    /// <summary>
-	/// 
-	/// </summary>
-    public class Test : Way.EntityDB.DBContext
+    }
+    public enum Log_TypeEnum:int
     {
         /// <summary>
-        /// 
+        /// 系统日志
+        /// 增加日志
         /// </summary>
-        /// <param name="connection"></param>
-        /// <param name="dbType"></param>
-        public Test(string connection, Way.EntityDB.DatabaseType dbType): base(connection, dbType)
+        SysLog = 1,
+        /// <summary>
+        /// 用户日志
+        /// </summary>
+        UserLog = 1<<1,
+        /// <summary>
+        /// 管理员日志
+        /// </summary>
+        AdminLog = 1 << 2
+    }
+    [TableConfig(AutoSetPropertyNameOnInsert = "Type" , AutoSetPropertyValueOnInsert=Log_TypeEnum.SysLog)]
+    public class SysLog :Log
+    {
+        String _SystemPath;
+        [Column("systempath")]
+        public virtual String SystemPath
+        {
+            get
+            {
+                return _SystemPath;
+            }
+            set
+            {
+                if ((_SystemPath != value))
+                {
+                    SendPropertyChanging("SystemPath",_SystemPath,value);
+                    _SystemPath = value;
+                    SendPropertyChanged("SystemPath");
+                }
+            }
+        }
+        String _SysId;
+        [Column("sysid")]
+        public virtual String SysId
+        {
+            get
+            {
+                return _SysId;
+            }
+            set
+            {
+                if ((_SysId != value))
+                {
+                    SendPropertyChanging("SysId",_SysId,value);
+                    _SysId = value;
+                    SendPropertyChanged("SysId");
+                }
+            }
+        }
+    }
+    [TableConfig(AutoSetPropertyNameOnInsert = "Type" , AutoSetPropertyValueOnInsert=Log_TypeEnum.UserLog)]
+    public class UserLog :Log
+    {
+        String _PeopleName;
+        [Column("peoplename")]
+        public virtual String PeopleName
+        {
+            get
+            {
+                return _PeopleName;
+            }
+            set
+            {
+                if ((_PeopleName != value))
+                {
+                    SendPropertyChanging("PeopleName",_PeopleName,value);
+                    _PeopleName = value;
+                    SendPropertyChanged("PeopleName");
+                }
+            }
+        }
+    }
+    [TableConfig(AutoSetPropertyNameOnInsert = "Type" , AutoSetPropertyValueOnInsert=Log_TypeEnum.AdminLog)]
+    public class AdminLog :Log
+    {
+        String _AdminId;
+        [Column("adminid")]
+        public virtual String AdminId
+        {
+            get
+            {
+                return _AdminId;
+            }
+            set
+            {
+                if ((_AdminId != value))
+                {
+                    SendPropertyChanging("AdminId",_AdminId,value);
+                    _AdminId = value;
+                    SendPropertyChanged("AdminId");
+                }
+            }
+        }
+    }
+}
+
+namespace TestDB.DB
+{
+    public class Test : Way.EntityDB.DBContext
+    {
+         public Test(string connection, Way.EntityDB.DatabaseType dbType): base(connection, dbType)
         {
             if (!setEvented)
             {
@@ -429,150 +312,126 @@ namespace TestDB.DB{
                 }
             }
         }
-
         static object lockObj = new object();
         static bool setEvented = false;
- 
-
         static void Database_BeforeDelete(object sender, Way.EntityDB.DatabaseModifyEventArg e)
         {
-            var db =  sender as TestDB.DB.Test;
-            if (db == null)
-                return;
-
-
-                    if (e.DataItem is TestDB.User)
+             var db =  sender as TestDB.DB.Test;
+            if (db == null) return;
+            if (e.DataItem is User)
+            {
+                var deletingItem = (User)e.DataItem;
+                var items0 = (from m in db.Log where m.UserId == deletingItem.id
+                select new Log
+                {
+                    id = m.id
+                }
+                );
+                while(true)
+                {
+                    var data2del = items0.Take(100).ToList();
+                    if(data2del.Count() ==0)
+                        break;
+                    foreach (var t in data2del)
                     {
-                        var deletingItem = (TestDB.User)e.DataItem;
-                        
-                    var items0 = (from m in db.Log
-                    where m.UserId == deletingItem.id
-                    select new TestDB.Log
-                    {
-                        id = m.id
-                    });
-                    while(true)
-                    {
-                        var data2del = items0.Take(100).ToList();
-                        if(data2del.Count() ==0)
-                            break;
-                        foreach (var t in data2del)
-                        {
-                            t.ChangedProperties.Clear();
-                            db.Delete(t);
-                        }
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                     }
-
-                    }
-
+                }
+            }
         }
-
-        /// <summary>
-	    /// 
-	    /// </summary>
-        /// <param name="modelBuilder"></param>
-         protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-   modelBuilder.Entity<TestDB.User>().HasKey(m => m.id);
-modelBuilder.Entity<TestDB.Log>().HasKey(m => m.id);
-modelBuilder.Entity<Log>().HasDiscriminator<Log_TypeEnum?>("Type")
-.HasValue<Log>((Log_TypeEnum)0).HasValue<SysLog>(Log_TypeEnum.SysLog).HasValue<UserLog>(Log_TypeEnum.UserLog).HasValue<AdminLog>(Log_TypeEnum.AdminLog);
-}
-
-        System.Linq.IQueryable<TestDB.User> _User;
-        /// <summary>
-        /// 
-        /// </summary>
-        public virtual System.Linq.IQueryable<TestDB.User> User
+            modelBuilder.Entity<User>().HasKey(m => m.id);
+            modelBuilder.Entity<Log>().HasKey(m => m.id);
+            modelBuilder.Entity<Log>().HasDiscriminator<Log_TypeEnum?>("Type")
+            .HasValue<Log>((Log_TypeEnum)0)
+            .HasValue<SysLog>(Log_TypeEnum.SysLog)
+            .HasValue<UserLog>(Log_TypeEnum.UserLog)
+            .HasValue<AdminLog>(Log_TypeEnum.AdminLog)
+            ;
+        }
+        System.Linq.IQueryable<User> _User;
+        public virtual System.Linq.IQueryable<User> User
         {
-             get
+            get
             {
                 if (_User == null)
                 {
-                    _User = this.Set<TestDB.User>();
+                    _User = this.Set<User>();
                 }
                 return _User;
             }
         }
-
-        System.Linq.IQueryable<TestDB.Log> _Log;
-        /// <summary>
-        /// 
-        /// </summary>
-        public virtual System.Linq.IQueryable<TestDB.Log> Log
+        System.Linq.IQueryable<Log> _Log;
+        public virtual System.Linq.IQueryable<Log> Log
         {
-             get
+            get
             {
                 if (_Log == null)
                 {
-                    _Log = this.Set<TestDB.Log>();
+                    _Log = this.Set<Log>();
                 }
                 return _Log;
             }
         }
-
-        System.Linq.IQueryable<TestDB.SysLog> _SysLog;
-        /// <summary>
-        /// 
-        /// </summary>
-        public virtual System.Linq.IQueryable<TestDB.SysLog> SysLog
+        System.Linq.IQueryable<SysLog> _SysLog;
+        public virtual System.Linq.IQueryable<SysLog> SysLog
         {
-             get
+            get
             {
                 if (_SysLog == null)
                 {
-                    _SysLog = this.Set<TestDB.SysLog>();
+                    _SysLog = this.Set<SysLog>();
                 }
                 return _SysLog;
             }
         }
-
-        System.Linq.IQueryable<TestDB.UserLog> _UserLog;
-        /// <summary>
-        /// 
-        /// </summary>
-        public virtual System.Linq.IQueryable<TestDB.UserLog> UserLog
+        System.Linq.IQueryable<UserLog> _UserLog;
+        public virtual System.Linq.IQueryable<UserLog> UserLog
         {
-             get
+            get
             {
                 if (_UserLog == null)
                 {
-                    _UserLog = this.Set<TestDB.UserLog>();
+                    _UserLog = this.Set<UserLog>();
                 }
                 return _UserLog;
             }
         }
-
-        System.Linq.IQueryable<TestDB.AdminLog> _AdminLog;
-        /// <summary>
-        /// 
-        /// </summary>
-        public virtual System.Linq.IQueryable<TestDB.AdminLog> AdminLog
+        System.Linq.IQueryable<AdminLog> _AdminLog;
+        public virtual System.Linq.IQueryable<AdminLog> AdminLog
         {
-             get
+            get
             {
                 if (_AdminLog == null)
                 {
-                    _AdminLog = this.Set<TestDB.AdminLog>();
+                    _AdminLog = this.Set<AdminLog>();
                 }
                 return _AdminLog;
             }
         }
+        protected override string GetDesignString()
+        {
+            var result = new StringBuilder();
+            result.Append("\r\n");
+            result.Append("H4sIAAAAAAAAC+1YUW/aMBD+K8jPMBFICCD2wGAP0SqGBpsmNX0wsQPREqdzTBFC/PednQScQikUqDqJJ+y7s/Pdl/vODis0xpOQJqh9v0qHAxxR1Eajv+GI8ifKURn9iBdpgCNolI6yqICA+xcO5zAx1uWNXSwf6daDepxiQdX2XU8EMUNarBczQZnQwlduCsVFbRgG");
+            result.Append("BH4Ns+yqBTB20c+EcheBpY8FnuCEOn2wy5DgLvb+wLi6hkkvDucRS2B6n+/TMPR9pAnmTtKdi9hhHqcRIAGX4HMqN8BsMA9DMPg4TKSFTMaQWrpYRpYzqAqAAukkw29qlu0Rc0K5enZVeftB4vEgChgWMc93BjpygDUdYDrYCzFHtMWYPVCD+IS5N8MpVSFlUzFTZqt6");
+            result.Append("EHi+8xa5cRTyuo78S8DFjODlGegJ1IwIMgI0+CeCrx0FvlBfDhNp7RhnwM/r4+3I6weQP0hf/3cvZn4wVSWeWlTt6/IimUR0qZqwXKp6JIBiJZZXtF27qrYtnfu7ePpGaVvXlLZ1AWk3nvcwh1y3vqxLyNrWUY9zPV5X0tYlJN0sAFcQzib7K5tHfeoHLDWPlgnUa+lz");
+            result.Append("Cah0mXyl2bTTUZYuAXiZqdTplGpnJr6/I0i4Wt4tPW9ACMIeYvm8658jr8A3X35vEkGIk0QHrlrBNjFbqkz3nyWfS+VknZdT4T4ypPFjegP7AIk1Tkgsq/xCZoWLjBLCh3hf9glp5fKFvN73vK0fOG9nmE1POm+/h2Rzsy8csQO62O9gdKEdsDJRTz2VPLMSGlKxY30/");
+            result.Append("msyr0rT5ytjhaeP5X4iybkQdR1TjRtRxRNm3DnUMTc0bTZImaFdZ70OSqHSs0yW/9uRRL/95UjfWT/AN3jBVIyxEZ21+N34keMCmuwu2vf74NYWe+yK0B5mW9I6oyBbiOrGblm1WfFzzKqbX8CsT36hXbIsYfqtFfGpStP4HSuhlvXUTAAA=");
+            return result.ToString();
+        }
+    }
+}
 
-protected override string GetDesignString(){System.Text.StringBuilder result = new System.Text.StringBuilder(); 
-result.Append("\r\n");
-result.Append("H4sIAAAAAAAAC82X32/aMBDH/xXkZ5gIJKQg9sBgD9EqhhY2TSp9MLED0RKnc5wihPjfe3YScAqlUKDiKfadf3zuct/YWaExnoY0QZ2HVdYc4oiiDnL/hy7lz5SjKvoVL7IBjqBR1spHBQTcf3CYQsdYVzd2sXyiWw/qc4oFVcv3PBHEDGljvZgJyoQ2fDXJUCaoA82A");
-result.Append("wNMwqxM1AdoT9DuhfILAMsACT3FCnQHY5ZDgPvb+Qbu+hk4/DtOIJdB9KNZpGfo60gR9J+mlInaYx2kEJOASPKVyAcyGaRiCwcdhIi1kOobQsslyZDVHVQAK0klGP1QvXyPmhHK1d115B0Hi8SAKGBYxL1aGdBSADR0wa+xFLIi2jPmGGuIz5t4cZ6kKKZuJuTJb9YPg");
-result.Append("xcpbcuMo8qZO/i3gYk7w8gx6AjUjgjwBGv6J8I2j4Ev15TCR1Y5xBn5RHx8nbx4gf5S+wd9+zPxgpko8s6ja1+VFconoUjVhulS1KyDFSizvaLtxVW1beu7v49kHpW1dU9rWBaTdev0Nc8h168u6hKxtnXpc6PG6krYuIem7ErhCODvZ31kaDagfsMzsLhOo18rXCqRy");
-result.Append("wuQrzbvdrrL0CODlpkq3W2mcGfj+L4LE1eJu63EDIQh7hOV+1z9H3sE3335vkiDESaKDq0/BNjBbqkz3nyWfS8VknRdT6T4yovFTdgO7gcBaJwSWV34pstJFRgnhJt6XfUJYhXwhrs89b5sHzts5ZrOTztufIdnc7EtH7JAu9jsYXWgHrAzUU7uSV1ZCQyp2rJ+XJvOq");
-result.Append("adr8ZezkaeO5lURBN18byVRlbT1h8jYlpST/7NSJ8AXuuC1TbVQanadxd7wreMBmuxO2uTx+TimmN9EeZVjS61KRT8RNYt9ZtlnzccOrmV7Lr019o1mzLWL47TbxqUnR+gXcOmtO1Q4AAA==");
-return result.ToString();}
-}}
 /*<design>
-H4sIAAAAAAAAC72WW2/aMBTHvwryc6i4JZQUHgrZpmxdhdZOmrRUlUkc6uHYmW26oorvvuNcoRfaQTt4SHxsn/M7x//Yvkce1niGFUHuPaIRcnsWmkrxi4Ta95DbttA5TqATXRKlkYWi2eUqJVlHKPiFltCliLwlcnQUBOo3I3epJEqdLGk0Uvgk/RON2p1uz3ZOykgj
-XbhibIr1DTi4D2TAG40AvAfIhefEDeD3HRwr8/IZhwvz9IhaaJGaV4NzFKoAWeVcRZOUkXw+/MG6hiD0TISLLCuTx0WKwzIZbwzdnwAT2rgb9Y/tfq8Z407Y7IVO3JzF7W6zb0fteDCIYtIjaG2hryJaMqKQ+zMvll2VJ8GUg78yR1M7iOmrj4JFBIoUY6aIhVIsCc8q
-21pfWegSzzbdtXuVP5P7Y39FNq21VUyoAc7EfMf4MpbPH6ZgYuZdXt7IB5gWOL8D26BroRVyB1tR6yn24ymO08qnDExg3/vh84jcZUGh7Y09wogmE8FjOt9B8o0wvBWnMlyDEsIqaWOeCLZMzDjH2TDwcqAppx8hg+ON8646sFOrHJpm1U6XWvg8lCSB1UKulktYuwnm
-50vGqrUsPwVEYcwDdF9Nv5j3fKaQoAETCcriK4+qUNKEcqxFqYyytE6nQskeT8AU0SuaPEQFc4tleIONdhjh8+zzslvP4RW+Kr72i3zdim9Mpb6J8GoPxghrommWXgX5WsTOi4j1R+Rzna91ew/IfFX/ma/7Ip/9tmqzD1Cbs7XfwAfytmWyD1Favz56cqm8ucrsQ1R2
-XOOZcPsW7gNfJh6JKTemi5WCHa0xarStgJsVKVrDoTGcRoBSWBrDYaOzT2JPydOAVXkNqryARpMkO6LfYxvaAdl7rvoQj2GlakBzAJTofdB73bOXmA+itvejrg+fKRFwg3m3fX8HuvM69EKSNXt9WmXi/P81778OvPx0sgtAaDpSKVIiNd28CYH04fbESHnH4VtXsVhI
-Qud8QVbX9ShQ6oY9zA6bcmcFKsEYXKSp4OXucbX+C+NmNQRyCwAA
+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
 <design>*/
+

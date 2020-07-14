@@ -47,22 +47,27 @@ namespace Way.EJServer
                     IDatabaseDesignService dbservice = Way.EntityDB.Design.DBHelper.CreateDatabaseDesignService((Way.EntityDB.DatabaseType)(int)database.dbType);
 
 
-                    bw.Write(tables.Count * 1 );
+                    bw.Write(1);
                     ICodeBuilder codeBuilder = new CodeBuilder();
 
+                    NamespaceCode codeNamespace = new NamespaceCode(database.NameSpace);
+                    codeNamespace.AddBeforeCode("//此代码由工具自动生成，请不要随意修改");
+                    codeNamespace.AddUsing("System");
+                    codeNamespace.AddUsing("System.Collections.Generic");
+                    codeNamespace.AddUsing("System.Linq");
+                    codeNamespace.AddUsing("System.Text");
+                    codeNamespace.AddBeforeCode("");
 
                     foreach (var table in tables)
                     {
-                        string[] codes = codeBuilder.BuildSimpleTable(db, database.NameSpace, table);
-                        for (int i = 0; i < codes.Length; i++)
-                        {
-                            bw.Write(table.Name + "_" + i + ".cs");
-                            byte[] bs = System.Text.Encoding.UTF8.GetBytes(codes[i]);
-                            bw.Write(bs.Length);
-                            bw.Write(bs);
-                        }
+                        codeBuilder.BuildSimpleTable(db, codeNamespace, table);
                     }
-                   
+
+                    bw.Write("code.cs");
+                    byte[] bs = System.Text.Encoding.UTF8.GetBytes(codeNamespace.Build());
+                    bw.Write(bs.Length);
+                    bw.Write(bs);
+
 
                     bw.Write(":end");
                 }

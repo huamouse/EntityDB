@@ -6,8 +6,8 @@ namespace Way.EJServer
 {
     interface ICodeBuilder
     {
-        string BuilderDB(EJDB db, EJ.Databases database, string nameSpace, List<EJ.DBTable> tables);
-        string[] BuildTable(EJDB db, string nameSpace, EJ.DBTable table);
-        string[] BuildSimpleTable(EJDB db, string nameSpace, EJ.DBTable table);
+        void BuilderDB(EJDB db, EJ.Databases database, NamespaceCode namespaceCode, List<EJ.DBTable> tables);
+        void BuildTable(EJDB db, NamespaceCode namespaceCode, EJ.DBTable table);
+        void BuildSimpleTable(EJDB db, NamespaceCode namespaceCode, EJ.DBTable table);
     }
 }

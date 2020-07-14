@@ -32,33 +32,7 @@ namespace EJClient.BuildDatabase
                 using (var fs = System.IO.File.Create(filepath))
                 {
 
-                    byte[] header;
-                    if (pagename == "DownloadDatabaseCode.aspx")
-                    {
-                        header = System.Text.Encoding.UTF8.GetBytes(@"
-using System;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Way.EntityDB.Attributes;
-");
-                    }
-                    else
-                    {
-                        header = System.Text.Encoding.UTF8.GetBytes(@"
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-");
-                    }
-                    fs.Write(header, 0, header.Length);
+                   
 
                     System.IO.BinaryReader br = new System.IO.BinaryReader(stream);
                     string msg = br.ReadString();

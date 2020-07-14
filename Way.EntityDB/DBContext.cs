@@ -806,7 +806,7 @@ namespace Way.EntityDB
         /// 更新对象数据到数据库
         /// </summary>
         /// <param name="dataitem"></param>
-        /// <param name="condition">指定更新条件，如：m=>m.age>16，默认使用主键匹配</param>
+        /// <param name="condition">指定更新条件，如：m=&gt;m.age &gt; 16 &amp;&amp; m.id == dataitem.id，默认使用主键匹配</param>
         public virtual int Update<T>(T dataitem, Expression<Func<T, bool>> condition) where T : DataItem
         {
             string pkid = dataitem.KeyName;

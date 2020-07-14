@@ -48,29 +48,34 @@ namespace Way.EJServer
                     IDatabaseDesignService dbservice = Way.EntityDB.Design.DBHelper.CreateDatabaseDesignService((Way.EntityDB.DatabaseType)(int)database.dbType);
 
 
-                    bw.Write(tables.Count * 1 + 1);
+                    bw.Write(1);
                     ICodeBuilder codeBuilder = new CodeBuilder();
 
+                    NamespaceCode namespaceCode = new NamespaceCode(database.NameSpace);
+                    NamespaceCode namespaceCode2 = new NamespaceCode(database.NameSpace + ".DB");
+                    namespaceCode.AddUsing("System");
+                    namespaceCode.AddUsing("Microsoft.EntityFrameworkCore");
+                    namespaceCode.AddUsing("System.Collections.Generic");
+                    namespaceCode.AddUsing("System.ComponentModel");
+                    namespaceCode.AddUsing("System.Data");
+                    namespaceCode.AddUsing("System.Linq");
+                    namespaceCode.AddUsing("System.Text");
+                    namespaceCode.AddUsing("System.ComponentModel.DataAnnotations");
+                    namespaceCode.AddUsing("System.ComponentModel.DataAnnotations.Schema");
+                    namespaceCode.AddUsing("Way.EntityDB.Attributes");
+                    namespaceCode.AddBeforeCode("");
+                    codeBuilder.BuilderDB(db, database, namespaceCode2, tables);
 
                     foreach (var table in tables)
                     {
-                        string[] codes = codeBuilder.BuildTable(db, database.NameSpace, table);
-                        for (int i = 0; i < codes.Length; i++)
-                        {
-                            bw.Write(table.Name + "_" + i + ".cs");
-                            byte[] bs = System.Text.Encoding.UTF8.GetBytes(codes[i]);
-                            bw.Write(bs.Length);
-                            bw.Write(bs);
-                        }
+                        codeBuilder.BuildTable(db, namespaceCode, table);
                     }
-                    if (true)
-                    {
-                        bw.Write(database.Name + "_db_linq.cs");
-                        string code = codeBuilder.BuilderDB(db, database, database.NameSpace, tables);
-                        byte[] bs = System.Text.Encoding.UTF8.GetBytes(code);
-                        bw.Write(bs.Length);
-                        bw.Write(bs);
-                    }
+
+                    bw.Write("code.cs");
+                    string code = namespaceCode.Build() + "\r\n" + namespaceCode2.Build();
+                    byte[] bs = System.Text.Encoding.UTF8.GetBytes(code);
+                    bw.Write(bs.Length);
+                    bw.Write(bs);
 
                     bw.Write(":end");
                 }

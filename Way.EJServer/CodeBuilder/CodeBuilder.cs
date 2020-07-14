@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -18,11 +19,42 @@ namespace Way.EJServer
      * 这里把baseType设为了null
     */
 
-    public class CodeBuilder : ICodeBuilder
+    class CodeBuilder : ICodeBuilder
     {
         
-        public  string BuilderDB(EJDB db, EJ.Databases databaseObj, string nameSpace,List<EJ.DBTable> tables)
+        public  void BuilderDB(EJDB db, EJ.Databases databaseObj, NamespaceCode namespaceCode, List<EJ.DBTable> tables)
         {
+            CodeItem classCode = new CodeItem($"public class {databaseObj.Name} : Way.EntityDB.DBContext");
+            namespaceCode.AddItem(classCode);
+
+
+
+            StringBuilder result = new StringBuilder();
+
+            //构造函数
+            CodeItem initFunc = new CodeItem($" public {databaseObj.Name}(string connection, Way.EntityDB.DatabaseType dbType): base(connection, dbType)");
+            classCode.AddItem(initFunc);
+            initFunc.AddString("if (!setEvented)");
+            initFunc.AddString("{");
+            initFunc.AddString("    lock (lockObj)");
+            initFunc.AddString("    {");
+            initFunc.AddString("        if (!setEvented)");
+            initFunc.AddString("        {");
+            initFunc.AddString("            setEvented = true;");
+            initFunc.AddString("            Way.EntityDB.DBContext.BeforeDelete += Database_BeforeDelete;");
+            initFunc.AddString("        }");
+            initFunc.AddString("    }");
+            initFunc.AddString("}");
+
+
+            classCode.AddString("static object lockObj = new object();");
+            classCode.AddString("static bool setEvented = false;");
+
+            //级联删除
+            CodeItem beforeDeleteFunc = new CodeItem("static void Database_BeforeDelete(object sender, Way.EntityDB.DatabaseModifyEventArg e)");
+            classCode.AddItem(beforeDeleteFunc);
+            beforeDeleteFunc.AddString($" var db =  sender as " + namespaceCode.NameSpace + "." + databaseObj.Name + @";");
+            beforeDeleteFunc.AddString($"if (db == null) return;");
 
             StringBuilder _Database_deleteCodes = new StringBuilder();
             foreach (var t in tables)
@@ -32,8 +64,12 @@ namespace Way.EJServer
 
                 if (delConfigs.Count > 0)
                 {
+                    CodeItem codeitem = new CodeItem($"if (e.DataItem is {t.Name})");
+                    beforeDeleteFunc.AddItem(codeitem);
+                    codeitem.AddString($"var deletingItem = ({t.Name})e.DataItem;");
+
                     StringBuilder codestrs = new StringBuilder();
-                    for (int i = 0; i < delConfigs.Count; i ++ )
+                    for (int i = 0; i < delConfigs.Count; i++)
                     {
                         var configitem = delConfigs[i];
                         var delDBTable = db.DBTable.FirstOrDefault(m => m.id == configitem.RelaTableID);
@@ -41,93 +77,39 @@ namespace Way.EJServer
                         var rela_pkcolumn = db.DBColumn.FirstOrDefault(m => m.TableID == configitem.RelaTableID && m.IsPKID == true);
                         if (rela_pkcolumn == null)
                             throw new Exception("关联表" + delDBTable.Name + "没有定义主键");
-                        codestrs.Append(@"
-                    var items" + i + @" = (from m in db."+delDBTable.Name+@"
-                    where m." + relaColumn.Name + @" == deletingItem.id
-                    select new " + nameSpace + @"." + delDBTable.Name + @"
-                    {
-                        " + rela_pkcolumn.Name + @" = m." + rela_pkcolumn.Name + @"
-                    });
-                    while(true)
-                    {
-                        var data2del = items" + i + @".Take(100).ToList();
-                        if(data2del.Count() ==0)
-                            break;
-                        foreach (var t in data2del)
-                        {
-                            t.ChangedProperties.Clear();
-                            db.Delete(t);
-                        }
-                    }
-");
-                    }
 
-                    _Database_deleteCodes.Append(@"
-                    if (e.DataItem is " + nameSpace + @"." + t.Name + @")
-                    {
-                        var deletingItem = (" + nameSpace + @"." + t.Name + @")e.DataItem;
-                        " + codestrs + @"
+                        codeitem.AddString($"var items{i} = (from m in db.{delDBTable.Name} where m.{relaColumn.Name} == deletingItem.id");
+                        codeitem.AddItem(new CodeItem($"select new {delDBTable.Name}")
+                            .AddString($"{rela_pkcolumn.Name} = m.{rela_pkcolumn.Name}")
+                            );
+                        codeitem.AddString(");");
+
+                        codeitem.AddItem(new CodeItem("while(true)")
+                            .AddString($"var data2del = items{i}.Take(100).ToList();")
+                            .AddString("if(data2del.Count() ==0)")
+                            .AddString("    break;")
+                            .AddString("foreach (var t in data2del)")
+                            .AddString("{")
+                            .AddString("    t.ChangedProperties.Clear();")
+                            .AddString("    db.Delete(t);")
+                            .AddString("}")
+                            );
+                        
                     }
-");
+                    beforeDeleteFunc.AddString("");
                 }
             }
 
 
-            StringBuilder result = new StringBuilder();
-            result.Append(@"
-namespace "+nameSpace+@".DB{
-    /// <summary>
-	/// 
-	/// </summary>
-    public class " + databaseObj.Name + @" : Way.EntityDB.DBContext
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name=""connection""></param>
-        /// <param name=""dbType""></param>
-        public " + databaseObj.Name + @"(string connection, Way.EntityDB.DatabaseType dbType): base(connection, dbType)
-        {
-            if (!setEvented)
-            {
-                lock (lockObj)
-                {
-                    if (!setEvented)
-                    {
-                        setEvented = true;
-                        Way.EntityDB.DBContext.BeforeDelete += Database_BeforeDelete;
-                    }
-                }
-            }
-        }
-
-        static object lockObj = new object();
-        static bool setEvented = false;
- 
-
-        static void Database_BeforeDelete(object sender, Way.EntityDB.DatabaseModifyEventArg e)
-        {
-            var db =  sender as " + nameSpace + ".DB." + databaseObj.Name + @";
-            if (db == null)
-                return;
-
-" + _Database_deleteCodes + @"
-        }
-
-        /// <summary>
-	    /// 
-	    /// </summary>
-        /// <param name=""modelBuilder""></param>
-         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-   ");
+            CodeItem modelbuildFunc = new CodeItem("protected override void OnModelCreating(ModelBuilder modelBuilder)");
+            classCode.AddItem(modelbuildFunc);
 
             foreach (var t in tables)
             {
                 var pkcolumn = db.DBColumn.FirstOrDefault(m => m.TableID == t.id && m.IsPKID == true);
                 if (pkcolumn == null)
                     throw new Exception(string.Format("表{0}缺少主键", t.Name));
-                result.AppendLine("modelBuilder.Entity<" + nameSpace + @"." + t.Name + @">().HasKey(m => m." + pkcolumn.Name + ");");
+                modelbuildFunc.AddString($"modelBuilder.Entity<{t.Name}>().HasKey(m => m.{pkcolumn.Name});");
 
                 var discriminatorColumn = db.DBColumn.FirstOrDefault(m => m.TableID == t.id && m.IsDiscriminator == true);
                 if(discriminatorColumn != null)
@@ -136,43 +118,36 @@ namespace "+nameSpace+@".DB{
                     var groups = columns.GroupBy(m => m.ClassName).ToArray();
                     if(groups.Count() > 0)
                     {
-                        result.AppendLine("modelBuilder.Entity<" + t.Name + @">().HasDiscriminator<" + t.Name + "_" + discriminatorColumn.Name + @"Enum?>(""" + discriminatorColumn.Name + @""")");
-                        result.Append(".HasValue<" + t.Name + ">((" + t.Name + "_" + discriminatorColumn.Name + "Enum)0)");
+                        modelbuildFunc.AddString($"modelBuilder.Entity<{t.Name}>().HasDiscriminator<{t.Name}_{discriminatorColumn.Name}Enum?>(\"{discriminatorColumn.Name}\")");
+                        modelbuildFunc.AddString($".HasValue<{t.Name}>(({t.Name}_{discriminatorColumn.Name}Enum)0)");
                     }
                     foreach (var g in groups)
                     {
-                        result.Append(".HasValue<" + g.Key + ">(" + t.Name + "_" + discriminatorColumn.Name + "Enum." + g.Key + ")");
+                        modelbuildFunc.AddString($".HasValue<{g.Key}>({t.Name}_{discriminatorColumn.Name}Enum.{g.Key})");
                     }
                     if (groups.Count() > 0)
                     {
-                        result.AppendLine(";");
+                        modelbuildFunc.AddString(";");
                     }
                 }
               
             }
-            result.AppendLine("}");
+
 
             foreach (var t in tables)
             {
-                result.Append(@"
-        System.Linq.IQueryable<" + nameSpace + @"." + t.Name + @"> _" + t.Name + @";
-        /// <summary>
-        /// " + t.caption + @"
-        /// </summary>
-        public virtual System.Linq.IQueryable<" + nameSpace + @"." + t.Name + @"> " + t.Name + @"
-        {
-             get
-            {
-                if (_" + t.Name + @" == null)
-                {
-                    _" + t.Name + @" = this.Set<" + nameSpace + @"." + t.Name + @">();
-                }
-                return _" + t.Name + @";
-            }
-        }
-"); 
-                
-                
+                classCode.AddString($"System.Linq.IQueryable<{t.Name}> _{t.Name};");
+                PropertyCodeItem proCodeItem = new PropertyCodeItem(t.Name);
+                classCode.AddItem(proCodeItem);
+                proCodeItem.Modification = "public virtual";
+                proCodeItem.PropertyType = $"System.Linq.IQueryable<{t.Name}>";
+                proCodeItem.ItemForSet = null;
+                proCodeItem.ItemForGet.AddString($"if (_{t.Name} == null)");
+                proCodeItem.ItemForGet.AddString("{");
+                proCodeItem.ItemForGet.AddString($"    _{t.Name} = this.Set<{t.Name}>();");
+                proCodeItem.ItemForGet.AddString("}");
+                proCodeItem.ItemForGet.AddString($"return _{t.Name};");
+
                 var discriminatorColumn = db.DBColumn.FirstOrDefault(m => m.TableID == t.id && m.IsDiscriminator == true);
                 if (discriminatorColumn != null)
                 {
@@ -180,23 +155,17 @@ namespace "+nameSpace+@".DB{
                     var groups = columns.GroupBy(m => m.ClassName).ToArray();
                     foreach (var g in groups)
                     {
-                        result.Append(@"
-        System.Linq.IQueryable<" + nameSpace + @"." + g.Key + @"> _" + g.Key + @";
-        /// <summary>
-        /// " + t.caption + @"
-        /// </summary>
-        public virtual System.Linq.IQueryable<" + nameSpace + @"." + g.Key + @"> " + g.Key + @"
-        {
-             get
-            {
-                if (_" + g.Key + @" == null)
-                {
-                    _" + g.Key + @" = this.Set<" + nameSpace + @"." + g.Key + @">();
-                }
-                return _" + g.Key + @";
-            }
-        }
-");
+                        classCode.AddString($"System.Linq.IQueryable<{g.Key}> _{g.Key};");
+                        proCodeItem = new PropertyCodeItem(g.Key);
+                        classCode.AddItem(proCodeItem);
+                        proCodeItem.Modification = "public virtual";
+                        proCodeItem.PropertyType = $"System.Linq.IQueryable<{g.Key}>";
+                        proCodeItem.ItemForSet = null;
+                        proCodeItem.ItemForGet.AddString($"if (_{g.Key} == null)");
+                        proCodeItem.ItemForGet.AddString("{");
+                        proCodeItem.ItemForGet.AddString($"    _{g.Key} = this.Set<{g.Key}>();");
+                        proCodeItem.ItemForGet.AddString("}");
+                        proCodeItem.ItemForGet.AddString($"return _{g.Key};");
                     }
                 }
             }
@@ -206,23 +175,27 @@ namespace "+nameSpace+@".DB{
 
             string content = GetDesignData(db, databaseObj);
 
+            var getDesignStringFunc = new CodeItem("protected override string GetDesignString()");
+            classCode.AddItem(getDesignStringFunc);
+            getDesignStringFunc.AddString("var result = new StringBuilder();");
+            getDesignStringFunc.AddString($"result.Append(\"\\r\\n\");");
 
-            result.AppendLine("protected override string GetDesignString(){System.Text.StringBuilder result = new System.Text.StringBuilder(); ");
-            result.AppendLine("result.Append(\"\\r\\n\");");
             for (int i = 0; i < content.Length; i += 200)
             {
                 int len = Math.Min(content.Length - i, 200);
-                result.AppendLine("result.Append(\"" + content.Substring(i , len) + "\");");
+                getDesignStringFunc.AddString("result.Append(\"" + content.Substring(i , len) + "\");");
             }
-            result.AppendLine("return result.ToString();}");
-            result.Append("}}\r\n");
+            getDesignStringFunc.AddString("return result.ToString();");
+
 
             //记录数据库设计数据
-            result.AppendLine("/*<design>");
-            outputDesigns(result, db, databaseObj);
-            result.AppendLine("<design>*/");
+            StringBuilder codeend = new StringBuilder();
+            codeend.AppendLine("/*<design>");
+            outputDesigns(codeend, db, databaseObj);
+            codeend.AppendLine("<design>*/");
 
-            return result.ToString();
+            namespaceCode.CodeEnd = codeend.ToString();
+
         }
 
         internal static string GetDesignData(EJDB db,EJ.Databases databaseObj)
@@ -288,12 +261,10 @@ namespace "+nameSpace+@".DB{
             return outBuffer.ToArray();
         }
 
-        public string[] BuildTable(EJDB db,string nameSpace, EJ.DBTable table)
+        public void BuildTable(EJDB db, NamespaceCode namespaceCode, EJ.DBTable table)
         {
             var columns = db.DBColumn.Where(m => m.TableID == table.id).ToList();
-            string[] codes = new string[1];
-            codes[0] = BuildTable(db, nameSpace, table, columns);
-            return codes;
+           BuildTable(db, namespaceCode, table, columns);
         }
         /// <summary>
         /// </summary>
@@ -399,43 +370,33 @@ namespace "+nameSpace+@".DB{
             return names;
         }
 
-        static string BuildTable(EJDB db, string nameSpace, EJ.DBTable table, List<EJ.DBColumn> columns)
+        static void BuildTable(EJDB db, NamespaceCode namespaceCode, EJ.DBTable table, List<EJ.DBColumn> columns)
         {
             var pkcolumn = columns.FirstOrDefault(m => m.IsPKID == true);
-            StringBuilder result = new StringBuilder();
-            StringBuilder enumDefines = new StringBuilder();
+            CodeItem classCode = new CodeItem($"public class {table.Name} :Way.EntityDB.DataItem");
+            namespaceCode.AddItem(classCode);
+            classCode.Comment = table.caption;
 
-            Dictionary<string, StringBuilder> otherClassCode = new Dictionary<string, StringBuilder>();
+            Dictionary<string, CodeItem> otherClassCode = new Dictionary<string, CodeItem>();
             var discriminatorColumn = columns.FirstOrDefault(m => m.IsDiscriminator == true && !string.IsNullOrEmpty(m.EnumDefine?.Trim()));
 
-            string tableAttString = @"[TableConfig]";
             ClassName[] classNames = null;
             if(discriminatorColumn != null && columns.Any(m=>!string.IsNullOrEmpty(m.ClassName?.Trim())))
             {
                 classNames = ParseNames(discriminatorColumn.EnumDefine).ToArray();
-                   tableAttString = @"[TableConfig( AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name + @""" , AutoSetPropertyValueOnInsert=(" + table.Name + "_" + discriminatorColumn.Name + @"Enum)0)]";
+                classCode.Attributes.Add(@"[TableConfig( AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name + @""" , AutoSetPropertyValueOnInsert=(" + table.Name + "_" + discriminatorColumn.Name + @"Enum)0)]");
+            }
+            else
+            {
+                classCode.Attributes.Add("[TableConfig]");
             }
 
-            result.Append(@"
+            classCode.Attributes.Add($"[Table(\"{table.Name.ToLower()}\")]");
 
-    /// <summary>
-	/// " + table.caption + @"
-	/// </summary>
-    [Table("""+ table.Name.ToLower() +@""")]
-    "+ tableAttString + @"
-    public class " + table.Name + @" :Way.EntityDB.DataItem
-    {
 
-        /// <summary>
-	    /// 
-	    /// </summary>
-        public  " + table.Name + @"()
-        {
-        }
 
-");
-          
-            StringBuilder curcodeBuffer;
+            CodeItem curClassCodeItem = null;
+
             foreach (var column in columns)
             {
                 if (discriminatorColumn != null && classNames != null &&!string.IsNullOrEmpty(column.ClassName?.Trim()) && columns.Any(m=>m.IsDiscriminator == true))
@@ -444,31 +405,21 @@ namespace "+nameSpace+@".DB{
                     {
                         var classnameitem = classNames.FirstOrDefault(m=>m.Name == column.ClassName);
                         //[TableConfig(AutoSetPropertyNameOnInsert = "Discriminator", AutoSetPropertyValueOnInsert = UserInfo_DiscriminatorEnum.SuperUser)]
-                        var buffer = otherClassCode[column.ClassName] = new StringBuilder();
-                        buffer.Append(@"
+                        var myClsCodeItem = otherClassCode[column.ClassName] = new CodeItem($"public class {column.ClassName} :{((classnameitem == null || classnameitem.BaseName == null) ? table.Name : classnameitem.BaseName)}");
+                        namespaceCode.AddItem(myClsCodeItem);
+                        myClsCodeItem.Comment = table.caption;
+                        myClsCodeItem.Attributes.Add(@"[TableConfig(AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name + @""" , AutoSetPropertyValueOnInsert=" + table.Name + "_" + discriminatorColumn.Name + @"Enum." + column.ClassName + @")]");
 
-    /// <summary>
-	/// " + table.caption + @"
-	/// </summary>
-     [TableConfig(AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name +   @""" , AutoSetPropertyValueOnInsert=" + table.Name + "_" + discriminatorColumn.Name + @"Enum."+ column.ClassName +@")]
-    public class " + column.ClassName + @" :" + ((classnameitem == null || classnameitem.BaseName==null) ? table.Name : classnameitem.BaseName) + @"
-    {
-
-        /// <summary>
-	    /// 
-	    /// </summary>
-        public  " + column.ClassName + @"()
-        {
-        }
-
-");
                     }
-                    curcodeBuffer = otherClassCode[column.ClassName];
+                    curClassCodeItem = otherClassCode[column.ClassName];
                 }
                 else
                 {
-                    curcodeBuffer = result;
+                    curClassCodeItem = classCode;
                 }
+
+                PropertyCodeItem columnCodeItem = new PropertyCodeItem(column.Name);
+                columnCodeItem.Modification = "public virtual";
 
                 string caption = column.caption == null ? "" : column.caption;
                 if (caption.Contains(","))
@@ -495,15 +446,10 @@ namespace "+nameSpace+@".DB{
                     {
                         string[] enumitems = column.EnumDefine.Replace("\r", "").Split('\n');
 
-                        enumDefines.Append(@"
-/// <summary>
-/// 
-/// </summary>
-public enum " + table.Name + "_" + column.Name + @"Enum:int
-{
-    
-");
-                        StringBuilder enumComments = new StringBuilder();
+                        CodeItem codeEnum = new CodeItem($"public enum {table.Name}_{column.Name}Enum:int");
+                        namespaceCode.AddItem(codeEnum);
+
+                        CodeItem codeEnumField = new CodeItem();
                         for (int i = 0; i < enumitems.Length; i++)
                         {
                             var code = enumitems[i].Trim();
@@ -513,24 +459,22 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                             {
                                 if (code.Length > 2)
                                 {
-                                    enumComments.AppendLine("/// " + code.Substring(2));
+                                    if (codeEnumField.Comment.Length > 0)
+                                        codeEnumField.Comment += "\r\n";
+                                    codeEnumField.Comment += code.Substring(2);
                                 }
 
                             }
                             else
                             {
-                                enumDefines.Append(@"
-/// <summary>
-" + enumComments + @"/// </summary>
-");
-                                enumComments.Clear();
-                                enumDefines.AppendLine(code);
+                                codeEnumField.Body = code ;
+                                codeEnum.AddItem(codeEnumField);
+                                codeEnumField = new CodeItem();
                             }
 
                         }
-                        enumDefines.Append("}\r\n");
 
-                        dataType = "System.Nullable<" + table.Name + "_" + column.Name + "Enum>";
+                        dataType = table.Name + "_" + column.Name + "Enum?";
                     }
                 }
 
@@ -569,47 +513,37 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                     }
                 }
 
-                string otherAttrs = "";
                 if(column.IsPKID == true)
                 {
-                    otherAttrs += "\r\n[Key]";
+                    columnCodeItem.Attributes.Add("[Key]");
                 }
                 if(column.IsAutoIncrement == true)
                 {
-                    otherAttrs += "\r\n[DatabaseGenerated(DatabaseGeneratedOption.Identity)]";
+                    columnCodeItem.Attributes.Add("[DatabaseGenerated(DatabaseGeneratedOption.Identity)]");
                 }
                 if (column.CanNull == false)
                 {
-                    otherAttrs += "\r\n[Required]";
+                    columnCodeItem.Attributes.Add("[Required]");
                 }
                 if ( !string.IsNullOrEmpty( column.caption ))
                 {
-                    otherAttrs += $"\r\n[Display(Name = \"{column.caption.Replace("\"" , "\\\"")}\")]";
+                    columnCodeItem.Attributes.Add($"[Display(Name = \"{column.caption.Replace("\"", "\\\"")}\")]");
                 }
-                curcodeBuffer.Append(@"
-        " + dataType + @" _" + column.Name + eqString  + @";
-        /// <summary>
-        /// " + column.caption + @"
-        /// </summary>"+ otherAttrs + @"
-        [Column("""+ column.Name.ToLower() + @""")]
-        public virtual " + dataType + @" " + column.Name + @"
-        {
-            get
-            {
-                return this._" + column.Name + @";
-            }
-            set
-            {
-                if ((this._" + column.Name + @" != value))
-                {
-                    this.SendPropertyChanging(""" + column.Name.Trim() + @""",this._" + column.Name.Trim() + @",value);
-                    this._" + column.Name + @" = value;
-                    this.SendPropertyChanged(""" + column.Name.Trim() + @""");
 
-                }
-            }
-        }
-");
+                columnCodeItem.Attributes.Add($"[Column(\"{column.Name.ToLower()}\")]");
+                columnCodeItem.PropertyType = dataType;
+                columnCodeItem.Comment = column.caption;
+                curClassCodeItem.AddString($"{dataType} _{column.Name + eqString};");
+                curClassCodeItem.AddItem(columnCodeItem);
+
+                columnCodeItem.ItemForGet.AddString($"return _{column.Name};");
+                columnCodeItem.ItemForSet.AddString($"if ((_{column.Name} != value))");
+                columnCodeItem.ItemForSet.AddString("{");
+                columnCodeItem.ItemForSet.AddString($"    SendPropertyChanging(\"{column.Name.Trim()}\",_{column.Name.Trim()},value);");
+                columnCodeItem.ItemForSet.AddString($"    _{column.Name} = value;");
+                columnCodeItem.ItemForSet.AddString($"    SendPropertyChanged(\"{column.Name.Trim()}\");");
+                columnCodeItem.ItemForSet.AddString("}");
+
             }
 
             var classProperties = db.classproperty.Where(m => m.tableid == table.id).ToArray();
@@ -625,17 +559,17 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                       
                         if ( column != null && column.TableID == table.id)
                         {
-                            result.Append(@"
-        [ForeignKey(""" + column.Name + @""")]
-        public virtual " + foreign_table.Name + @" " + pro.name + @" { get; set; }
-");
+                            var procodeitem = new CodeItem($"public virtual {foreign_table.Name} {pro.name} {{ get; set; }}");
+                            classCode.AddItem(procodeitem);
+                            procodeitem.Attributes.Add(@"[ForeignKey(""" + column.Name + @""")]");
+
                         }
                         else
                         {
                             //与其他表一对一
-                            result.Append(@"
-        public virtual " + foreign_table.Name + @" " + pro.name + @" { get; set; }
-");
+                            var procodeitem = new CodeItem($"public virtual {foreign_table.Name} {pro.name} {{ get; set; }}");
+                            classCode.AddItem(procodeitem);
+
                         }
                     }
                     else
@@ -644,10 +578,10 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                         {
 
                             //与其他表多对一
-                            result.Append(@"
-        [ForeignKey(""" + column.Name + @""")]
-        public virtual ICollection<" + foreign_table.Name + @"> " + pro.name + @" { get; set; }
-");
+                            var procodeitem = new CodeItem($"public virtual ICollection<{foreign_table.Name}> {pro.name} {{ get; set; }}");
+                            classCode.AddItem(procodeitem);
+                            procodeitem.Attributes.Add(@"[ForeignKey(""" + column.Name + @""")]");
+
                         }
                     }
                 }
@@ -656,19 +590,6 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                 }
                
             }
-
-            foreach( var pair in otherClassCode )
-            {
-                pair.Value.Append("}\r\n");
-                result.Insert(0, pair.Value.ToString());
-            }
-
-            result.Append("}}\r\n");
-
-            result.Insert(0, @"namespace " + nameSpace + @"{
-" + enumDefines);
-
-            return result.ToString();
         }
         public static string GetTypeString(string type)
         {
@@ -740,102 +661,49 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
         /// <param name="nameSpace"></param>
         /// <param name="table"></param>
         /// <returns></returns>
-        public string[] BuildSimpleTable(EJDB db, string nameSpace, EJ.DBTable table)
+        public void BuildSimpleTable(EJDB db, NamespaceCode namespaceCode, EJ.DBTable table)
         {
             var columns = db.DBColumn.Where(m => m.TableID == table.id).ToList();
-            string[] codes = new string[1];
-            codes[0] = BuildSimpleTable(db, nameSpace, table, columns);
-            return codes;
+            BuildSimpleTable(db, namespaceCode, table, columns);
         }
 
-        static string BuildSimpleTable(EJDB db, string nameSpace, EJ.DBTable table, List<EJ.DBColumn> columns)
+        static void BuildSimpleTable(EJDB db, NamespaceCode namespaceCode, EJ.DBTable table, List<EJ.DBColumn> columns)
         {
             var pkcolumn = columns.FirstOrDefault(m => m.IsPKID == true);
-            StringBuilder result = new StringBuilder();
-            StringBuilder enumDefines = new StringBuilder();
 
 
-            result.Append(@"
+            CodeItem classCode = new CodeItem($"public class {table.Name} :Way.Lib.DataModel");
+            namespaceCode.AddItem(classCode);
+            classCode.Comment = table.caption;
 
-    /// <summary>
-	/// " + table.caption + @"
-	/// </summary>
-    public class " + table.Name + @" :Way.Lib.DataModel
-    {
-
-        /// <summary>
-	    /// 
-	    /// </summary>
-        public  " + table.Name + @"()
-        {
-        }
-
-");
+            //构造函数
+            classCode.AddItem(new CodeItem($"public {table.Name}()").AddString(""));
 
             foreach (var column in columns)
             {
-                string caption = column.caption == null ? "" : column.caption;
-                if (caption.Contains(","))
-                {
-                    caption = caption.Substring(0, caption.IndexOf(","));
-                }
-                else if (caption.Contains("，"))
-                {
-                    caption = caption.Substring(0, caption.IndexOf("，"));
-                }
+                PropertyCodeItem proCodeItem = new PropertyCodeItem(column.Name);
+                classCode.AddItem(proCodeItem);
+                proCodeItem.Comment = column.caption;
+
 
                 string dataType = GetLinqTypeString(column.dbType);
-                string att = ",DbType=\"" + column.dbType;
-                if (string.IsNullOrEmpty(column.length))
-                {
-                    if (column.dbType.Contains("char"))
-                    {
-                        att += "(50)";
-                    }
-                }
-                else
-                {
-                    if (column.dbType.Contains("char"))
-                    {
-                        att += "(" + column.length + ")";
-                    }
-                }
-                att += "\"";
-                if (column.IsPKID == true)
-                {
-                    //,AutoSync= AutoSync.OnInsert ,IsPrimaryKey=true,IsDbGenerated=true
-                    att += " ,IsPrimaryKey=true";
-                }
-                if (column.IsAutoIncrement == true)
-                {
-                    att += ",IsDbGenerated=true";
-                }
-                if (column.CanNull == false)
-                {
-                    att += ",CanBeNull=false";
-                }
-
+               
                 string eqString = "";
                 if (!string.IsNullOrEmpty(column.EnumDefine) && column.dbType == "int")
                 {
                     if (column.EnumDefine.Trim().StartsWith("$"))
                     {
                         var target = column.EnumDefine.Trim().Substring(1).Split('.');
-                        dataType = "System.Nullable<" + target[0] + "_" + target[1] + "Enum>";
+                        dataType = target[0] + "_" + target[1] + "Enum?";
                     }
                     else
                     {
                         string[] enumitems = column.EnumDefine.Replace("\r", "").Split('\n');
 
-                        enumDefines.Append(@"
-/// <summary>
-/// 
-/// </summary>
-public enum " + table.Name + "_" + column.Name + @"Enum:int
-{
-    
-");
-                        StringBuilder enumComments = new StringBuilder();
+                        CodeItem codeEnum = new CodeItem($"public enum {table.Name}_{column.Name}Enum:int");
+                        namespaceCode.AddItem(codeEnum);
+
+                        CodeItem codeEnumField = new CodeItem();
                         for (int i = 0; i < enumitems.Length; i++)
                         {
                             var code = enumitems[i].Trim();
@@ -845,24 +713,22 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                             {
                                 if (code.Length > 2)
                                 {
-                                    enumComments.AppendLine("/// " + code.Substring(2));
+                                    if (codeEnumField.Comment.Length > 0)
+                                        codeEnumField.Comment += "\r\n";
+                                    codeEnumField.Comment += code.Substring(2);
                                 }
 
                             }
                             else
-                            {
-                                enumDefines.Append(@"
-/// <summary>
-" + enumComments + @"/// </summary>
-");
-                                enumComments.Clear();
-                                enumDefines.AppendLine(code);
+                            {                               
+                                codeEnumField.Body = code ;
+                                codeEnum.AddItem(codeEnumField);
+                                codeEnumField = new CodeItem();
                             }
 
                         }
-                        enumDefines.Append("}\r\n");
 
-                        dataType = "System.Nullable<" + table.Name + "_" + column.Name + "Enum>";
+                        dataType = table.Name + "_" + column.Name + "Enum?";
                     }
                 }
 
@@ -901,30 +767,16 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                     }
                 }
 
-               
-                result.Append(@"
-        " + dataType + @" _" + column.Name + eqString + @";
-        /// <summary>
-        /// " + column.caption + @"
-        /// </summary>
-        public virtual " + dataType + @" " + column.Name + @"
-        {
-            get
-            {
-                return this._" + column.Name + @";
-            }
-            set
-            {
-                if ((this._" + column.Name + @" != value))
-                {
-                    var original = this._" + column.Name + @";
-                    this._" + column.Name + @" = value;
-                    this.OnPropertyChanged(""" + column.Name.Trim() + @""",original,value);
 
-                }
-            }
-        }
-");
+                proCodeItem.PropertyType = dataType;
+                proCodeItem.Modification = "public virtual";
+                proCodeItem.ItemForGet.AddString($"return _{column.Name};");
+                proCodeItem.ItemForSet.AddItem(new CodeItem($"if ((_{column.Name} != value))")
+                    .AddString($"var original = _{column.Name};")
+                    .AddString($"_{column.Name} = value;")
+                    .AddString($"OnPropertyChanged(\"{column.Name.Trim()}\",original,value);")
+                    );
+
             }
 
 
@@ -938,26 +790,20 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                     {
 
                         var column = db.DBColumn.FirstOrDefault(m => m.id == pro.foreignkey_columnid);
-                        if (column.TableID == table.id)
+                        classCode.AddItem(new PropertyCodeItem(pro.name)
                         {
-                            result.Append(@"
-        public virtual " + foreign_table.Name + @" " + pro.name + @" { get; set; }
-");
-                        }
-                        else
-                        {
-                            //与其他表一对一
-                            result.Append(@"
-        public virtual " + foreign_table.Name + @" " + pro.name + @" { get; set; }
-");
-                        }
+                            PropertyType = foreign_table.Name,
+                            Modification = "public virtual"
+                        });
                     }
                     else
                     {
                         //与其他表多对一
-                        result.Append(@"
-        public virtual ICollection<" + foreign_table.Name + @"> " + pro.name + @" { get; set; }
-");
+                        classCode.AddItem(new PropertyCodeItem(pro.name)
+                        {
+                            PropertyType = $"ICollection<{foreign_table.Name}>",
+                            Modification = "public virtual"
+                        });
                     }
                 }
                 catch
@@ -965,13 +811,6 @@ public enum " + table.Name + "_" + column.Name + @"Enum:int
                 }
 
             }
-
-            result.Append("}}\r\n");
-
-            result.Insert(0, @"namespace " + nameSpace + @"{
-" + enumDefines);
-
-            return result.ToString();
         }
     }
 

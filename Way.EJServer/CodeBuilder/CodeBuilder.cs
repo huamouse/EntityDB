@@ -55,6 +55,7 @@ namespace Way.EJServer
                             break;
                         foreach (var t in data2del)
                         {
+                            t.ChangedProperties.Clear();
                             db.Delete(t);
                         }
                     }

@@ -19,6 +19,7 @@ using System.Linq.Expressions;
 using TestDB;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Security.Cryptography;
 
 namespace Way.EntityDB.Test
 { 
@@ -40,6 +41,12 @@ namespace Way.EntityDB.Test
                     user.IntColumn1 = i;
                     db.Insert(user);
                 }
+
+                //var ar = (from m in db.User
+                //          select new User
+                //          {
+                //              Name = m.Name
+                //          }).ToArray();
 
                 var list = db.User.Where(m => m.Name.StartsWith("test_user")).ToArray();
                 if (list.Length < 10)
@@ -114,6 +121,13 @@ namespace Way.EntityDB.Test
                 var syslogs = db.SysLog.Include(m => m.User).ToArray();
                 if (syslogs[0].User == null)
                     throw new Exception("数据错误");
+
+                //测试删除
+
+                db.Delete(db.User);
+
+                if (db.Log.Count() > 0)
+                    throw new Exception("没有级联删除");
             }
         }
 

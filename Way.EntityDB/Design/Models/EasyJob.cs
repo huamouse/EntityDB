@@ -3512,6 +3512,7 @@ namespace EJ.DB{
                             break;
                         foreach (var t in data2del)
                         {
+                        t.ChangedProperties.Clear();
                             db.Delete(t);
                         }
                     }
@@ -3528,8 +3529,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3545,8 +3547,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3562,8 +3565,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3585,8 +3589,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3602,8 +3607,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3619,8 +3625,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3642,8 +3649,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3659,8 +3667,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3676,8 +3685,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3693,8 +3703,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3716,8 +3727,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3733,8 +3745,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3756,8 +3769,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3773,8 +3787,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3790,8 +3805,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3807,8 +3823,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3824,8 +3841,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3841,8 +3859,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3858,8 +3877,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3881,8 +3901,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3904,8 +3925,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 
@@ -3921,8 +3943,9 @@ namespace EJ.DB{
                         if(data2del.Count() ==0)
                             break;
                         foreach (var t in data2del)
-                        {
-                            db.Delete(t);
+                    {
+                        t.ChangedProperties.Clear();
+                        db.Delete(t);
                         }
                     }
 

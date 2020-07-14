@@ -297,19 +297,11 @@ namespace Way.EntityDB
             {
                 if (_pkvalue == null)
                 {
-                    var changed = this.ChangedProperties[this.KeyName];
-                    if (changed != null)
-                    {
-                        _pkvalue = changed.OriginalValue;
-                    }
-                    else
-                    {
-                        var schema = SchemaManager.GetSchemaTable(this.TableType);
-                        if (schema.KeyColumn == null)
-                            return null;
+                    var schema = SchemaManager.GetSchemaTable(this.TableType);
+                    if (schema.KeyColumn == null)
+                        return null;
 
-                        _pkvalue = schema.KeyColumn.PropertyInfo.GetValue(this);
-                    }
+                    _pkvalue = schema.KeyColumn.PropertyInfo.GetValue(this);
                 }
                 return _pkvalue;
             }

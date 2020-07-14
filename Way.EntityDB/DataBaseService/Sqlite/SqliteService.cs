@@ -509,6 +509,9 @@ namespace Way.EntityDB
                 return 1;
             }
 
+            var changedHistory = dataitem.ChangedProperties[dataitem.KeyName];
+            if (changedHistory != null && changedHistory.OriginalValue != null)
+                pkvalue = changedHistory.OriginalValue;
 
             bool needToClose = false;
             if (this.Connection.State != System.Data.ConnectionState.Open)

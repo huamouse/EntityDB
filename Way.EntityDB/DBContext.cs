@@ -1015,6 +1015,7 @@ namespace Way.EntityDB
                     {
                         var deldataItem = (DataItem)Activator.CreateInstance(dataType);
                         deldataItem.SetValue(tableSchema.KeyColumn.PropertyName, idvalue);
+                        deldataItem.ChangedProperties.Clear();
                         Delete(deldataItem);
                     }
 

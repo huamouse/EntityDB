@@ -513,6 +513,17 @@ namespace Way.EJServer
                     }
                 }
 
+                if(column.dbType.Contains("char"))
+                {
+                    try
+                    {
+                        columnCodeItem.Attributes.Add($"[MaxLength({Convert.ToInt32(column.length)})]");
+                    }
+                    catch
+                    {
+                    }
+                }
+
                 if(column.IsPKID == true)
                 {
                     columnCodeItem.Attributes.Add("[Key]");

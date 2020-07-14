@@ -43,6 +43,7 @@ namespace TestDB
         /// <summary>
         /// 姓名
         /// </summary>
+        [MaxLength(50)]
         [Display(Name = "姓名")]
         [Column("name")]
         public virtual String Name
@@ -212,6 +213,7 @@ namespace TestDB
     public class SysLog :Log
     {
         String _SystemPath;
+        [MaxLength(50)]
         [Column("systempath")]
         public virtual String SystemPath
         {
@@ -230,6 +232,7 @@ namespace TestDB
             }
         }
         String _SysId;
+        [MaxLength(50)]
         [Column("sysid")]
         public virtual String SysId
         {
@@ -252,6 +255,7 @@ namespace TestDB
     public class UserLog :Log
     {
         String _PeopleName;
+        [MaxLength(50)]
         [Column("peoplename")]
         public virtual String PeopleName
         {
@@ -274,6 +278,7 @@ namespace TestDB
     public class AdminLog :Log
     {
         String _AdminId;
+        [MaxLength(50)]
         [Column("adminid")]
         public virtual String AdminId
         {

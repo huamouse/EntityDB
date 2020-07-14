@@ -13,8 +13,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 using Microsoft.Data.SqlClient;
-using Storm.OrderMessageCenter.Database.DB;
-using Storm.OrderMessageCenter.Database;
 using System.Linq.Expressions;
 using TestDB;
 using System.Threading.Tasks;

@@ -538,7 +538,7 @@ namespace Way.EJServer
                 }
                 if ( !string.IsNullOrEmpty( column.caption ))
                 {
-                    columnCodeItem.Attributes.Add($"[Display(Name = \"{column.caption.Replace("\"", "\\\"")}\")]");
+                    columnCodeItem.Attributes.Add($"[Display(Name = \"{column.caption.Replace("\r","").Replace("\n"," ").Replace("\"", "\\\"")}\")]");
                 }
 
                 columnCodeItem.Attributes.Add($"[Column(\"{column.Name.ToLower()}\")]");

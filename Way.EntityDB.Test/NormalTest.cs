@@ -26,20 +26,6 @@ namespace Way.EntityDB.Test
     public class NormalTest
     {
         string ConStr = "server=.\\sqlexpress;uid=sa;pwd=123456;Database=test";
-        [TestMethod]
-        public void AddUser()
-        {
-            using (var db = new FllowOrderSystem.DBModels.DB.FllowOrders("server=.\\sqlexpress;uid=sa;pwd=123456;Database=test2" , DatabaseType.SqlServer))
-            {
-                db.Insert(new TradeUser()
-                {
-                    TradeUserId = 1
-                });
-                var user = db.TradeUser.FirstOrDefault();
-                user.TradeUserId = 3;
-                db.Update(user);
-            }
-        }
 
         [TestMethod]
         public void InsertUpdateDelete()

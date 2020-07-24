@@ -242,5 +242,24 @@ namespace Way.EJServer
         }
     }
 
-    
+    class FieldCodeItem : CodeItem
+    {
+        public string FieldName { get; set; }
+        public string FieldType { get; set; }
+        /// <summary>
+        /// 修饰语，如 public virtual
+        /// </summary>
+        public string Modification { get; set; }
+        public FieldCodeItem(string fieldName) : base()
+        {
+            this.FieldName = fieldName;
+        }
+
+        public override string Build()
+        {
+            this.Body = $"{(this.Modification == null ? "" : this.Modification + " ")}{this.FieldType} {this.FieldName};";
+            this.ClearItems();
+            return base.Build();
+        }
+    }
 }

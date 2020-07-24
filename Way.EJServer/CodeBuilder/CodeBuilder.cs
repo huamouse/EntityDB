@@ -692,6 +692,8 @@ namespace Way.EJServer
 
             foreach (var column in columns)
             {
+                FieldCodeItem fieldCodeItem = new FieldCodeItem($"_{column.Name}");
+                classCode.AddItem(fieldCodeItem);
                 PropertyCodeItem proCodeItem = new PropertyCodeItem(column.Name);
                 classCode.AddItem(proCodeItem);
                 proCodeItem.Comment = column.caption;
@@ -778,7 +780,7 @@ namespace Way.EJServer
                     }
                 }
 
-
+                fieldCodeItem.FieldType = dataType;
                 proCodeItem.PropertyType = dataType;
                 proCodeItem.Modification = "public virtual";
                 proCodeItem.ItemForGet.AddString($"return _{column.Name};");

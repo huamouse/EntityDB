@@ -50,7 +50,7 @@ namespace Way.EJServer
                     bw.Write(1);
                     ICodeBuilder codeBuilder = new CodeBuilder();
 
-                    NamespaceCode codeNamespace = new NamespaceCode(database.NameSpace + ".dtos");
+                    NamespaceCode codeNamespace = new NamespaceCode(database.NameSpace + ".Dtos");
                     codeNamespace.AddBeforeCode("//此代码由工具自动生成，请不要随意修改");
                     codeNamespace.AddUsing("System");
                     codeNamespace.AddUsing("System.Collections.Generic");

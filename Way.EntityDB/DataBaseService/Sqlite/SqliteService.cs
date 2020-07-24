@@ -242,7 +242,7 @@ namespace Way.EntityDB
                         object id = command.ExecuteScalar();
 
                         command.Parameters.Clear();
-                        if (id != null && !string.IsNullOrEmpty(pkid))
+                        if (id != null && id != DBNull.Value && !string.IsNullOrEmpty(pkid))
                         {
                             dataitem.SetValue(pkid, id);
                         }
@@ -260,7 +260,7 @@ namespace Way.EntityDB
                             command.CommandText = sql;
                             object id = command.ExecuteScalar();
 
-                            if (id != null && !string.IsNullOrEmpty(pkid))
+                            if (id != null && id != DBNull.Value && !string.IsNullOrEmpty(pkid))
                             {
                                 dataitem.SetValue(pkid, id);
                             }

@@ -70,7 +70,7 @@ namespace Way.EJServer
                 ms.Position = 0;
                 while (true)
                 {
-                    var line = sr.ReadLine();
+                    var line = sr.ReadLine().Trim();
                     if (line == null)
                         break;
                     if (line.StartsWith("return result.ToString()"))
@@ -108,6 +108,7 @@ namespace Way.EJServer
 
                         oldDatabaseid = designData.Database.id.Value;
                         designData.Database.ProjectID = projectid;
+                        designData.Database.conStr = "";
                         db.Insert(designData.Database);
 
                         
@@ -222,23 +223,23 @@ namespace Way.EJServer
 
                         });
 
-                        try
-                        {
-                            //变更数据库类型
-                            IDatabaseDesignService dbservice = Way.EntityDB.Design.DBHelper.CreateDatabaseDesignService((Way.EntityDB.DatabaseType)(int)designData.Database.dbType);
-                            dbservice.Create(designData.Database);
-                            db.Update(designData.Database);
+                        //try
+                        //{
+                        //    //变更数据库类型
+                        //    IDatabaseDesignService dbservice = Way.EntityDB.Design.DBHelper.CreateDatabaseDesignService((Way.EntityDB.DatabaseType)(int)designData.Database.dbType);
+                        //    dbservice.Create(designData.Database);
+                        //    db.Update(designData.Database);
 
-                            //更新到现在的数据结构                         
+                        //    //更新到现在的数据结构                         
 
-                            var invokeDB = Way.EntityDB.Design.DBHelper.CreateInvokeDatabase(designData.Database);
-                            var designDataStr = CodeBuilder.GetDesignData(db, designData.Database);
-                            DBUpgrade.Upgrade(invokeDB.DBContext, "\r\n" + designDataStr);
-                        }
-                        catch
-                        {
+                        //    var invokeDB = Way.EntityDB.Design.DBHelper.CreateInvokeDatabase(designData.Database);
+                        //    var designDataStr = CodeBuilder.GetDesignData(db, designData.Database);
+                        //    DBUpgrade.Upgrade(invokeDB.DBContext, "\r\n" + designDataStr);
+                        //}
+                        //catch
+                        //{
 
-                        }
+                        //}
 
                         db.CommitTransaction();
 

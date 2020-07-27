@@ -728,7 +728,7 @@ namespace EJClient
                         string result = null;
                         await Task.Run(()=> {
                             Way.Lib.NetStream client = new Way.Lib.NetStream(host, port);
-                            client.AsSSLClient();
+                            client.AsSSLClient( System.Security.Authentication.SslProtocols.None);
 
 
                             System.IO.StreamWriter stream = new System.IO.StreamWriter(client);

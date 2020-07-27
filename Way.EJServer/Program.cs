@@ -23,7 +23,7 @@ namespace Way.EJServer
             {
                 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-                int port = 6068;
+                int port = 6069;
                 if (args != null && args.Length > 0)
                 {
                     port = Convert.ToInt32(args[0]);
@@ -51,7 +51,7 @@ namespace Way.EJServer
                 server.RegisterHandler(new ImportDataHandler());
                 server.RegisterHandler(new ImportCSFileHandler());
 
-                server.UseHttps(new X509Certificate2(Way.Lib.PlatformHelper.GetAppDirectory() + "EJServerCert.pfx", "123456") , true);
+                server.UseHttps(new X509Certificate2(Way.Lib.PlatformHelper.GetAppDirectory() + "EJServerCert.pfx", "123456") , System.Security.Authentication.SslProtocols.None , true);
                 Console.WriteLine($"use ssl EJServerCert.pfx");
 
                 server.SessionTimeout = 60 * 24;

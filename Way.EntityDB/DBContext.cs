@@ -1047,6 +1047,9 @@ namespace Way.EntityDB
         /// <param name="IsolationLevel"></param>
         public virtual Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction BeginTransaction(System.Data.IsolationLevel IsolationLevel = System.Data.IsolationLevel.ReadUncommitted)
         {
+            if (this.CurrentTransaction != null)
+                return this.CurrentTransaction;
+
             return ((Microsoft.EntityFrameworkCore.DbContext)this).Database.BeginTransaction(IsolationLevel);
         }
 

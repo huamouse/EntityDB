@@ -91,6 +91,7 @@ namespace Way.EntityDB.Design
 
                     Type type = assembly.GetType($"Way.EntityDB.Design.Actions.{actionType}");
                     var actionItem = (EntityDB.Design.Actions.Action)Newtonsoft.Json.JsonConvert.DeserializeObject(json, type);
+                    actionItem.ID = Convert.ToInt32(datarow["id"]);
                     list.Add(actionItem);
                 }
             }

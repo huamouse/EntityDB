@@ -840,8 +840,8 @@ namespace Way.EJServer
         [RemotingMethod]
         public void ModifyTable(EJ.DBTable newtable, EJ.DBColumn[] nowcolumns, EJ.DBDeleteConfig[] delConfigs, IndexInfo[] idxConfigs,EJ.classproperty[] classProperties)
         {
-            if (nowcolumns.Any(m => m.IsPKID == true) == false)
-                throw new Exception("必须设置主键");
+            //if (nowcolumns.Any(m => m.IsPKID == true) == false)
+            //    throw new Exception("必须设置主键");
 
             foreach (var p in classProperties)
             {
@@ -1432,6 +1432,14 @@ namespace Way.EJServer
                     Time = DateTime.Now,
 
                 });
+
+                var invokingDB = DBHelper.CreateInvokeDatabase(dbobj);
+                var lastid = (from m in db.DesignHistory
+                              orderby m.ActionId descending
+                              where m.DatabaseId == databaseid
+                              select m).Max(m => m.ActionId);
+                if (lastid != null)
+                    SetLastUpdateID(lastid, dbobj.Guid, invokingDB);
 
                 db.CommitTransaction();
             }

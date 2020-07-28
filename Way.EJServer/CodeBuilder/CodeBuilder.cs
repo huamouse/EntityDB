@@ -261,10 +261,10 @@ namespace Way.EJServer
             return outBuffer.ToArray();
         }
 
-        public void BuildTable(EJDB db, NamespaceCode namespaceCode, EJ.DBTable table)
+        public void BuildTable(EJDB db, NamespaceCode namespaceCode, EJ.DBTable table,List<string> foreignKeys)
         {
             var columns = db.DBColumn.Where(m => m.TableID == table.id).ToList();
-           BuildTable(db, namespaceCode, table, columns);
+           BuildTable(db, namespaceCode, table, columns, foreignKeys);
         }
         /// <summary>
         /// </summary>
@@ -370,7 +370,7 @@ namespace Way.EJServer
             return names;
         }
 
-        static void BuildTable(EJDB db, NamespaceCode namespaceCode, EJ.DBTable table, List<EJ.DBColumn> columns)
+        static void BuildTable(EJDB db, NamespaceCode namespaceCode, EJ.DBTable table, List<EJ.DBColumn> columns,List<string> foreignKeys)
         {
             var pkcolumn = columns.FirstOrDefault(m => m.IsPKID == true);
             CodeItem classCode = new CodeItem($"public class {table.Name} :Way.EntityDB.DataItem");
@@ -572,7 +572,12 @@ namespace Way.EJServer
                         {
                             var procodeitem = new CodeItem($"public virtual {foreign_table.Name} {pro.name} {{ get; set; }}");
                             classCode.AddItem(procodeitem);
-                            procodeitem.Attributes.Add(@"[ForeignKey(""" + column.Name + @""")]");
+                           
+                            if (foreignKeys.Contains($"{table.Name}->{column.Name}") == false)
+                            {
+                                foreignKeys.Add($"{table.Name}->{column.Name}");
+                                procodeitem.Attributes.Add(@"[ForeignKey(""" + column.Name + @""")]");
+                            }
 
                         }
                         else
@@ -591,7 +596,12 @@ namespace Way.EJServer
                             //与其他表多对一
                             var procodeitem = new CodeItem($"public virtual ICollection<{foreign_table.Name}> {pro.name} {{ get; set; }}");
                             classCode.AddItem(procodeitem);
-                            procodeitem.Attributes.Add(@"[ForeignKey(""" + column.Name + @""")]");
+
+                            if (foreignKeys.Contains($"{foreign_table.Name}->{column.Name}") == false)
+                            {
+                                foreignKeys.Add($"{foreign_table.Name}->{column.Name}");
+                                procodeitem.Attributes.Add(@"[ForeignKey(""" + column.Name + @""")]");
+                            }
 
                         }
                     }

@@ -66,9 +66,10 @@ namespace Way.EJServer
                     namespaceCode.AddBeforeCode("");
                     codeBuilder.BuilderDB(db, database, namespaceCode2, tables);
 
+                    List<string> foreignKeys = new List<string>();
                     foreach (var table in tables)
                     {
-                        codeBuilder.BuildTable(db, namespaceCode, table);
+                        codeBuilder.BuildTable(db, namespaceCode, table, foreignKeys);
                     }
 
                     bw.Write("code.cs");

@@ -99,25 +99,6 @@ namespace Way.EJServer
                        
                     }
 
-
-                    //判断是否有version字段
-                    try
-                    {
-                        db.Database.ExecSqlString("select version from __wayeasyjob");
-                    }
-                    catch (Exception)
-                    {
-                        Console.WriteLine("增加version字段，并把DesignHistory表里的数据 ActionId=id");
-                        db.Database.ExecSqlString("ALTER TABLE __wayeasyjob ADD COLUMN version INT DEFAULT(0)");
-
-                        //把所有actionid改为id的值
-                        var actions = db.DesignHistory.ToArray();
-                        foreach( var item in actions )
-                        {
-                            item.ActionId = item.id;
-                            db.Update(item);
-                        }
-                    }
                 }
 
                 server.Start();

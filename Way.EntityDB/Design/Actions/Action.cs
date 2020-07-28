@@ -36,7 +36,7 @@ namespace Way.EntityDB.Design.Actions
             action.ActionId = System.Threading.Interlocked.Increment(ref actionObject.ActionId);
 
             db.Insert(action);
-            return action.GetValue("id");
+            return action.ActionId;
         }
 
         public void AddLog(EJ.DB.easyjob db, int userid, int databaseid)

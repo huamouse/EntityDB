@@ -436,11 +436,11 @@ namespace Way.EntityDB
 
         }
 
-        void CreateUpdateBody( Expression expression, StringBuilder sb,List<string> findnames, System.Data.Common.DbCommand cmd)
+        void CreateUpdateBody( Expression expression,bool isRight, StringBuilder sb,List<string> findnames, System.Data.Common.DbCommand cmd)
         {
             if (expression is BinaryExpression binaryExpression)
             {
-                CreateUpdateBody(binaryExpression.Left, sb, findnames, cmd);
+                CreateUpdateBody(binaryExpression.Left,false, sb, findnames, cmd);
 
                 switch (binaryExpression.NodeType)
                 {
@@ -475,9 +475,9 @@ namespace Way.EntityDB
                         throw new ParseUpdateExpressionException("表达式解析错误");
                 }
 
-                CreateUpdateBody(binaryExpression.Right, sb,findnames ,cmd);
+                CreateUpdateBody(binaryExpression.Right,true, sb,findnames ,cmd);
             }
-            else if (expression is MemberExpression memberExpression)
+            else if ( !isRight && expression is MemberExpression memberExpression)
             {
                 var membername = memberExpression.Member.Name.ToLower();
                 if (findnames.Contains(membername) == false)
@@ -540,7 +540,7 @@ namespace Way.EntityDB
                     if(updateExpression != null)
                     {
                         cancelNames = new List<string>();
-                        CreateUpdateBody(updateExpression.Body, str_fields, cancelNames, command);
+                        CreateUpdateBody(updateExpression.Body,false, str_fields, cancelNames, command);
                     }
 
                     foreach (var fieldValue in fieldValues)

@@ -15,19 +15,17 @@ using System.IO;
 using Microsoft.Data.SqlClient;
 using System.Linq.Expressions;
 using System.Xml;
+using FllowOrderSystem.DBModels;
 
 namespace Way.EntityDB.Test
 { 
     [TestClass]
     public class Test
     {
-        [TestMethod]
-        public void aa()
-        {
-        }
+
     }
 
-   class TestItem:DataItem
+    class TestItem:DataItem
     {
 
         private string _Name;

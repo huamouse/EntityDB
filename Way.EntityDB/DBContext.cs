@@ -809,13 +809,6 @@ namespace Way.EntityDB
         /// <param name="condition">指定更新条件，如：m=&gt;m.age &gt; 16 &amp;&amp; m.id == dataitem.id，默认使用主键匹配</param>
         public virtual int Update<T>(T dataitem, Expression<Func<T, bool>> condition) where T : DataItem
         {
-            string pkid = dataitem.KeyName;
-            object pkvalue = dataitem.PKValue;
-            if (pkvalue == null && pkid != null)
-            {
-                Insert(dataitem);
-                return 1;
-            }
 
             if (BeforeUpdate != null)
             {

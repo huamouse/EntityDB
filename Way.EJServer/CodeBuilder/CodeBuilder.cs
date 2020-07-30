@@ -534,7 +534,8 @@ namespace Way.EJServer
                 }
                 if (column.CanNull == false)
                 {
-                    columnCodeItem.Attributes.Add("[Required]");
+                    columnCodeItem.Attributes.Add("[DisallowNull]");
+                    //columnCodeItem.Attributes.Add("[Required]");
                 }
                 if ( !string.IsNullOrEmpty( column.caption ))
                 {

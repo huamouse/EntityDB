@@ -63,6 +63,7 @@ namespace Way.EJServer
                     namespaceCode.AddUsing("System.ComponentModel.DataAnnotations");
                     namespaceCode.AddUsing("System.ComponentModel.DataAnnotations.Schema");
                     namespaceCode.AddUsing("Way.EntityDB.Attributes");
+                    namespaceCode.AddUsing("System.Diagnostics.CodeAnalysis");
                     namespaceCode.AddBeforeCode("");
                     codeBuilder.BuilderDB(db, database, namespaceCode2, tables);
 

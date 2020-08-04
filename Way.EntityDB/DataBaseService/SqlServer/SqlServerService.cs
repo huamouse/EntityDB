@@ -77,57 +77,7 @@ namespace Way.EntityDB
             if (((Microsoft.Data.SqlClient.SqlException)ex).Number != 2601)
                 throw ex;
 
-            string[] keys = null;
-            string[] captions = null;
-            StringBuilder output = new StringBuilder();
-            try
-            {
-                string msg = ex.Message;
-                var matches = Regex.Matches(msg, @"\'(\w|\.)+\'");
-                string idxName = matches[0].Value.Substring(1, matches[0].Value.Length - 2);
-                string tableName = matches[1].Value.Replace("dbo.", "");
-                tableName = tableName.Substring(1, tableName.Length - 2);
-
-                using (var sp_helpResult = this.SelectDataSet("sp_help [" + tableName + "]"))
-                {
-                    foreach (var dtable in sp_helpResult.Tables)
-                    {
-                        if (dtable.Columns.Any(m=>m.ColumnName == "index_keys"))
-                        {
-                            var row = dtable.Rows.SingleOrDefault( m=>m["index_name"].Equals(idxName) );
-                            keys = row["index_keys"].ToString().Split(',');
-                            break;
-                        }
-                    }
-                }
-                for (int i = 0; i < keys.Length; i++)
-                    keys[i] = keys[i].Trim();
-                captions = new string[keys.Length];
-
-                var tableSchema = SchemaManager.GetSchemaTable(tableType);
-
-                for (int i = 0; i < keys.Length; i++)
-                {
-                    var column = tableSchema.Columns.FirstOrDefault(m => m.Name == keys[i]);
-                    if (column == null)
-                    {
-                        output.Append(keys[i]);
-                        continue;
-                    }
-
-                    captions[i] = column.Display;
-                    if (output.Length > 0)
-                        output.Append(',');
-
-                    output.Append(column.Display.IsNullOrEmpty() ? keys[i] : column.Display);
-                }
-
-            }
-            catch
-            {
-                throw ex;
-            }
-            throw new RepeatValueException(keys, captions, "此" + output + "已存在");
+            throw new RepeatException( ex);
         }
 
 

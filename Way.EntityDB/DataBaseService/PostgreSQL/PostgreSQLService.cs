@@ -70,56 +70,7 @@ namespace Way.EntityDB
             PostgresException nerror = ex as PostgresException;
             if(nerror.SqlState != "23505" || nerror.Detail.Contains(" already exists") == false)
                 throw ex;
-
-            StringBuilder output = new StringBuilder();
-            string[] captions = null;
-            string[] keys = null;
-            try
-            {
-                string msg = nerror.Detail;
-                var tableSchema = SchemaManager.GetSchemaTable(tableType);
-
-
-                try
-                {
-                    var match = Regex.Match(msg, @"Key \((?<c>(\w| |,)+)\)");
-                    if (match != null && match.Length > 0)
-                    {
-                        string indexname = match.Groups["c"].Value;
-                        keys = indexname.Split(',');
-                        keys = (from m in keys
-                                select m.Trim()).ToArray();
-
-                        captions = new string[keys.Length];
-
-                        for (int i = 0; i < keys.Length; i++)
-                        {
-                            var column = tableSchema.Columns.FirstOrDefault(m => m.Name == keys[i]);
-                            if (column == null)
-                            {
-                                output.Append(keys[i]);
-                                continue;
-                            }
-
-                            captions[i] = column.Display;
-                            if (output.Length > 0)
-                                output.Append(',');
-
-                            output.Append(column.Display.IsNullOrEmpty() ? keys[i] : column.Display);
-                        }
-                    }
-                }
-                catch (Exception ee)
-                {
-                    throw ex;
-                }
-
-            }
-            catch
-            {
-                throw ex;
-            }
-            throw new RepeatValueException(keys, captions, "此" + output + "已存在");
+            throw new RepeatException(ex);
         }
 
         public override string ConvertConnectionString(string conStr)

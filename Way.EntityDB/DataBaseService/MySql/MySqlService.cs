@@ -66,53 +66,7 @@ namespace Way.EntityDB
                 throw ex;
             if (((MySql.Data.MySqlClient.MySqlException)ex).Number != 1062)
                 throw ex;
-
-            StringBuilder output = new StringBuilder();
-            string[] captions = null;
-            string[] keys = null;
-            try
-            {
-                string msg = ex.Message;
-                var tableSchema = SchemaManager.GetSchemaTable(tableType);
-
-                try
-                {
-                    var matches = Regex.Matches(msg, @"for key \'(?<n>(\w|\.|_)+)\'");
-                    if (matches.Count > 0)
-                    {
-                        string indexname = matches[matches.Count - 1].Groups["n"].Value;
-                        keys = indexname.Substring(indexname.IndexOf("_ej_") + 4).Split('_');
-
-                        captions = new string[keys.Length];
-
-                        for (int i = 0; i < keys.Length; i++)
-                        {
-                            var column = tableSchema.Columns.FirstOrDefault(m=>m.Name == keys[i]);
-                            if (column == null)
-                            {
-                                output.Append( keys[i]);
-                                continue;
-                            }
-
-                            captions[i] = column.Display;
-                            if (output.Length > 0)
-                                output.Append(',');
-
-                            output.Append(column.Display.IsNullOrEmpty() ? keys[i] : column.Display);
-                        }
-                    }
-                }
-                catch (Exception ee)
-                {
-                    throw ex;
-                }
-
-            }
-            catch
-            {
-                throw ex;
-            }
-            throw new RepeatValueException(keys, captions, "此" + output + "已存在");
+            throw new RepeatException(ex);
         }
 
 

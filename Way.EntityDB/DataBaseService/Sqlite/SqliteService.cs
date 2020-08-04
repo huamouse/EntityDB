@@ -125,57 +125,7 @@ namespace Way.EntityDB
                 throw ex;
             if (((SqliteException)ex).SqliteErrorCode != 19)
                 throw ex;
-
-            List<string> keys = new List<string>();
-            string[] captions = null;
-            StringBuilder output = new StringBuilder();
-            try
-            {
-                string msg = ex.Message.Substring(ex.Message.IndexOf("UNIQUE constraint failed:") + "UNIQUE constraint failed:".Length);
-                var tableSchema = SchemaManager.GetSchemaTable(tableType);
-
-                try
-                {
-                    var matches = Regex.Matches(msg, @"(\w|\.)+");
-                    string tableName = null;
-                    foreach (Match columninfo in matches)
-                    {
-                        string[] arr = columninfo.Value.Split('.');
-                        if (tableName == null)
-                            tableName = arr[0];
-                        string columnName = arr[1];
-                        keys.Add(columnName);
-                    }
-                    captions = new string[keys.Count];
-
-                    for (int i = 0; i < keys.Count; i++)
-                    {
-                        var column = tableSchema.Columns.FirstOrDefault(m => m.Name == keys[i]);
-                        if (column == null)
-                        {
-                            output.Append(keys[i]);
-                            continue;
-                        }
-
-                        captions[i] = column.Display;
-                        if (output.Length > 0)
-                            output.Append(',');
-
-                        output.Append(column.Display.IsNullOrEmpty() ? keys[i] : column.Display);
-                    }
-
-                }
-                catch
-                {
-                    throw ex;
-                }
-
-            }
-            catch
-            {
-                throw ex;
-            }
-            throw new RepeatValueException(keys.ToArray(), captions, "此" + output + "已存在");
+            throw new RepeatException(ex);
         }
 
         public virtual void Insert(DataItem dataitem)

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Way.EntityDB
 {
+    /// <summary>
+    /// 违反数据库唯一索引
+    /// </summary>
     public class RepeatException : Exception
     {
        

@@ -32,7 +32,7 @@ namespace Way.EJServer
             StringBuilder result = new StringBuilder();
 
             //构造函数
-            CodeItem initFunc = new CodeItem($" public {databaseObj.Name}(string connection, Way.EntityDB.DatabaseType dbType): base(connection, dbType)");
+            CodeItem initFunc = new CodeItem($" public {databaseObj.Name}(string connection, Way.EntityDB.DatabaseType dbType , bool upgradeDatabase = true): base(connection, dbType , upgradeDatabase)");
             classCode.AddItem(initFunc);
             initFunc.AddString("if (!setEvented)");
             initFunc.AddString("{");

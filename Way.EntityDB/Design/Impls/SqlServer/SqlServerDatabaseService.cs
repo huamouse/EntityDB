@@ -106,13 +106,21 @@ namespace Way.EntityDB.Design.Database.SqlServer
                 column.defaultValue = row["cdefault"].ToSafeString();
                 if(!column.defaultValue.IsNullOrEmpty())
                 {
-                    column.defaultValue = db.ExecSqlString($@"SELECT TEXT FROM syscomments where id='{column.defaultValue}'").ToSafeString().Trim();
-                    if (column.defaultValue.StartsWith("("))
+                    try
                     {
-                        column.defaultValue = column.defaultValue.Substring(1, column.defaultValue.Length - 2).Replace("''","'");
-                        if (column.defaultValue.StartsWith("'"))
-                            column.defaultValue = column.defaultValue.Substring(1, column.defaultValue.Length - 2);
+                        column.defaultValue = db.ExecSqlString($@"SELECT TEXT FROM syscomments where id='{column.defaultValue}'").ToSafeString().Trim();
+                        if (column.defaultValue.StartsWith("("))
+                        {
+                            column.defaultValue = column.defaultValue.Substring(1, column.defaultValue.Length - 2).Replace("''", "'");
+                            if (column.defaultValue.StartsWith("'"))
+                                column.defaultValue = column.defaultValue.Substring(1, column.defaultValue.Length - 2);
+                        }
                     }
+                    catch 
+                    {
+                        column.defaultValue = "";
+                    }
+                   
                 }
 
                 column.CanNull = row["isnullable"].ToSafeString() == "1";

@@ -134,6 +134,14 @@ namespace Way.EntityDB.Design.Database.SqlServer
                 if (column.dbType.Contains("int") || column.dbType.Contains("date") || column.dbType.Contains("bit"))
                     column.length = "";
 
+                if(column.dbType.Contains("bit"))
+                {
+                    if (column.defaultValue == "(0)")
+                        column.defaultValue = "0";
+                    else if (column.defaultValue == "(1)")
+                        column.defaultValue = "1";
+                }
+
                 column.ChangedProperties.Clear();
                 result.Add(column);
             }

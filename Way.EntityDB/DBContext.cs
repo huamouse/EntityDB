@@ -709,8 +709,17 @@ namespace Way.EntityDB
         /// </summary>
         /// <param name="conStr">连接字符串</param>
         /// <param name="dbType">数据库类型</param>
+        public DBContext(string conStr, DatabaseType dbType = DatabaseType.SqlServer):this(conStr,dbType,true)
+        {
+
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="conStr">连接字符串</param>
+        /// <param name="dbType">数据库类型</param>
         /// <param name="upgradeDatabase">是否自动更新数据库结构到最新</param>
-        public DBContext(string conStr, DatabaseType dbType = DatabaseType.SqlServer,bool upgradeDatabase = true)
+        public DBContext(string conStr, DatabaseType dbType , bool upgradeDatabase)
         {
             this.DatabaseType = dbType;
            

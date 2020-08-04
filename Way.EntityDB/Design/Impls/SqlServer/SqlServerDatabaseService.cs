@@ -81,6 +81,11 @@ namespace Way.EntityDB.Design.Database.SqlServer
                 EJ.DBColumn column = new EJ.DBColumn();
                 column.Name = row["name"].ToSafeString();
                 column.dbType = db.ExecSqlString($"select name  from SYSTYPES where xtype={row["xtype"]}").ToSafeString();
+                if (column.dbType.Contains("varchar"))
+                    column.dbType = "varchar";
+                else if (column.dbType.Contains("datetime"))
+                    column.dbType = "datetime";
+
                 int typeindex = -1;
                 for (int i = 0; i < Way.EntityDB.Design.ColumnType.SupportTypes.Count; i++)
                 {
@@ -116,6 +121,11 @@ namespace Way.EntityDB.Design.Database.SqlServer
 
                 column.IsPKID = pkfields.Any(m => string.Equals(m , column.Name , StringComparison.CurrentCultureIgnoreCase));
                 column.length = row["length"].ToString();
+                if (column.dbType.Contains("char") && column.length == "-1")
+                    column.length = "50";
+                if (column.dbType.Contains("int") || column.dbType.Contains("date") || column.dbType.Contains("bit"))
+                    column.length = "";
+
                 column.ChangedProperties.Clear();
                 result.Add(column);
             }

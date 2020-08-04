@@ -704,7 +704,13 @@ namespace Way.EntityDB
         {
             this.Dispose();
         }
-        public DBContext(string conStr, DatabaseType dbType = DatabaseType.SqlServer)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="conStr">连接字符串</param>
+        /// <param name="dbType">数据库类型</param>
+        /// <param name="upgradeDatabase">是否自动更新数据库结构到最新</param>
+        public DBContext(string conStr, DatabaseType dbType = DatabaseType.SqlServer,bool upgradeDatabase = true)
         {
             this.DatabaseType = dbType;
            
@@ -716,7 +722,7 @@ namespace Way.EntityDB
 
             var thisType = this.GetType() ;
             var dictKey = thisType + "," + this.ConnectionString;
-            if (thisType != typeof(EntityDB.DBContext))
+            if (upgradeDatabase && thisType != typeof(EntityDB.DBContext))
             {
                 if (upgradedDatabase.ContainsKey(dictKey) == false || !upgradedDatabase[dictKey])
                 {

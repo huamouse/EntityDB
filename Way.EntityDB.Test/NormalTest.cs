@@ -28,6 +28,22 @@ namespace Way.EntityDB.Test
         string ConStr = "server=.\\sqlexpress;uid=sa;pwd=123456;Database=test";
 
         [TestMethod]
+        public void CopyValue()
+        {
+            var data1 = new TestDB.User() { 
+            Birthday = DateTime.Now,
+             IntColumn1 = 3,
+              Name = "test"
+            };
+
+            var data2 = new TestDB.User();
+            data1.CopyValue(data2);
+
+            if (data1.Birthday != data2.Birthday || data1.IntColumn1 != data2.IntColumn1 || data1.Name != data2.Name)
+                throw new Exception("error");
+        }
+
+        [TestMethod]
         public void InsertUpdateDelete()
         {
             using ( var db = new TestDB.DB.Test(ConStr , DatabaseType.SqlServer) )

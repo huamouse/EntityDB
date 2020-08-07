@@ -428,6 +428,33 @@ namespace Way.EntityDB
 
         private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
       
+        /// <summary>
+        /// 把当前的值赋给指定的目标
+        /// </summary>
+        /// <param name="target"></param>
+        public void CopyValue(DataItem target)
+        {
+            var targetType = target.GetType();
+            var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(m => m.GetCustomAttribute<System.ComponentModel.DataAnnotations.Schema.ColumnAttribute>() != null);
+            foreach( var pro in properties )
+            {
+                try
+                {
+                    var targetPro = targetType.GetProperty(pro.Name);
+                    if(targetPro != null  )
+                    {
+                        var att = targetPro.GetCustomAttribute<DatabaseGeneratedAttribute>();
+                        if (att != null && att.DatabaseGeneratedOption != DatabaseGeneratedOption.None)
+                            continue;
+                        target.SetValue(pro.Name, pro.GetValue(this));
+                    }                    
+                }
+                catch 
+                { 
+                }
+            }
+        }
+
         public object Clone()
         {
             Type myType = this.GetType();

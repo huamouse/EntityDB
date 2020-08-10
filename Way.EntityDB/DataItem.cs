@@ -435,19 +435,26 @@ namespace Way.EntityDB
         public void CopyValue(DataItem target)
         {
             var targetType = target.GetType();
-            var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(m => m.GetCustomAttribute<System.ComponentModel.DataAnnotations.Schema.ColumnAttribute>() != null);
+            var properties = this.TableType.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(m => m.GetCustomAttribute<System.ComponentModel.DataAnnotations.Schema.ColumnAttribute>() != null);
             foreach( var pro in properties )
             {
                 try
                 {
-                    var targetPro = targetType.GetProperty(pro.Name);
-                    if(targetPro != null  )
+                    if (targetType == this.TableType)
                     {
-                        var att = targetPro.GetCustomAttribute<DatabaseGeneratedAttribute>();
-                        if (att != null && att.DatabaseGeneratedOption != DatabaseGeneratedOption.None)
-                            continue;
-                        target.SetValue(pro.Name, pro.GetValue(this));
-                    }                    
+                        pro.SetValue(target, pro.GetValue(this));
+                    }
+                    else
+                    {
+                        var targetPro = targetType.GetProperty(pro.Name);
+                        if (targetPro != null)
+                        {
+                            var att = targetPro.GetCustomAttribute<DatabaseGeneratedAttribute>();
+                            if (att != null && att.DatabaseGeneratedOption != DatabaseGeneratedOption.None)
+                                continue;
+                            target.SetValue(pro.Name, pro.GetValue(this));
+                        }
+                    }
                 }
                 catch 
                 { 

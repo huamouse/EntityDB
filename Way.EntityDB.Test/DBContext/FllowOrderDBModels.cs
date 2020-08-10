@@ -8,16 +8,17 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Way.EntityDB.Attributes;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FllowOrderSystem.DBModels
 {
     [TableConfig]
     [Table("tradeuser")]
-    public class TradeUser :Way.EntityDB.DataItem
+    public class TradeUser : Way.EntityDB.DataItem
     {
         System.Nullable<Int64> _TradeUserId;
         [Key]
-        [Required]
+        [DisallowNull]
         [Column("tradeuserid")]
         public virtual System.Nullable<Int64> TradeUserId
         {
@@ -29,7 +30,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TradeUserId != value))
                 {
-                    SendPropertyChanging("TradeUserId",_TradeUserId,value);
+                    SendPropertyChanging("TradeUserId", _TradeUserId, value);
                     _TradeUserId = value;
                     SendPropertyChanged("TradeUserId");
                 }
@@ -51,7 +52,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_Style != value))
                 {
-                    SendPropertyChanging("Style",_Style,value);
+                    SendPropertyChanging("Style", _Style, value);
                     _Style = value;
                     SendPropertyChanged("Style");
                 }
@@ -74,13 +75,13 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_Description != value))
                 {
-                    SendPropertyChanging("Description",_Description,value);
+                    SendPropertyChanging("Description", _Description, value);
                     _Description = value;
                     SendPropertyChanged("Description");
                 }
             }
         }
-        System.Nullable<Boolean> _EnableSubscribe=false;
+        System.Nullable<Boolean> _EnableSubscribe = false;
         /// <summary>
         /// 开启订阅
         /// </summary>
@@ -96,13 +97,13 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_EnableSubscribe != value))
                 {
-                    SendPropertyChanging("EnableSubscribe",_EnableSubscribe,value);
+                    SendPropertyChanging("EnableSubscribe", _EnableSubscribe, value);
                     _EnableSubscribe = value;
                     SendPropertyChanged("EnableSubscribe");
                 }
             }
         }
-        System.Nullable<Boolean> _IsVisible=false;
+        System.Nullable<Boolean> _IsVisible = false;
         /// <summary>
         /// 开启展示
         /// </summary>
@@ -118,7 +119,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_IsVisible != value))
                 {
-                    SendPropertyChanging("IsVisible",_IsVisible,value);
+                    SendPropertyChanging("IsVisible", _IsVisible, value);
                     _IsVisible = value;
                     SendPropertyChanged("IsVisible");
                 }
@@ -140,7 +141,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_SubscribePrice != value))
                 {
-                    SendPropertyChanging("SubscribePrice",_SubscribePrice,value);
+                    SendPropertyChanging("SubscribePrice", _SubscribePrice, value);
                     _SubscribePrice = value;
                     SendPropertyChanged("SubscribePrice");
                 }
@@ -162,7 +163,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_SpecialPrice != value))
                 {
-                    SendPropertyChanging("SpecialPrice",_SpecialPrice,value);
+                    SendPropertyChanging("SpecialPrice", _SpecialPrice, value);
                     _SpecialPrice = value;
                     SendPropertyChanged("SpecialPrice");
                 }
@@ -184,13 +185,13 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_SubscribeDays != value))
                 {
-                    SendPropertyChanging("SubscribeDays",_SubscribeDays,value);
+                    SendPropertyChanging("SubscribeDays", _SubscribeDays, value);
                     _SubscribeDays = value;
                     SendPropertyChanged("SubscribeDays");
                 }
             }
         }
-        TradeUser_StatusEnum? _Status=(TradeUser_StatusEnum?)(1);
+        TradeUser_StatusEnum? _Status = (TradeUser_StatusEnum?)(1);
         /// <summary>
         /// 状态
         /// </summary>
@@ -206,7 +207,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_Status != value))
                 {
-                    SendPropertyChanging("Status",_Status,value);
+                    SendPropertyChanging("Status", _Status, value);
                     _Status = value;
                     SendPropertyChanged("Status");
                 }
@@ -228,7 +229,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TotalProfit != value))
                 {
-                    SendPropertyChanging("TotalProfit",_TotalProfit,value);
+                    SendPropertyChanging("TotalProfit", _TotalProfit, value);
                     _TotalProfit = value;
                     SendPropertyChanged("TotalProfit");
                 }
@@ -250,7 +251,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_ProfitRate != value))
                 {
-                    SendPropertyChanging("ProfitRate",_ProfitRate,value);
+                    SendPropertyChanging("ProfitRate", _ProfitRate, value);
                     _ProfitRate = value;
                     SendPropertyChanged("ProfitRate");
                 }
@@ -272,7 +273,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_Retracement != value))
                 {
-                    SendPropertyChanging("Retracement",_Retracement,value);
+                    SendPropertyChanging("Retracement", _Retracement, value);
                     _Retracement = value;
                     SendPropertyChanged("Retracement");
                 }
@@ -294,35 +295,35 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TradeDays != value))
                 {
-                    SendPropertyChanging("TradeDays",_TradeDays,value);
+                    SendPropertyChanging("TradeDays", _TradeDays, value);
                     _TradeDays = value;
                     SendPropertyChanged("TradeDays");
                 }
             }
         }
-        System.Nullable<double> _PositionCycle;
+        System.Nullable<double> _PositionDisRate;
         /// <summary>
-        /// 持仓周期
+        /// 持仓分布的数值
         /// </summary>
-        [Display(Name = "持仓周期")]
-        [Column("positioncycle")]
-        public virtual System.Nullable<double> PositionCycle
+        [Display(Name = "持仓分布的数值")]
+        [Column("positiondisrate")]
+        public virtual System.Nullable<double> PositionDisRate
         {
             get
             {
-                return _PositionCycle;
+                return _PositionDisRate;
             }
             set
             {
-                if ((_PositionCycle != value))
+                if ((_PositionDisRate != value))
                 {
-                    SendPropertyChanging("PositionCycle",_PositionCycle,value);
-                    _PositionCycle = value;
-                    SendPropertyChanged("PositionCycle");
+                    SendPropertyChanging("PositionDisRate", _PositionDisRate, value);
+                    _PositionDisRate = value;
+                    SendPropertyChanged("PositionDisRate");
                 }
             }
         }
-        System.Nullable<Int32> _Subscribers=0;
+        System.Nullable<Int32> _Subscribers = 0;
         /// <summary>
         /// 累计订阅人数
         /// </summary>
@@ -338,7 +339,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_Subscribers != value))
                 {
-                    SendPropertyChanging("Subscribers",_Subscribers,value);
+                    SendPropertyChanging("Subscribers", _Subscribers, value);
                     _Subscribers = value;
                     SendPropertyChanged("Subscribers");
                 }
@@ -360,7 +361,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_WinRate != value))
                 {
-                    SendPropertyChanging("WinRate",_WinRate,value);
+                    SendPropertyChanging("WinRate", _WinRate, value);
                     _WinRate = value;
                     SendPropertyChanged("WinRate");
                 }
@@ -382,7 +383,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TranFrequency != value))
                 {
-                    SendPropertyChanging("TranFrequency",_TranFrequency,value);
+                    SendPropertyChanging("TranFrequency", _TranFrequency, value);
                     _TranFrequency = value;
                     SendPropertyChanged("TranFrequency");
                 }
@@ -405,7 +406,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_HeadIconUrl != value))
                 {
-                    SendPropertyChanging("HeadIconUrl",_HeadIconUrl,value);
+                    SendPropertyChanging("HeadIconUrl", _HeadIconUrl, value);
                     _HeadIconUrl = value;
                     SendPropertyChanged("HeadIconUrl");
                 }
@@ -428,7 +429,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_NickName != value))
                 {
-                    SendPropertyChanging("NickName",_NickName,value);
+                    SendPropertyChanging("NickName", _NickName, value);
                     _NickName = value;
                     SendPropertyChanged("NickName");
                 }
@@ -450,7 +451,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TradeCount != value))
                 {
-                    SendPropertyChanging("TradeCount",_TradeCount,value);
+                    SendPropertyChanging("TradeCount", _TradeCount, value);
                     _TradeCount = value;
                     SendPropertyChanged("TradeCount");
                 }
@@ -472,7 +473,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TradeProfitCount != value))
                 {
-                    SendPropertyChanging("TradeProfitCount",_TradeProfitCount,value);
+                    SendPropertyChanging("TradeProfitCount", _TradeProfitCount, value);
                     _TradeProfitCount = value;
                     SendPropertyChanged("TradeProfitCount");
                 }
@@ -494,7 +495,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TradeLossCount != value))
                 {
-                    SendPropertyChanging("TradeLossCount",_TradeLossCount,value);
+                    SendPropertyChanging("TradeLossCount", _TradeLossCount, value);
                     _TradeLossCount = value;
                     SendPropertyChanged("TradeLossCount");
                 }
@@ -516,7 +517,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TradeLots != value))
                 {
-                    SendPropertyChanging("TradeLots",_TradeLots,value);
+                    SendPropertyChanging("TradeLots", _TradeLots, value);
                     _TradeLots = value;
                     SendPropertyChanged("TradeLots");
                 }
@@ -538,7 +539,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TradeProfits != value))
                 {
-                    SendPropertyChanging("TradeProfits",_TradeProfits,value);
+                    SendPropertyChanging("TradeProfits", _TradeProfits, value);
                     _TradeProfits = value;
                     SendPropertyChanged("TradeProfits");
                 }
@@ -560,7 +561,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_DayTradeLots != value))
                 {
-                    SendPropertyChanging("DayTradeLots",_DayTradeLots,value);
+                    SendPropertyChanging("DayTradeLots", _DayTradeLots, value);
                     _DayTradeLots = value;
                     SendPropertyChanged("DayTradeLots");
                 }
@@ -582,7 +583,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_MaxProfit != value))
                 {
-                    SendPropertyChanging("MaxProfit",_MaxProfit,value);
+                    SendPropertyChanging("MaxProfit", _MaxProfit, value);
                     _MaxProfit = value;
                     SendPropertyChanged("MaxProfit");
                 }
@@ -604,65 +605,110 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_MaxLoss != value))
                 {
-                    SendPropertyChanging("MaxLoss",_MaxLoss,value);
+                    SendPropertyChanging("MaxLoss", _MaxLoss, value);
                     _MaxLoss = value;
                     SendPropertyChanged("MaxLoss");
                 }
             }
         }
+        System.Nullable<Int32> _PositionCount = 0;
+        /// <summary>
+        /// 当前持仓数量
+        /// </summary>
+        [Display(Name = "当前持仓数量")]
+        [Column("positioncount")]
+        public virtual System.Nullable<Int32> PositionCount
+        {
+            get
+            {
+                return _PositionCount;
+            }
+            set
+            {
+                if ((_PositionCount != value))
+                {
+                    SendPropertyChanging("PositionCount", _PositionCount, value);
+                    _PositionCount = value;
+                    SendPropertyChanged("PositionCount");
+                }
+            }
+        }
+        String _PositionDisStr;
+        /// <summary>
+        /// 持仓分布描述
+        /// </summary>
+        [MaxLength(50)]
+        [Display(Name = "持仓分布描述")]
+        [Column("positiondisstr")]
+        public virtual String PositionDisStr
+        {
+            get
+            {
+                return _PositionDisStr;
+            }
+            set
+            {
+                if ((_PositionDisStr != value))
+                {
+                    SendPropertyChanging("PositionDisStr", _PositionDisStr, value);
+                    _PositionDisStr = value;
+                    SendPropertyChanged("PositionDisStr");
+                }
+            }
+        }
     }
-    public enum TradeUser_StyleEnum:int
+    public enum TradeUser_StyleEnum : int
     {
         /// <summary>
         /// 短线
         /// </summary>
-        Short = 1,
+        Short = 1 << 0,
         /// <summary>
         /// 长线
         /// </summary>
-        Long = 2,
+        Long = 1 << 1,
         /// <summary>
         /// 重仓
         /// </summary>
-        High = 3,
+        High = 1 << 2,
         /// <summary>
         /// 高频
         /// </summary>
-        HighFrequency = 4,
+        HighFrequency = 1 << 3,
         /// <summary>
         /// 主流
         /// </summary>
-        MainStream = 5,
+        MainStream = 1 << 4,
         /// <summary>
         /// 激进
         /// </summary>
-        Radical = 6,
+        Radical = 1 << 5,
         /// <summary>
         /// 中线
         /// </summary>
-        CenterLine = 7,
+        CenterLine = 1 << 6,
         /// <summary>
         /// 低频
         /// </summary>
-        LowFrequency=8,
+        LowFrequency = 1 << 7,
         /// <summary>
         /// 轻仓
         /// </summary>
-        LightWarehouse=9,
+        LightWarehouse = 1 << 8,
         /// <summary>
         /// 止损
         /// </summary>
-        StopLoss = 10,
+        StopLoss = 1 << 9,
         /// <summary>
         /// 高风险
         /// </summary>
-        HighRisk = 11,
+        HighRisk = 1 << 10,
         /// <summary>
         /// 稳健
         /// </summary>
-        Steady = 12
+        Steady = 1 << 11
     }
-    public enum TradeUser_StatusEnum:int
+    public enum TradeUser_StatusEnum : int
     {
         None = 0,
         /// <summary>
@@ -677,14 +723,14 @@ namespace FllowOrderSystem.DBModels
     /// <summary>
     /// 跟单设置
     /// </summary>
-    [TableConfig]
-    [Table("fllowusersetting")]
-    public class FllowUserSetting :Way.EntityDB.DataItem
+    [TableConfig(AutoSetPropertyNameOnInsert = "Type", AutoSetPropertyValueOnInsert = (FllowOrderSetting_TypeEnum)0)]
+    [Table("fllowordersetting")]
+    public class FllowOrderSetting : Way.EntityDB.DataItem
     {
         System.Nullable<Int32> _id;
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Required]
+        [DisallowNull]
         [Column("id")]
         public virtual System.Nullable<Int32> id
         {
@@ -696,14 +742,14 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_id != value))
                 {
-                    SendPropertyChanging("id",_id,value);
+                    SendPropertyChanging("id", _id, value);
                     _id = value;
                     SendPropertyChanged("id");
                 }
             }
         }
         System.Nullable<Int64> _UserId;
-        [Required]
+        [DisallowNull]
         [Column("userid")]
         public virtual System.Nullable<Int64> UserId
         {
@@ -715,14 +761,14 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_UserId != value))
                 {
-                    SendPropertyChanging("UserId",_UserId,value);
+                    SendPropertyChanging("UserId", _UserId, value);
                     _UserId = value;
                     SendPropertyChanged("UserId");
                 }
             }
         }
         System.Nullable<Int64> _TradeUserId;
-        [Required]
+        [DisallowNull]
         [Column("tradeuserid")]
         public virtual System.Nullable<Int64> TradeUserId
         {
@@ -734,13 +780,17 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TradeUserId != value))
                 {
-                    SendPropertyChanging("TradeUserId",_TradeUserId,value);
+                    SendPropertyChanging("TradeUserId", _TradeUserId, value);
                     _TradeUserId = value;
                     SendPropertyChanged("TradeUserId");
                 }
             }
         }
-        System.Nullable<Boolean> _IsEnable=true;
+        System.Nullable<Boolean> _IsEnable = true;
+        /// <summary>
+        /// 是否有效
+        /// </summary>
+        [Display(Name = "是否有效")]
         [Column("isenable")]
         public virtual System.Nullable<Boolean> IsEnable
         {
@@ -752,7 +802,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_IsEnable != value))
                 {
-                    SendPropertyChanging("IsEnable",_IsEnable,value);
+                    SendPropertyChanging("IsEnable", _IsEnable, value);
                     _IsEnable = value;
                     SendPropertyChanged("IsEnable");
                 }
@@ -770,7 +820,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_StartTime != value))
                 {
-                    SendPropertyChanging("StartTime",_StartTime,value);
+                    SendPropertyChanging("StartTime", _StartTime, value);
                     _StartTime = value;
                     SendPropertyChanged("StartTime");
                 }
@@ -788,7 +838,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_EndTime != value))
                 {
-                    SendPropertyChanging("EndTime",_EndTime,value);
+                    SendPropertyChanging("EndTime", _EndTime, value);
                     _EndTime = value;
                     SendPropertyChanged("EndTime");
                 }
@@ -811,7 +861,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_Lots != value))
                 {
-                    SendPropertyChanging("Lots",_Lots,value);
+                    SendPropertyChanging("Lots", _Lots, value);
                     _Lots = value;
                     SendPropertyChanged("Lots");
                 }
@@ -834,19 +884,19 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_Multiple != value))
                 {
-                    SendPropertyChanging("Multiple",_Multiple,value);
+                    SendPropertyChanging("Multiple", _Multiple, value);
                     _Multiple = value;
                     SendPropertyChanged("Multiple");
                 }
             }
         }
-        FllowUserSetting_DirectionEnum? _Direction=(FllowUserSetting_DirectionEnum?)(1);
+        FllowOrderSetting_DirectionEnum? _Direction = (FllowOrderSetting_DirectionEnum?)(1);
         /// <summary>
         /// 跟单方向
         /// </summary>
         [Display(Name = "跟单方向")]
         [Column("direction")]
-        public virtual FllowUserSetting_DirectionEnum? Direction
+        public virtual FllowOrderSetting_DirectionEnum? Direction
         {
             get
             {
@@ -856,7 +906,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_Direction != value))
                 {
-                    SendPropertyChanging("Direction",_Direction,value);
+                    SendPropertyChanging("Direction", _Direction, value);
                     _Direction = value;
                     SendPropertyChanged("Direction");
                 }
@@ -878,7 +928,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_DayTotalAmount != value))
                 {
-                    SendPropertyChanging("DayTotalAmount",_DayTotalAmount,value);
+                    SendPropertyChanging("DayTotalAmount", _DayTotalAmount, value);
                     _DayTotalAmount = value;
                     SendPropertyChanged("DayTotalAmount");
                 }
@@ -900,7 +950,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TotalAmount != value))
                 {
-                    SendPropertyChanging("TotalAmount",_TotalAmount,value);
+                    SendPropertyChanging("TotalAmount", _TotalAmount, value);
                     _TotalAmount = value;
                     SendPropertyChanged("TotalAmount");
                 }
@@ -923,13 +973,13 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_PositionRate != value))
                 {
-                    SendPropertyChanging("PositionRate",_PositionRate,value);
+                    SendPropertyChanging("PositionRate", _PositionRate, value);
                     _PositionRate = value;
                     SendPropertyChanged("PositionRate");
                 }
             }
         }
-        System.Nullable<Boolean> _IsFllowAll=true;
+        System.Nullable<Boolean> _IsFllowAll = true;
         /// <summary>
         /// 是否跟随所有产品
         /// </summary>
@@ -945,37 +995,36 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_IsFllowAll != value))
                 {
-                    SendPropertyChanging("IsFllowAll",_IsFllowAll,value);
+                    SendPropertyChanging("IsFllowAll", _IsFllowAll, value);
                     _IsFllowAll = value;
                     SendPropertyChanged("IsFllowAll");
                 }
             }
         }
-        String _NickName;
-        /// <summary>
-        /// 昵称
-        /// </summary>
-        [MaxLength(50)]
-        [Display(Name = "昵称")]
-        [Column("nickname")]
-        public virtual String NickName
+        FllowOrderSetting_TypeEnum? _Type;
+        [Column("type")]
+        public virtual FllowOrderSetting_TypeEnum? Type
         {
             get
             {
-                return _NickName;
+                return _Type;
             }
             set
             {
-                if ((_NickName != value))
+                if ((_Type != value))
                 {
-                    SendPropertyChanging("NickName",_NickName,value);
-                    _NickName = value;
-                    SendPropertyChanged("NickName");
+                    SendPropertyChanging("Type", _Type, value);
+                    _Type = value;
+                    SendPropertyChanged("Type");
                 }
             }
         }
+        [ForeignKey("TradeUserId")]
+        public virtual TradeUser TradeUser { get; set; }
+        [ForeignKey("UserId")]
+        public virtual UserInfo NickNameInfo { get; set; }
     }
-    public enum FllowUserSetting_DirectionEnum:int
+    public enum FllowOrderSetting_DirectionEnum : int
     {
         /// <summary>
         /// 正向
@@ -987,16 +1036,130 @@ namespace FllowOrderSystem.DBModels
         backward = 2
     }
     /// <summary>
+    /// 跟单设置
+    /// </summary>
+    [TableConfig(AutoSetPropertyNameOnInsert = "Type", AutoSetPropertyValueOnInsert = FllowOrderSetting_TypeEnum.UserFllowSetting)]
+    public class UserFllowSetting : FllowOrderSetting
+    {
+        System.Nullable<double> _OrderPriceRate = 0.002;
+        /// <summary>
+        /// 成交价格保护比例
+        /// </summary>
+        [Display(Name = "成交价格保护比例")]
+        [Column("orderpricerate")]
+        public virtual System.Nullable<double> OrderPriceRate
+        {
+            get
+            {
+                return _OrderPriceRate;
+            }
+            set
+            {
+                if ((_OrderPriceRate != value))
+                {
+                    SendPropertyChanging("OrderPriceRate", _OrderPriceRate, value);
+                    _OrderPriceRate = value;
+                    SendPropertyChanged("OrderPriceRate");
+                }
+            }
+        }
+        System.Nullable<Boolean> _IsOnlyMessage = false;
+        /// <summary>
+        /// 是否只是发送消息
+        /// </summary>
+        [Display(Name = "是否只是发送消息")]
+        [Column("isonlymessage")]
+        public virtual System.Nullable<Boolean> IsOnlyMessage
+        {
+            get
+            {
+                return _IsOnlyMessage;
+            }
+            set
+            {
+                if ((_IsOnlyMessage != value))
+                {
+                    SendPropertyChanging("IsOnlyMessage", _IsOnlyMessage, value);
+                    _IsOnlyMessage = value;
+                    SendPropertyChanged("IsOnlyMessage");
+                }
+            }
+        }
+        String _Language;
+        /// <summary>
+        /// 订阅时的语言
+        /// </summary>
+        [MaxLength(50)]
+        [Display(Name = "订阅时的语言")]
+        [Column("language")]
+        public virtual String Language
+        {
+            get
+            {
+                return _Language;
+            }
+            set
+            {
+                if ((_Language != value))
+                {
+                    SendPropertyChanging("Language", _Language, value);
+                    _Language = value;
+                    SendPropertyChanged("Language");
+                }
+            }
+        }
+    }
+    public enum FllowOrderSetting_TypeEnum : int
+    {
+        /// <summary>
+        /// 系统跟单
+        /// </summary>
+        SystemFllowSetting = 1,
+        /// <summary>
+        /// 用户跟单
+        /// </summary>
+        UserFllowSetting = 2
+    }
+    /// <summary>
+    /// 跟单设置
+    /// </summary>
+    [TableConfig(AutoSetPropertyNameOnInsert = "Type", AutoSetPropertyValueOnInsert = FllowOrderSetting_TypeEnum.SystemFllowSetting)]
+    public class SystemFllowSetting : FllowOrderSetting
+    {
+        System.Nullable<Int32> _Delay;
+        /// <summary>
+        /// 延迟几秒
+        /// </summary>
+        [Display(Name = "延迟几秒")]
+        [Column("delay")]
+        public virtual System.Nullable<Int32> Delay
+        {
+            get
+            {
+                return _Delay;
+            }
+            set
+            {
+                if ((_Delay != value))
+                {
+                    SendPropertyChanging("Delay", _Delay, value);
+                    _Delay = value;
+                    SendPropertyChanged("Delay");
+                }
+            }
+        }
+    }
+    /// <summary>
     /// 设置跟随什么产品
     /// </summary>
     [TableConfig]
     [Table("fllowproduct")]
-    public class FllowProduct :Way.EntityDB.DataItem
+    public class FllowProduct : Way.EntityDB.DataItem
     {
         System.Nullable<Int32> _id;
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Required]
+        [DisallowNull]
         [Column("id")]
         public virtual System.Nullable<Int32> id
         {
@@ -1008,28 +1171,28 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_id != value))
                 {
-                    SendPropertyChanging("id",_id,value);
+                    SendPropertyChanging("id", _id, value);
                     _id = value;
                     SendPropertyChanged("id");
                 }
             }
         }
-        System.Nullable<Int32> _FllowUserSettingId;
-        [Required]
-        [Column("fllowusersettingid")]
-        public virtual System.Nullable<Int32> FllowUserSettingId
+        System.Nullable<Int32> _FllowSettingId;
+        [DisallowNull]
+        [Column("fllowsettingid")]
+        public virtual System.Nullable<Int32> FllowSettingId
         {
             get
             {
-                return _FllowUserSettingId;
+                return _FllowSettingId;
             }
             set
             {
-                if ((_FllowUserSettingId != value))
+                if ((_FllowSettingId != value))
                 {
-                    SendPropertyChanging("FllowUserSettingId",_FllowUserSettingId,value);
-                    _FllowUserSettingId = value;
-                    SendPropertyChanged("FllowUserSettingId");
+                    SendPropertyChanging("FllowSettingId", _FllowSettingId, value);
+                    _FllowSettingId = value;
+                    SendPropertyChanged("FllowSettingId");
                 }
             }
         }
@@ -1046,7 +1209,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_Symbol != value))
                 {
-                    SendPropertyChanging("Symbol",_Symbol,value);
+                    SendPropertyChanging("Symbol", _Symbol, value);
                     _Symbol = value;
                     SendPropertyChanged("Symbol");
                 }
@@ -1064,7 +1227,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_Leverage != value))
                 {
-                    SendPropertyChanging("Leverage",_Leverage,value);
+                    SendPropertyChanging("Leverage", _Leverage, value);
                     _Leverage = value;
                     SendPropertyChanged("Leverage");
                 }
@@ -1074,14 +1237,14 @@ namespace FllowOrderSystem.DBModels
     /// <summary>
     /// 跟单记录
     /// </summary>
-    [TableConfig]
+    [TableConfig(AutoSetPropertyNameOnInsert = "Type", AutoSetPropertyValueOnInsert = (FllowHistory_TypeEnum)0)]
     [Table("fllowhistory")]
-    public class FllowHistory :Way.EntityDB.DataItem
+    public class FllowHistory : Way.EntityDB.DataItem
     {
         System.Nullable<Int32> _id;
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Required]
+        [DisallowNull]
         [Column("id")]
         public virtual System.Nullable<Int32> id
         {
@@ -1093,7 +1256,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_id != value))
                 {
-                    SendPropertyChanging("id",_id,value);
+                    SendPropertyChanging("id", _id, value);
                     _id = value;
                     SendPropertyChanged("id");
                 }
@@ -1103,7 +1266,7 @@ namespace FllowOrderSystem.DBModels
         /// <summary>
         /// 交易员
         /// </summary>
-        [Required]
+        [DisallowNull]
         [Display(Name = "交易员")]
         [Column("tradeuserid")]
         public virtual System.Nullable<Int64> TradeUserId
@@ -1116,7 +1279,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TradeUserId != value))
                 {
-                    SendPropertyChanging("TradeUserId",_TradeUserId,value);
+                    SendPropertyChanging("TradeUserId", _TradeUserId, value);
                     _TradeUserId = value;
                     SendPropertyChanged("TradeUserId");
                 }
@@ -1126,7 +1289,7 @@ namespace FllowOrderSystem.DBModels
         /// <summary>
         /// 跟单人
         /// </summary>
-        [Required]
+        [DisallowNull]
         [Display(Name = "跟单人")]
         [Column("userid")]
         public virtual System.Nullable<Int64> UserId
@@ -1139,7 +1302,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_UserId != value))
                 {
-                    SendPropertyChanging("UserId",_UserId,value);
+                    SendPropertyChanging("UserId", _UserId, value);
                     _UserId = value;
                     SendPropertyChanged("UserId");
                 }
@@ -1161,12 +1324,78 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_OriginalOrderId != value))
                 {
-                    SendPropertyChanging("OriginalOrderId",_OriginalOrderId,value);
+                    SendPropertyChanging("OriginalOrderId", _OriginalOrderId, value);
                     _OriginalOrderId = value;
                     SendPropertyChanged("OriginalOrderId");
                 }
             }
         }
+        FllowHistory_TypeEnum? _Type;
+        [Column("type")]
+        public virtual FllowHistory_TypeEnum? Type
+        {
+            get
+            {
+                return _Type;
+            }
+            set
+            {
+                if ((_Type != value))
+                {
+                    SendPropertyChanging("Type", _Type, value);
+                    _Type = value;
+                    SendPropertyChanged("Type");
+                }
+            }
+        }
+        String _TradeUserName;
+        /// <summary>
+        /// 程序自用
+        /// </summary>
+        [MaxLength(1)]
+        [Display(Name = "程序自用")]
+        [Column("tradeusername")]
+        public virtual String TradeUserName
+        {
+            get
+            {
+                return _TradeUserName;
+            }
+            set
+            {
+                if ((_TradeUserName != value))
+                {
+                    SendPropertyChanging("TradeUserName", _TradeUserName, value);
+                    _TradeUserName = value;
+                    SendPropertyChanged("TradeUserName");
+                }
+            }
+        }
+        System.Nullable<DateTime> _Time;
+        [Column("time")]
+        public virtual System.Nullable<DateTime> Time
+        {
+            get
+            {
+                return _Time;
+            }
+            set
+            {
+                if ((_Time != value))
+                {
+                    SendPropertyChanging("Time", _Time, value);
+                    _Time = value;
+                    SendPropertyChanged("Time");
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 跟单记录
+    /// </summary>
+    [TableConfig(AutoSetPropertyNameOnInsert = "Type", AutoSetPropertyValueOnInsert = FllowHistory_TypeEnum.SuccessOrder)]
+    public class SuccessOrder : FllowHistory
+    {
         System.Nullable<Int64> _OrderId;
         /// <summary>
         /// 跟单的订单号
@@ -1183,7 +1412,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_OrderId != value))
                 {
-                    SendPropertyChanging("OrderId",_OrderId,value);
+                    SendPropertyChanging("OrderId", _OrderId, value);
                     _OrderId = value;
                     SendPropertyChanged("OrderId");
                 }
@@ -1205,7 +1434,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_Profit != value))
                 {
-                    SendPropertyChanging("Profit",_Profit,value);
+                    SendPropertyChanging("Profit", _Profit, value);
                     _Profit = value;
                     SendPropertyChanged("Profit");
                 }
@@ -1227,53 +1456,9 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_CloseType != value))
                 {
-                    SendPropertyChanging("CloseType",_CloseType,value);
+                    SendPropertyChanging("CloseType", _CloseType, value);
                     _CloseType = value;
                     SendPropertyChanged("CloseType");
-                }
-            }
-        }
-        System.Nullable<Boolean> _IsOpenSuccess=true;
-        /// <summary>
-        /// 是否开仓成功
-        /// </summary>
-        [Display(Name = "是否开仓成功")]
-        [Column("isopensuccess")]
-        public virtual System.Nullable<Boolean> IsOpenSuccess
-        {
-            get
-            {
-                return _IsOpenSuccess;
-            }
-            set
-            {
-                if ((_IsOpenSuccess != value))
-                {
-                    SendPropertyChanging("IsOpenSuccess",_IsOpenSuccess,value);
-                    _IsOpenSuccess = value;
-                    SendPropertyChanged("IsOpenSuccess");
-                }
-            }
-        }
-        FllowHistory_OpenFailReasonEnum? _OpenFailReason;
-        /// <summary>
-        /// 开仓失败原因
-        /// </summary>
-        [Display(Name = "开仓失败原因")]
-        [Column("openfailreason")]
-        public virtual FllowHistory_OpenFailReasonEnum? OpenFailReason
-        {
-            get
-            {
-                return _OpenFailReason;
-            }
-            set
-            {
-                if ((_OpenFailReason != value))
-                {
-                    SendPropertyChanging("OpenFailReason",_OpenFailReason,value);
-                    _OpenFailReason = value;
-                    SendPropertyChanged("OpenFailReason");
                 }
             }
         }
@@ -1293,14 +1478,102 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_OrderAmount != value))
                 {
-                    SendPropertyChanging("OrderAmount",_OrderAmount,value);
+                    SendPropertyChanging("OrderAmount", _OrderAmount, value);
                     _OrderAmount = value;
                     SendPropertyChanged("OrderAmount");
                 }
             }
         }
+        System.Nullable<double> _ProfitRate;
+        /// <summary>
+        /// 收益率
+        /// </summary>
+        [Display(Name = "收益率")]
+        [Column("profitrate")]
+        public virtual System.Nullable<double> ProfitRate
+        {
+            get
+            {
+                return _ProfitRate;
+            }
+            set
+            {
+                if ((_ProfitRate != value))
+                {
+                    SendPropertyChanging("ProfitRate", _ProfitRate, value);
+                    _ProfitRate = value;
+                    SendPropertyChanged("ProfitRate");
+                }
+            }
+        }
+        System.Nullable<double> _OpenPrice;
+        /// <summary>
+        /// 开仓价
+        /// </summary>
+        [Display(Name = "开仓价")]
+        [Column("openprice")]
+        public virtual System.Nullable<double> OpenPrice
+        {
+            get
+            {
+                return _OpenPrice;
+            }
+            set
+            {
+                if ((_OpenPrice != value))
+                {
+                    SendPropertyChanging("OpenPrice", _OpenPrice, value);
+                    _OpenPrice = value;
+                    SendPropertyChanged("OpenPrice");
+                }
+            }
+        }
+        System.Nullable<double> _ClosePrice;
+        /// <summary>
+        /// 平仓价
+        /// </summary>
+        [Display(Name = "平仓价")]
+        [Column("closeprice")]
+        public virtual System.Nullable<double> ClosePrice
+        {
+            get
+            {
+                return _ClosePrice;
+            }
+            set
+            {
+                if ((_ClosePrice != value))
+                {
+                    SendPropertyChanging("ClosePrice", _ClosePrice, value);
+                    _ClosePrice = value;
+                    SendPropertyChanged("ClosePrice");
+                }
+            }
+        }
+        System.Nullable<Boolean> _IsFllowDisable = false;
+        /// <summary>
+        /// 是否已经停止自动跟单
+        /// </summary>
+        [Display(Name = "是否已经停止自动跟单")]
+        [Column("isfllowdisable")]
+        public virtual System.Nullable<Boolean> IsFllowDisable
+        {
+            get
+            {
+                return _IsFllowDisable;
+            }
+            set
+            {
+                if ((_IsFllowDisable != value))
+                {
+                    SendPropertyChanging("IsFllowDisable", _IsFllowDisable, value);
+                    _IsFllowDisable = value;
+                    SendPropertyChanged("IsFllowDisable");
+                }
+            }
+        }
     }
-    public enum FllowHistory_CloseTypeEnum:int
+    public enum FllowHistory_CloseTypeEnum : int
     {
         /// <summary>
         /// 跟单平仓
@@ -1315,7 +1588,36 @@ namespace FllowOrderSystem.DBModels
         /// </summary>
         Manual = 3
     }
-    public enum FllowHistory_OpenFailReasonEnum:int
+    /// <summary>
+    /// 跟单记录
+    /// </summary>
+    [TableConfig(AutoSetPropertyNameOnInsert = "Type", AutoSetPropertyValueOnInsert = FllowHistory_TypeEnum.FailOrder)]
+    public class FailOrder : FllowHistory
+    {
+        FllowHistory_OpenFailReasonEnum? _OpenFailReason;
+        /// <summary>
+        /// 开仓失败原因
+        /// </summary>
+        [Display(Name = "开仓失败原因")]
+        [Column("openfailreason")]
+        public virtual FllowHistory_OpenFailReasonEnum? OpenFailReason
+        {
+            get
+            {
+                return _OpenFailReason;
+            }
+            set
+            {
+                if ((_OpenFailReason != value))
+                {
+                    SendPropertyChanging("OpenFailReason", _OpenFailReason, value);
+                    _OpenFailReason = value;
+                    SendPropertyChanged("OpenFailReason");
+                }
+            }
+        }
+    }
+    public enum FllowHistory_OpenFailReasonEnum : int
     {
         /// <summary>
         /// 账户资金不足
@@ -1344,70 +1646,28 @@ namespace FllowOrderSystem.DBModels
         /// <summary>
         /// 网络异常
         /// </summary>
-        NetworkError =7,
-    }
-    /// <summary>
-    /// 关注订单
-    /// </summary>
-    [TableConfig]
-    [Table("interestorder")]
-    public class InterestOrder :Way.EntityDB.DataItem
-    {
-        System.Nullable<Int64> _OrderId;
-        [Key]
-        [Required]
-        [Column("orderid")]
-        public virtual System.Nullable<Int64> OrderId
-        {
-            get
-            {
-                return _OrderId;
-            }
-            set
-            {
-                if ((_OrderId != value))
-                {
-                    SendPropertyChanging("OrderId",_OrderId,value);
-                    _OrderId = value;
-                    SendPropertyChanged("OrderId");
-                }
-            }
-        }
-        System.Nullable<Int64> _UserId;
+        NetworkError = 7,
         /// <summary>
-        /// 关注的用户
+        /// 订单撮合时间超时
         /// </summary>
-        [Required]
-        [Display(Name = "关注的用户")]
-        [Column("userid")]
-        public virtual System.Nullable<Int64> UserId
-        {
-            get
-            {
-                return _UserId;
-            }
-            set
-            {
-                if ((_UserId != value))
-                {
-                    SendPropertyChanging("UserId",_UserId,value);
-                    _UserId = value;
-                    SendPropertyChanged("UserId");
-                }
-            }
-        }
+        Timeout = 8
+    }
+    public enum FllowHistory_TypeEnum : int
+    {
+        FailOrder = 1,
+        SuccessOrder = 2
     }
     /// <summary>
     /// 消费记录
     /// </summary>
     [TableConfig]
     [Table("consumerecord")]
-    public class ConsumeRecord :Way.EntityDB.DataItem
+    public class ConsumeRecord : Way.EntityDB.DataItem
     {
         System.Nullable<Int32> _id;
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Required]
+        [DisallowNull]
         [Column("id")]
         public virtual System.Nullable<Int32> id
         {
@@ -1419,7 +1679,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_id != value))
                 {
-                    SendPropertyChanging("id",_id,value);
+                    SendPropertyChanging("id", _id, value);
                     _id = value;
                     SendPropertyChanged("id");
                 }
@@ -1429,7 +1689,7 @@ namespace FllowOrderSystem.DBModels
         /// <summary>
         /// 收款人
         /// </summary>
-        [Required]
+        [DisallowNull]
         [Display(Name = "收款人")]
         [Column("tradeuserid")]
         public virtual System.Nullable<Int64> TradeUserId
@@ -1442,7 +1702,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TradeUserId != value))
                 {
-                    SendPropertyChanging("TradeUserId",_TradeUserId,value);
+                    SendPropertyChanging("TradeUserId", _TradeUserId, value);
                     _TradeUserId = value;
                     SendPropertyChanged("TradeUserId");
                 }
@@ -1452,7 +1712,7 @@ namespace FllowOrderSystem.DBModels
         /// <summary>
         /// 付款人
         /// </summary>
-        [Required]
+        [DisallowNull]
         [Display(Name = "付款人")]
         [Column("userid")]
         public virtual System.Nullable<Int64> UserId
@@ -1465,7 +1725,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_UserId != value))
                 {
-                    SendPropertyChanging("UserId",_UserId,value);
+                    SendPropertyChanging("UserId", _UserId, value);
                     _UserId = value;
                     SendPropertyChanged("UserId");
                 }
@@ -1487,13 +1747,13 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_PayTime != value))
                 {
-                    SendPropertyChanging("PayTime",_PayTime,value);
+                    SendPropertyChanging("PayTime", _PayTime, value);
                     _PayTime = value;
                     SendPropertyChanged("PayTime");
                 }
             }
         }
-        System.Nullable<Boolean> _IsConfirm=false;
+        System.Nullable<Boolean> _IsConfirm = false;
         /// <summary>
         /// 资金是否已经打给交易员
         /// </summary>
@@ -1509,7 +1769,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_IsConfirm != value))
                 {
-                    SendPropertyChanging("IsConfirm",_IsConfirm,value);
+                    SendPropertyChanging("IsConfirm", _IsConfirm, value);
                     _IsConfirm = value;
                     SendPropertyChanged("IsConfirm");
                 }
@@ -1531,7 +1791,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_Amount != value))
                 {
-                    SendPropertyChanging("Amount",_Amount,value);
+                    SendPropertyChanging("Amount", _Amount, value);
                     _Amount = value;
                     SendPropertyChanged("Amount");
                 }
@@ -1540,8 +1800,9 @@ namespace FllowOrderSystem.DBModels
         System.Nullable<DateTime> _ToBalanceTime;
         /// <summary>
         /// 转入余额时间
+        /// 预计转入余额的时间，没转入之前，这个字段也是有值的
         /// </summary>
-        [Display(Name = "转入余额时间")]
+        [Display(Name = "转入余额时间  预计转入余额的时间，没转入之前，这个字段也是有值的")]
         [Column("tobalancetime")]
         public virtual System.Nullable<DateTime> ToBalanceTime
         {
@@ -1553,9 +1814,32 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_ToBalanceTime != value))
                 {
-                    SendPropertyChanging("ToBalanceTime",_ToBalanceTime,value);
+                    SendPropertyChanging("ToBalanceTime", _ToBalanceTime, value);
                     _ToBalanceTime = value;
                     SendPropertyChanged("ToBalanceTime");
+                }
+            }
+        }
+        String _TransferVoucher;
+        /// <summary>
+        /// 转账凭证
+        /// </summary>
+        [MaxLength(50)]
+        [Display(Name = "转账凭证")]
+        [Column("transfervoucher")]
+        public virtual String TransferVoucher
+        {
+            get
+            {
+                return _TransferVoucher;
+            }
+            set
+            {
+                if ((_TransferVoucher != value))
+                {
+                    SendPropertyChanging("TransferVoucher", _TransferVoucher, value);
+                    _TransferVoucher = value;
+                    SendPropertyChanged("TransferVoucher");
                 }
             }
         }
@@ -1565,12 +1849,12 @@ namespace FllowOrderSystem.DBModels
     /// </summary>
     [TableConfig]
     [Table("concern")]
-    public class Concern :Way.EntityDB.DataItem
+    public class Concern : Way.EntityDB.DataItem
     {
         System.Nullable<Int32> _id;
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Required]
+        [DisallowNull]
         [Column("id")]
         public virtual System.Nullable<Int32> id
         {
@@ -1582,7 +1866,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_id != value))
                 {
-                    SendPropertyChanging("id",_id,value);
+                    SendPropertyChanging("id", _id, value);
                     _id = value;
                     SendPropertyChanged("id");
                 }
@@ -1592,7 +1876,7 @@ namespace FllowOrderSystem.DBModels
         /// <summary>
         /// 交易员
         /// </summary>
-        [Required]
+        [DisallowNull]
         [Display(Name = "交易员")]
         [Column("tradeuserid")]
         public virtual System.Nullable<Int64> TradeUserId
@@ -1605,7 +1889,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TradeUserId != value))
                 {
-                    SendPropertyChanging("TradeUserId",_TradeUserId,value);
+                    SendPropertyChanging("TradeUserId", _TradeUserId, value);
                     _TradeUserId = value;
                     SendPropertyChanged("TradeUserId");
                 }
@@ -1615,7 +1899,7 @@ namespace FllowOrderSystem.DBModels
         /// <summary>
         /// 用户
         /// </summary>
-        [Required]
+        [DisallowNull]
         [Display(Name = "用户")]
         [Column("userid")]
         public virtual System.Nullable<Int64> UserId
@@ -1628,7 +1912,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_UserId != value))
                 {
-                    SendPropertyChanging("UserId",_UserId,value);
+                    SendPropertyChanging("UserId", _UserId, value);
                     _UserId = value;
                     SendPropertyChanged("UserId");
                 }
@@ -1636,16 +1920,16 @@ namespace FllowOrderSystem.DBModels
         }
     }
     /// <summary>
-    /// 交易对胜率
+    /// 用户的交易对胜率
     /// </summary>
     [TableConfig]
     [Table("symbolwinrate")]
-    public class SymbolWinRate :Way.EntityDB.DataItem
+    public class SymbolWinRate : Way.EntityDB.DataItem
     {
         System.Nullable<Int32> _id;
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Required]
+        [DisallowNull]
         [Column("id")]
         public virtual System.Nullable<Int32> id
         {
@@ -1657,14 +1941,18 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_id != value))
                 {
-                    SendPropertyChanging("id",_id,value);
+                    SendPropertyChanging("id", _id, value);
                     _id = value;
                     SendPropertyChanged("id");
                 }
             }
         }
         System.Nullable<Int64> _TradeUserId;
-        [Required]
+        /// <summary>
+        /// 用户id
+        /// </summary>
+        [DisallowNull]
+        [Display(Name = "用户id")]
         [Column("tradeuserid")]
         public virtual System.Nullable<Int64> TradeUserId
         {
@@ -1676,7 +1964,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_TradeUserId != value))
                 {
-                    SendPropertyChanging("TradeUserId",_TradeUserId,value);
+                    SendPropertyChanging("TradeUserId", _TradeUserId, value);
                     _TradeUserId = value;
                     SendPropertyChanged("TradeUserId");
                 }
@@ -1699,7 +1987,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_Symbol != value))
                 {
-                    SendPropertyChanging("Symbol",_Symbol,value);
+                    SendPropertyChanging("Symbol", _Symbol, value);
                     _Symbol = value;
                     SendPropertyChanged("Symbol");
                 }
@@ -1721,7 +2009,7 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_WinRate != value))
                 {
-                    SendPropertyChanging("WinRate",_WinRate,value);
+                    SendPropertyChanging("WinRate", _WinRate, value);
                     _WinRate = value;
                     SendPropertyChanged("WinRate");
                 }
@@ -1743,9 +2031,473 @@ namespace FllowOrderSystem.DBModels
             {
                 if ((_ProfitRate != value))
                 {
-                    SendPropertyChanging("ProfitRate",_ProfitRate,value);
+                    SendPropertyChanging("ProfitRate", _ProfitRate, value);
                     _ProfitRate = value;
                     SendPropertyChanged("ProfitRate");
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 用户收益表
+    /// </summary>
+    [TableConfig]
+    [Table("userprofit")]
+    public class UserProfit : Way.EntityDB.DataItem
+    {
+        System.Nullable<Int32> _id;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DisallowNull]
+        [Column("id")]
+        public virtual System.Nullable<Int32> id
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                if ((_id != value))
+                {
+                    SendPropertyChanging("id", _id, value);
+                    _id = value;
+                    SendPropertyChanged("id");
+                }
+            }
+        }
+        System.Nullable<Int64> _TradeUserId;
+        /// <summary>
+        /// 用户id
+        /// </summary>
+        [DisallowNull]
+        [Display(Name = "用户id")]
+        [Column("tradeuserid")]
+        public virtual System.Nullable<Int64> TradeUserId
+        {
+            get
+            {
+                return _TradeUserId;
+            }
+            set
+            {
+                if ((_TradeUserId != value))
+                {
+                    SendPropertyChanging("TradeUserId", _TradeUserId, value);
+                    _TradeUserId = value;
+                    SendPropertyChanged("TradeUserId");
+                }
+            }
+        }
+        System.Nullable<DateTime> _Date;
+        /// <summary>
+        /// 日期
+        /// </summary>
+        [Display(Name = "日期")]
+        [Column("date")]
+        public virtual System.Nullable<DateTime> Date
+        {
+            get
+            {
+                return _Date;
+            }
+            set
+            {
+                if ((_Date != value))
+                {
+                    SendPropertyChanging("Date", _Date, value);
+                    _Date = value;
+                    SendPropertyChanged("Date");
+                }
+            }
+        }
+        UserProfit_TypeEnum? _Type;
+        /// <summary>
+        /// 日期类型
+        /// </summary>
+        [Display(Name = "日期类型")]
+        [Column("type")]
+        public virtual UserProfit_TypeEnum? Type
+        {
+            get
+            {
+                return _Type;
+            }
+            set
+            {
+                if ((_Type != value))
+                {
+                    SendPropertyChanging("Type", _Type, value);
+                    _Type = value;
+                    SendPropertyChanged("Type");
+                }
+            }
+        }
+        System.Nullable<double> _Loss;
+        /// <summary>
+        /// 亏损
+        /// </summary>
+        [Display(Name = "亏损")]
+        [Column("loss")]
+        public virtual System.Nullable<double> Loss
+        {
+            get
+            {
+                return _Loss;
+            }
+            set
+            {
+                if ((_Loss != value))
+                {
+                    SendPropertyChanging("Loss", _Loss, value);
+                    _Loss = value;
+                    SendPropertyChanged("Loss");
+                }
+            }
+        }
+        System.Nullable<double> _Profit;
+        /// <summary>
+        /// 收益
+        /// </summary>
+        [Display(Name = "收益")]
+        [Column("profit")]
+        public virtual System.Nullable<double> Profit
+        {
+            get
+            {
+                return _Profit;
+            }
+            set
+            {
+                if ((_Profit != value))
+                {
+                    SendPropertyChanging("Profit", _Profit, value);
+                    _Profit = value;
+                    SendPropertyChanged("Profit");
+                }
+            }
+        }
+    }
+    public enum UserProfit_TypeEnum : int
+    {
+        /// <summary>
+        /// 日
+        /// </summary>
+        Day = 1,
+        /// <summary>
+        /// 周
+        /// </summary>
+        Week = 2,
+        /// <summary>
+        /// 月
+        /// </summary>
+        Month = 3
+    }
+    /// <summary>
+    /// 用户信息
+    /// </summary>
+    [TableConfig]
+    [Table("userinfo")]
+    public class UserInfo : Way.EntityDB.DataItem
+    {
+        System.Nullable<Int64> _UserId;
+        [Key]
+        [DisallowNull]
+        [Column("userid")]
+        public virtual System.Nullable<Int64> UserId
+        {
+            get
+            {
+                return _UserId;
+            }
+            set
+            {
+                if ((_UserId != value))
+                {
+                    SendPropertyChanging("UserId", _UserId, value);
+                    _UserId = value;
+                    SendPropertyChanged("UserId");
+                }
+            }
+        }
+        String _NickName;
+        /// <summary>
+        /// 昵称
+        /// </summary>
+        [MaxLength(50)]
+        [Display(Name = "昵称")]
+        [Column("nickname")]
+        public virtual String NickName
+        {
+            get
+            {
+                return _NickName;
+            }
+            set
+            {
+                if ((_NickName != value))
+                {
+                    SendPropertyChanging("NickName", _NickName, value);
+                    _NickName = value;
+                    SendPropertyChanged("NickName");
+                }
+            }
+        }
+        String _HeadIconUrl;
+        /// <summary>
+        /// 头像
+        /// </summary>
+        [MaxLength(100)]
+        [Display(Name = "头像")]
+        [Column("headiconurl")]
+        public virtual String HeadIconUrl
+        {
+            get
+            {
+                return _HeadIconUrl;
+            }
+            set
+            {
+                if ((_HeadIconUrl != value))
+                {
+                    SendPropertyChanging("HeadIconUrl", _HeadIconUrl, value);
+                    _HeadIconUrl = value;
+                    SendPropertyChanged("HeadIconUrl");
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 记录一些交易员的订单
+    /// </summary>
+    [TableConfig]
+    [Table("traderorder")]
+    public class TraderOrder : Way.EntityDB.DataItem
+    {
+        String _Symbol;
+        [MaxLength(50)]
+        [Column("symbol")]
+        public virtual String Symbol
+        {
+            get
+            {
+                return _Symbol;
+            }
+            set
+            {
+                if ((_Symbol != value))
+                {
+                    SendPropertyChanging("Symbol", _Symbol, value);
+                    _Symbol = value;
+                    SendPropertyChanged("Symbol");
+                }
+            }
+        }
+        System.Nullable<double> _OrderPrice;
+        [Column("orderprice")]
+        public virtual System.Nullable<double> OrderPrice
+        {
+            get
+            {
+                return _OrderPrice;
+            }
+            set
+            {
+                if ((_OrderPrice != value))
+                {
+                    SendPropertyChanging("OrderPrice", _OrderPrice, value);
+                    _OrderPrice = value;
+                    SendPropertyChanged("OrderPrice");
+                }
+            }
+        }
+        System.Nullable<Int32> _Leverage;
+        [Column("leverage")]
+        public virtual System.Nullable<Int32> Leverage
+        {
+            get
+            {
+                return _Leverage;
+            }
+            set
+            {
+                if ((_Leverage != value))
+                {
+                    SendPropertyChanging("Leverage", _Leverage, value);
+                    _Leverage = value;
+                    SendPropertyChanged("Leverage");
+                }
+            }
+        }
+        System.Nullable<Int32> _Bstype;
+        [Column("bstype")]
+        public virtual System.Nullable<Int32> Bstype
+        {
+            get
+            {
+                return _Bstype;
+            }
+            set
+            {
+                if ((_Bstype != value))
+                {
+                    SendPropertyChanging("Bstype", _Bstype, value);
+                    _Bstype = value;
+                    SendPropertyChanged("Bstype");
+                }
+            }
+        }
+        System.Nullable<Int32> _Lots;
+        [Column("lots")]
+        public virtual System.Nullable<Int32> Lots
+        {
+            get
+            {
+                return _Lots;
+            }
+            set
+            {
+                if ((_Lots != value))
+                {
+                    SendPropertyChanging("Lots", _Lots, value);
+                    _Lots = value;
+                    SendPropertyChanged("Lots");
+                }
+            }
+        }
+        System.Nullable<Int64> _TradeUserId;
+        [Column("tradeuserid")]
+        public virtual System.Nullable<Int64> TradeUserId
+        {
+            get
+            {
+                return _TradeUserId;
+            }
+            set
+            {
+                if ((_TradeUserId != value))
+                {
+                    SendPropertyChanging("TradeUserId", _TradeUserId, value);
+                    _TradeUserId = value;
+                    SendPropertyChanged("TradeUserId");
+                }
+            }
+        }
+        System.Nullable<Int64> _OrderId;
+        [Key]
+        [DisallowNull]
+        [Column("orderid")]
+        public virtual System.Nullable<Int64> OrderId
+        {
+            get
+            {
+                return _OrderId;
+            }
+            set
+            {
+                if ((_OrderId != value))
+                {
+                    SendPropertyChanging("OrderId", _OrderId, value);
+                    _OrderId = value;
+                    SendPropertyChanged("OrderId");
+                }
+            }
+        }
+        System.Nullable<double> _Profit;
+        [Column("profit")]
+        public virtual System.Nullable<double> Profit
+        {
+            get
+            {
+                return _Profit;
+            }
+            set
+            {
+                if ((_Profit != value))
+                {
+                    SendPropertyChanging("Profit", _Profit, value);
+                    _Profit = value;
+                    SendPropertyChanged("Profit");
+                }
+            }
+        }
+        System.Nullable<double> _ProfitRate;
+        [Column("profitrate")]
+        public virtual System.Nullable<double> ProfitRate
+        {
+            get
+            {
+                return _ProfitRate;
+            }
+            set
+            {
+                if ((_ProfitRate != value))
+                {
+                    SendPropertyChanging("ProfitRate", _ProfitRate, value);
+                    _ProfitRate = value;
+                    SendPropertyChanged("ProfitRate");
+                }
+            }
+        }
+        System.Nullable<double> _ClosePrice;
+        [Column("closeprice")]
+        public virtual System.Nullable<double> ClosePrice
+        {
+            get
+            {
+                return _ClosePrice;
+            }
+            set
+            {
+                if ((_ClosePrice != value))
+                {
+                    SendPropertyChanging("ClosePrice", _ClosePrice, value);
+                    _ClosePrice = value;
+                    SendPropertyChanged("ClosePrice");
+                }
+            }
+        }
+        System.Nullable<DateTime> _OpenTime;
+        /// <summary>
+        /// 开仓时间
+        /// </summary>
+        [Display(Name = "开仓时间")]
+        [Column("opentime")]
+        public virtual System.Nullable<DateTime> OpenTime
+        {
+            get
+            {
+                return _OpenTime;
+            }
+            set
+            {
+                if ((_OpenTime != value))
+                {
+                    SendPropertyChanging("OpenTime", _OpenTime, value);
+                    _OpenTime = value;
+                    SendPropertyChanged("OpenTime");
+                }
+            }
+        }
+        System.Nullable<DateTime> _CloseTime;
+        /// <summary>
+        /// 平仓时间
+        /// </summary>
+        [Display(Name = "平仓时间")]
+        [Column("closetime")]
+        public virtual System.Nullable<DateTime> CloseTime
+        {
+            get
+            {
+                return _CloseTime;
+            }
+            set
+            {
+                if ((_CloseTime != value))
+                {
+                    SendPropertyChanging("CloseTime", _CloseTime, value);
+                    _CloseTime = value;
+                    SendPropertyChanged("CloseTime");
                 }
             }
         }
@@ -1756,7 +2508,7 @@ namespace FllowOrderSystem.DBModels.DB
 {
     public class FllowOrders : Way.EntityDB.DBContext
     {
-         public FllowOrders(string connection, Way.EntityDB.DatabaseType dbType): base(connection, dbType)
+        public FllowOrders(string connection, Way.EntityDB.DatabaseType dbType, bool upgradeDatabase = true) : base(connection, dbType, upgradeDatabase)
         {
             if (!setEvented)
             {
@@ -1774,21 +2526,22 @@ namespace FllowOrderSystem.DBModels.DB
         static bool setEvented = false;
         static void Database_BeforeDelete(object sender, Way.EntityDB.DatabaseModifyEventArg e)
         {
-             var db =  sender as FllowOrderSystem.DBModels.DB.FllowOrders;
+            var db = sender as FllowOrderSystem.DBModels.DB.FllowOrders;
             if (db == null) return;
-            if (e.DataItem is FllowUserSetting)
+            if (e.DataItem is FllowOrderSetting)
             {
-                var deletingItem = (FllowUserSetting)e.DataItem;
-                var items0 = (from m in db.FllowProduct where m.FllowUserSettingId == deletingItem.id
-                select new FllowProduct
-                {
-                    id = m.id
-                }
+                var deletingItem = (FllowOrderSetting)e.DataItem;
+                var items0 = (from m in db.FllowProduct
+                              where m.FllowSettingId == deletingItem.id
+                              select new FllowProduct
+                              {
+                                  id = m.id
+                              }
                 );
-                while(true)
+                while (true)
                 {
                     var data2del = items0.Take(100).ToList();
-                    if(data2del.Count() ==0)
+                    if (data2del.Count() == 0)
                         break;
                     foreach (var t in data2del)
                     {
@@ -1801,13 +2554,25 @@ namespace FllowOrderSystem.DBModels.DB
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TradeUser>().HasKey(m => m.TradeUserId);
-            modelBuilder.Entity<FllowUserSetting>().HasKey(m => m.id);
+            modelBuilder.Entity<FllowOrderSetting>().HasKey(m => m.id);
+            modelBuilder.Entity<FllowOrderSetting>().HasDiscriminator<FllowOrderSetting_TypeEnum?>("Type")
+            .HasValue<FllowOrderSetting>((FllowOrderSetting_TypeEnum)0)
+            .HasValue<UserFllowSetting>(FllowOrderSetting_TypeEnum.UserFllowSetting)
+            .HasValue<SystemFllowSetting>(FllowOrderSetting_TypeEnum.SystemFllowSetting)
+            ;
             modelBuilder.Entity<FllowProduct>().HasKey(m => m.id);
             modelBuilder.Entity<FllowHistory>().HasKey(m => m.id);
-            modelBuilder.Entity<InterestOrder>().HasKey(m => m.OrderId);
+            modelBuilder.Entity<FllowHistory>().HasDiscriminator<FllowHistory_TypeEnum?>("Type")
+            .HasValue<FllowHistory>((FllowHistory_TypeEnum)0)
+            .HasValue<SuccessOrder>(FllowHistory_TypeEnum.SuccessOrder)
+            .HasValue<FailOrder>(FllowHistory_TypeEnum.FailOrder)
+            ;
             modelBuilder.Entity<ConsumeRecord>().HasKey(m => m.id);
             modelBuilder.Entity<Concern>().HasKey(m => m.id);
             modelBuilder.Entity<SymbolWinRate>().HasKey(m => m.id);
+            modelBuilder.Entity<UserProfit>().HasKey(m => m.id);
+            modelBuilder.Entity<UserInfo>().HasKey(m => m.UserId);
+            modelBuilder.Entity<TraderOrder>().HasKey(m => m.OrderId);
         }
         System.Linq.IQueryable<TradeUser> _TradeUser;
         public virtual System.Linq.IQueryable<TradeUser> TradeUser
@@ -1821,16 +2586,40 @@ namespace FllowOrderSystem.DBModels.DB
                 return _TradeUser;
             }
         }
-        System.Linq.IQueryable<FllowUserSetting> _FllowUserSetting;
-        public virtual System.Linq.IQueryable<FllowUserSetting> FllowUserSetting
+        System.Linq.IQueryable<FllowOrderSetting> _FllowOrderSetting;
+        public virtual System.Linq.IQueryable<FllowOrderSetting> FllowOrderSetting
         {
             get
             {
-                if (_FllowUserSetting == null)
+                if (_FllowOrderSetting == null)
                 {
-                    _FllowUserSetting = this.Set<FllowUserSetting>();
+                    _FllowOrderSetting = this.Set<FllowOrderSetting>();
                 }
-                return _FllowUserSetting;
+                return _FllowOrderSetting;
+            }
+        }
+        System.Linq.IQueryable<UserFllowSetting> _UserFllowSetting;
+        public virtual System.Linq.IQueryable<UserFllowSetting> UserFllowSetting
+        {
+            get
+            {
+                if (_UserFllowSetting == null)
+                {
+                    _UserFllowSetting = this.Set<UserFllowSetting>();
+                }
+                return _UserFllowSetting;
+            }
+        }
+        System.Linq.IQueryable<SystemFllowSetting> _SystemFllowSetting;
+        public virtual System.Linq.IQueryable<SystemFllowSetting> SystemFllowSetting
+        {
+            get
+            {
+                if (_SystemFllowSetting == null)
+                {
+                    _SystemFllowSetting = this.Set<SystemFllowSetting>();
+                }
+                return _SystemFllowSetting;
             }
         }
         System.Linq.IQueryable<FllowProduct> _FllowProduct;
@@ -1857,16 +2646,28 @@ namespace FllowOrderSystem.DBModels.DB
                 return _FllowHistory;
             }
         }
-        System.Linq.IQueryable<InterestOrder> _InterestOrder;
-        public virtual System.Linq.IQueryable<InterestOrder> InterestOrder
+        System.Linq.IQueryable<SuccessOrder> _SuccessOrder;
+        public virtual System.Linq.IQueryable<SuccessOrder> SuccessOrder
         {
             get
             {
-                if (_InterestOrder == null)
+                if (_SuccessOrder == null)
                 {
-                    _InterestOrder = this.Set<InterestOrder>();
+                    _SuccessOrder = this.Set<SuccessOrder>();
                 }
-                return _InterestOrder;
+                return _SuccessOrder;
+            }
+        }
+        System.Linq.IQueryable<FailOrder> _FailOrder;
+        public virtual System.Linq.IQueryable<FailOrder> FailOrder
+        {
+            get
+            {
+                if (_FailOrder == null)
+                {
+                    _FailOrder = this.Set<FailOrder>();
+                }
+                return _FailOrder;
             }
         }
         System.Linq.IQueryable<ConsumeRecord> _ConsumeRecord;
@@ -1905,55 +2706,104 @@ namespace FllowOrderSystem.DBModels.DB
                 return _SymbolWinRate;
             }
         }
+        System.Linq.IQueryable<UserProfit> _UserProfit;
+        public virtual System.Linq.IQueryable<UserProfit> UserProfit
+        {
+            get
+            {
+                if (_UserProfit == null)
+                {
+                    _UserProfit = this.Set<UserProfit>();
+                }
+                return _UserProfit;
+            }
+        }
+        System.Linq.IQueryable<UserInfo> _UserInfo;
+        public virtual System.Linq.IQueryable<UserInfo> UserInfo
+        {
+            get
+            {
+                if (_UserInfo == null)
+                {
+                    _UserInfo = this.Set<UserInfo>();
+                }
+                return _UserInfo;
+            }
+        }
+        System.Linq.IQueryable<TraderOrder> _TraderOrder;
+        public virtual System.Linq.IQueryable<TraderOrder> TraderOrder
+        {
+            get
+            {
+                if (_TraderOrder == null)
+                {
+                    _TraderOrder = this.Set<TraderOrder>();
+                }
+                return _TraderOrder;
+            }
+        }
         protected override string GetDesignString()
         {
             var result = new StringBuilder();
             result.Append("\r\n");
-            result.Append("H4sIAAAAAAAAE81ca1MTyRr+K1Y+65FcAav8wAEsUwfRAt3dqo21NZk0MGUygzMTOSnLqnhci4tyW+CAggsqrrhHcT0iYgLyZ9Iz4dP5C6d7enKZnpBpMrl9YtLdM91P99vPe+vmvucmF40DxXPp5/vkcZBLAM8lz/Dd+DCQ7wHZc94zJE2QBmEVJMiT2UqIoeofuHgS");
-            result.Append("/fA+OF8sV1PjoFTj6ZUBpwLj8z28Kkiip6wtL4kqENWy5vcjZCgRzyX0KMTQX+/5iNEePaJKmYuBWwqQIx5U3MepXJRTQLjPbCcMSPwd9NzxAP3oleLJhKhE8KirfiscM74WVnqSqhQWeRkk0KhQmxEurgD8JU4cTMbjZSWx6E2E0/hMVBgVcGtUGgfiqDpmlBq/DSjF");
-            result.Append("wYWVG/8wfqhyEn9DkmNANobVYdT2CQovCwlB5FRJLvSFZsscexA14rlxPIdGDyev57StQ6OfIqRhNYXnjhGMOY4yLAUg/WIy0QdGBJEUX7yob37QM8eRiDg8JsnqucvnEKCIePHiycoxKR+QxFFU7DOLJ2dz2SX0eFUYHUPFfrP4P2snrxbN4isyuJsEIp9C9QFSnzvI");
-            result.Append("al8eosdrnCAOq0h0EqgySCq143T+eB09DnExgefiqCZUeM0cXC9CCuQBNGxU2WlWHs2RPgekiWKXl7tIZf4oS8Y5gAak/sjJYExKKuByt9nlh1fa7CZGrUrjA5KiYOAdJSyv506evTPhDAnKHVxtToy+8xk+fGO8CrgYxuj1nUVGCqtVEhI/i5CEKCHRd9O57BOrkPQB");
-            result.Append("/AmzTc2ico+T+TFOpjH5OjrOBivAAquTggUP03DhY3731cnaYyu4fhF3PJyM4u9F3eyFqFB5U8fACJeMqwZjGaVnBBxkAdxVETD8tKJvZ6yAw8oPgiJEXW37RkENsUDtpqCSVc1lv9rZrbCqN2SBd4M3JiULE1bzduxkwYbJwgIud7imPdpC4Chk44AXuHg74OpiwuWl");
-            result.Append("cGkbaaQKyNLByS24/e6UpevjUkodFFTN8LpZ4AVoXavP7Gvph7Su5dRkPbBQynZQMtSXqWb0D9Pw+2O4+1LbOsC6D9wTwIRg6FpT05C6k/Tz/PEkKugZH5eleyCGlTHbpvaebQa9TNZKwKaJ9hBfv9SW9/X1GetE3pRULPrSiMlCrZN9r5cJGq2NCCh9btKKi0AaQuZv");
-            result.Append("q2H5mGDROid/vOiHiztoa8Ptt3D9d+23bSvAIaDKHG+iaS1CJqUaoFVNLrOtrS0hstJW/qJkEvsGreYqL5P+DNI6Rnv6EBm1xsptUhIpKQJu1pviXdkLdVkyJgUapBUNoRHTRshkbAtXVDRyI5bOrUHkZdKuQVr95B9t2NjlR0FsB2ph8kqCtDIgGw/5ZTZYaOOJRTet");
-            result.Append("1eCYfJOgzTnZ3oOP5pNy3IrsKvIDw7wk3jIr6up2ec/qdjFpuiCtErS1L/pbascNCvwd8qPeoIJnxMSk5oK0EiCMQiQS8QqcXamsDXqlpCs9x8wpZ1xIJos2RCsJfX0KTr2rhpeYL41Czb6oTOZmiNYTucy8NrtZDR+O57QeHdM+DPkq8qc2/eQ0aKob7VcP7vQxbcaQ");
-            result.Append("v+JmJMJ5qky2HBtbKC5Ak+fqG/hikiyd/n7ZtnTI3KzH6rmXSSa1F6KNFOInVFq6a9w/28K98zF5CSHaWCHACKHYgGEWaTWsam7CbVzX91OvJI4Io0YuhJREcJKkPBcTM3Mp1rzObSMFhEMdwMiqOCSCfI1MBNEkmP+6icg9v/tdP9q1rsuVeFyawJmdYaCqgjhaW7LI");
-            result.Append("V/5J4bQckbmmVVNEhS1ZWlJf+ZLWlg/ylw+vSWksX3VJZAuf2Fi9PQbPROpei1CEFZJuaEbonY7SOaBh4nCvRYbQLpfVm4IrSx6xCFALn6h5KZh42msRpH4x1hZDZwrZeGndCdczcPc5JrTJLWTVRSLiORGNM/9yR9/O5A5mSf3/Dp9i2wD+9vQaEg1hPA7g/J/5R0fa");
-            result.Append("xnTuIJ07+BM9wDSVNGm4NeEwIWx5ElrnkqmA6dl6TkWhaSungy29QocUiKrT/v0NLixSRqMgA95lKvfUrL/24TXuMCJekeQJTo6VJR3mZ0lNlOPvmFU1phscJozJvfXa8qVotlbfmNOWzp68emG3tXHaoSfh0gNkMuCc1CaTvvfaEqVFdJOLNoBthI7JKvDZotiG1U1i");
-            result.Append("2drH5dx3gxXh7Odcdqa0tEY1wQ9nt0gh+ak//9V8rWIIvBmxU6eJYXKRfTY/a+0jXPgDQT15Pq9NpzHjZd7CJSo7GVYMI7gHj7/tjBO2qHHIlmdrbfTRAVS11bR7Yfdx41uicNeYwcLXwkpvPKmoQAax8sEbvglGabxasvZvn6/i9PxSaGXMaO2dWUz06j1amj5opKPp");
-            result.Append("b6SjSQeliItJdlwum859m6q044zZuCFLsSSv1uhwWo4n1tnj9JdLb20ep89XbfXdeXDOhpW/+vZj0zL00lLJw1QiKrkhTFYqccDCphgs/s8AuAdkbrSxtq3DsKuxep0ZsJLw2bnJ3I2/VGrdUHoKNJKe6LhyIQ72FzxaqUBJVwUFLUSqRkoKNZCSAnWgJNpGMI90LK5V");
-            result.Append("yB40Kc4UqL5L2IjKdhjHWORcJmPF1R6Q2PjqlNM3i2vIVCeJOjhPnYu8LuPRcfHruKsz4KxkyrqHyWS1+mlHhqxcNYztgI0pXui3ncZZR6bQPOVhNSXV4wCHKYLopzMK8BvyLpf0T1n4O+U29sYlBZARutavtjALkRDSOQ62YNYuElYp5qJ/zurZTXiYQS3xxYIUUpMJ");
-            result.Append("Y2Clixfa9BM4s1P81DVOTBo3JfzuppMpqumnjSviqcLDNHbhpxbgDJU+CyvXx4E4nOR54CqJVrOb6oCaKXTpp9UxwQu3P+X33sC5Tbi+Re13hPkKJ8SHAKc0JmyX3/tDm/qa//LryeRi7mA2v4/FZVBS+0UpOTp2TRJBqiRVZiBl4z0OmzxbgFP7qLgsejSAoKslAbME");
-            result.Append("1qwv9XEp6yvmrR97JKf4Snk0pvCWeRcICQxSEOQaQO74hTazTd46h1/D5+QRz6iAV0sXhMzoz+s5be5tsQd8LQcZnaoslV0Y0o8W9ewGPPwXPMCHqgeBOiHJd/plWULbDa+6m73CFOH12+yWgyfF0FUF/dCcSJ4Dsmqh2Drb9w5BB9OmpQIO7uIczr01JbIRbKTrYMs7");
-            result.Append("Pf6sfd4hhgnFzfgmHVBUQ/pq8x38QTdmTq2matC9U+Gns1FkmpAJpy/vIGZtiQluwXU2r6IZ0UeLvDRnp4QauVNsh4D2p/J73yo52WhalWQCDAEerUaNO6XrfOO87FAdNgTtumnL+9r77zZvtJledqj2/VA6imK7npddq4SrPSCx3eKx3cxb3T9Z3aNcNC7VnMMSDoiY");
-            result.Append("HOqA7dyXYdiazsXX/+rZeW16Sc8+OyX0g1gNE5+caIaHQQd6HSaAyesO0H5VJSuxOQaiAxwmNzFgi18evYeP3+SOniFQlaT1pvR3Ls6JPGgLma0WWWiaEWzROY23gq3dNUW5dzZSudtu7Bj2HZxazb/csSl3HshibWo92MgTpJ3u1XqQJpY2CJ5bYNWo1oM0w7TQbHfA");
-            result.Append("08RDA1XZBAt5U3jE6KgpDNLdUE+azs+YW+fjt0p3NUleufzG5pm5JNRIF6HLPZeEulvFGF3VdxgTY3TaHIHCcrbogIADKCZXoJN2BVp4jdgBD5Mj0Ek7AuX/UqKF/33BAVs1G79pFG9hoDqe00I/TbIyaLg0ogIZY6LD04n/r5yRsPpbWFRDAaMjS2uToe3th1VZEEft");
-            result.Append("L5Romv0dC6ZTh3Ybw8K1w0A1Xwx4oz4QC3RciIFo4EIgFOQvdIViIxc6At0dwWhHKDjCdXge/B+6zlvpU08AAA==");
+            result.Append("H4sIAAAAAAAAE81da1Pbxhr+Kxk+J41lbGN3mg8pJFPmkMtA2p6ZQ6cj7AU0MRKV5KRMJjPmpDlAEkLI5UACLSQlDc0J0DaEgA3hz1iy+dS/cPYiG2lXWOuLZH/C9uqyz+677/u8l11udVwTh9JA6/j8X7fIx8viGOj4vGPgh/QAUG8AteN0R79yk1zQq4Mx8sm6SkrB");
+            result.Append("5m/EdAZ+icdun6406BPj4Lipo1sFog7w888ndUmRO2zXJhVZB7Juu/zWIOnLYMfn8KOUgn+F04P4evgRNqpiCnytAXWwA/7cI+rikKiB3h7rOqlPSV6Hn0O34ZduJZ0Zk7VB1O2qz+pN4af1auczutIrJ1UwBnsFrxkW0xpATxLly5l02vZLaugaxIkfMySNSOhq+Gsa");
+            result.Append("yCP6KP4Vf8dQKp3r1a7+A3/R1Qx6hqKmgIq7FcKtPZKWVKUxSRZ1RS2/C46W1fcovCgpjqMxxG84+vWhubqP31OBNKBPoLHjBGP1w4alDOSCnBnrAcOSTH4+e7a4slHMHQ4OygOjiqqfOndK+OIL2OtB+ezZo2eHpKlPkUdIi2C1TM0W8k/gx6+kkVHSErZa/rd49Gre");
+            result.Append("armogh8yQE5OkEs6ySWF3bz5YRJ+vCRK8oAOxWiMtEdIu3mYLR0uwY/9YkpKimnSGC3fbHW3G2IHah8EQtpjVvvBQ/L+PuVm5fXnYHsXaS8d5EnP+2D/9G9FFYwqGQ2gK+LW6zdembMraEB0ZbxP0TTy/MQxvl8fHj3/3YLYL2nXraGxRq24/t6YfI3vB2LKgi4ItYhR");
+            result.Append("eUKP5aiTR45ilBwVN7OF/H2nHPUA9Ajrmrql6YaoJkdFlcYUDoVqgxXhgdVFwTL2s8ajrdLmq6PFu05wF2T04oHMEHreUCPLZUhyX/cpMCxm0jpWavjXGgFHeQDHXQEbfz4rruWcgHu1byRNGmpIM/gFNcYDNUFBJbNayH9kFWB5Vq+qUrIRvCklUx6wupdjFw82pBAc");
+            result.Append("4Ar7i+adVQiOQjYOkpKYbgdccS5cAoXLXM5CU0GmzphaNdZ+P2HqesQJrQk2rG54CR54EdocF+/tmNlJ2hyLeqYZWCh7fFnB9qxsSjZmjE93jc2X5uousofghgRuSsQWkytI21H2RelwCv5wfnxcVW6AFLwgzLeohdpGUOAiNBHGEm1Dff3SfLpTXLrnHMhrio5EXxm2");
+            result.Append("tFDrZF8QuKDR1oiAKj6ccuIikPohQ241rDAXLNrmlA7nO435dbi0jbU3xtIv5uM1J8B+oKti0kLTWoRcRjVCm5pCbs1cfAKVlfnsD0omkfvQal0lcNnPKG1jzAeTkN8a0/8xdu8UX/wEsRlZypJeVTQJXQ8f3Q7yyWVLo7TNIRrFogu5HDOHFZuj+jGLjXIjgcsSRWlL");
+            result.Append("VLqzzCiabyW5HWaRy0GJ0naBrEHosDGw4BqUK/5bq8FxuSlRxk9Z2zbuzGXUtBPZV9Ar7E0q8tdWQ1M9MKFWD4zL6EVp62Aufii+oVbcZSl5nXxpNqhojZi4LF6UtgdEoxCJhHrFmH3mbhi6lUxDJo9bp9QImouZxWh7UVyaNqZ/r4aXMBm/UPPj45LUGG0nCrk5c3al");
+            result.Append("Gj4U4mk9Oi6ZjYVd9ac5c/8kaHoj1q8ZujPMF7nqdF2MRDhPlMmWY+OyC7EIrTwXXhs/T5GpK757ykwdZJ7NmL3GZZKLV8dokkJcBrepuyT+2BaeXpiLWsdoskKAEYXCAENapNWwuJh0gtaQxsETY2aW+A1QFo+m5tzdhcDsXq3Wni9oFWeiVjZPyZybKx3+4Y4bPnhA");
+            result.Append("V1vPaoRqOL9DbT3/7FbkYWkEJ8bIL4MoY2ZPzKWsxJo9yyfA21FCEAW1AE6xeaUFu/xMC9JGrvRxBRrv0uan4sGmc4ouptPKzStohAaArkvySH25w7D9mdJJKUNrYqtmDMsyfjypYfuk1pce7LR3L6CsZthDFnn6HWHMdnt0notqCbQUmotbxqPfzOUZ89k0nYQheacg");
+            result.Append("cjB0uNYDKhf5EhwCBpWAql+TGvLjoJIBevkRdc8TF7sSHFJ2QU61Rde5mJNAMydjKWdsvkDqbmoVcvrBQfmUDPtZerleXMsVdmdJ+9/7DxAzNB4/uARFQxpPA2PubenOARTNwm62sPsWfmBifr5zSY8B4WJcAs24yFAY2dlmDkX50lYOB1/+kA4oEUNo/nfPeDRPuQyS");
+            result.Append("CpIN5vRPrBAxN35FLxyULyrqTVFN2bJPc7OkZUhMXrea6sw7eQwYJ8ejFxQcrYXX1rBl80evfmY9LZR/Oj/WILflou8eELlCwgKTMK+Am5pn8LUPOL68YZjJZmCXy/JNtp4WPmGlaMy+L+TvHc8sbib4jdlV8iP5ijIg5DZXah9E4NxrYLioVJhxsjEbgVCPXsyZM1mk");
+            result.Append("8HJvjCdUlrpXwwz5POp/23ETvsQk67ZNPyrk1kiFSOHwZ/PemtsMY6cAV1T4N8es4/pZKBSucRCqkBzUs7SoaQ7ujye04u3Y3Ho2RI8kBNpD9GFu/ig7ae5Mm5NbtIRckdMTl4CmiSMtKSLyGp8qTKqm8RHiMYdmxB1vvq0svs8X8ytEBaESwAkN+tH2Ph0bz+LTdXP6");
+            result.Append("Y+VSuvMnmlL+sXNn/wiNfVyYtFV+p3SIeFfxzWPKXIK02EgurnG3swqNZKSBHXunPDAVDziXbC7sQKNR2toorWcpCi3KI5nGVglvJMhrGKrQR55FwQaLbqHnfS1LP+BVanW8V+tOZ+AYqiBlfzqOn6DH4zsdEQmHk//d6WqRmu/JZd87brnta9Aq7mfQik5gkHAVMdCF");
+            result.Append("fLawN+1moPGwXFWVVCap1xm7chS+Nzl41WmXw/qCV+Ewg9eSgMYCQd66pNNjEXH1np5W5/QNTIwNKY1wK16F4IGFi0mFHZGSPnADqI1ps4anoFp0yktHlZ/GqaRowWOVk7UKv6ev9FcnJfzUSXTisRxI/8M4eOaih76SNDgDE3XqIQe9arIeijRBD9E0xyr/m190SS8H");
+            result.Append("FKeOVF8efBqKoTF4kgu5nBNXe0DiikeHT6jUnF9EzAxXchhzVA39FRX1TkxjilEDTjdPpnGYXJHrTjrYQWauGsZ2wFYlEsdS8EwyCV1L3HE7+e5kqjmXID2i886BlAp4oK0SlONHS6eSjL33hfyT4p954xcqbNGdVjTgl29K5Iu8HEVzkc6vqDubX4pdWGM/B6+suLC4");
+            result.Append("Y8gltfbIzdw37q1XHnVJlDN4n15ngxqvisrjH27a7Bn7WZToX/uztP3aeLhiLK1S62ocyBdFKd0PRM2fCHpp+zfk6n/46WhqvrA7W9pBA3tZ0S/ISmZk9JIig4nj8beCmsvvUAjz+SNjegf+bIvk9sGR0Y+nwhHjdt7UI044b7E2YLJR1cot9sho+a7ytkwm8EbuOoVu");
+            result.Append("Q5E2uGB1kER3RO1I0G7Wh28qb0AbJiGr01UFCYy1a7N4MF/MLxv7/zZ20UaXy0C/qajXL6iqAgWzvHOT1PA93jQeTUMv/Whhu7SD3HU0OtIYUDLozfHGBLAWxxqJDCt8DM3YvV+JRruo82CC817Lror/wL3s4g5Hzx8dVhny8mqxd4YjYOYxDu7RJWe8LE57hC3f/+M1");
+            result.Append("uVXoMf/k0jq1uH7fyM2Vpt4Wn66fQKD9qQWnkwwe6PlyDFEHgEAKCDz6zVVAkKBlkVg6ZoMpMnCB7C71EsUq9J9bFBOMeccshAGNGUtboK4lxXMSaiHOpEZJfufjX8X8nDG5bG68gqsRkjIroeCWB4RdCKpOiQ5geY1RLWkeaoyaHCnyiGFbQRIqbn26oVd6vy2QAHki");
+            result.Append("5Gcwiqmm3pkube+5BaPgTGqZMdAPklBA6otGdcZP+xeNitlluc6STjrEAVmE+e4TE7UJMhrlgFVvySdz5EF+0Q1Xe0Di2xnNFCBg34Nie+JEMLTBAxFXfC3CFFhjx9RuUMyZJ8X88xNCpFCrIV2rjrXCkHgMAFfkLULzJjf3LBjPzAMOV51ghInzH7wz7r4uHDyHoCxp");
+            result.Append("HZRPHb36Ce2YtrWh6ijc/Pf+A/OvctPefWNmFv5SOnxe2H1rbCyYmx8KeytQPEg1JbyLUlLKl2JalJOgLZYAH3NmlsDBu9L2b8bURmlrklHBsjYM1G+UTHIUBLEPxANgtVLawLiQw0b7T4acrwuGDQl+siGm6Obue/P9ujG9UHpJ+dMQehKocn08KOrn1pauxnlQlNbE");
+            result.Append("bZCVc8CqkwdFmXgJLvZqCQnywFONBDW3UIiexJNWOhJ3u0oJaL2H/VzvdJaWyAM0pZbAb+25ne1B6kvsJ3zUrAFifnpC8cY1QIw5hgGPjNXRliiAePUFw6UAuhhHqDzPLaog8gDF5Qp10a5QC8+j8cDD5Qh10SzQfkxZCyP6Htiq+TiBEUCHagqwijPR6aeadldGRCAY");
+            result.Append("Zobw2ooUalbNXY59l01WzYnGVXOXO4lppWpOVF8ZfKqZ2Uuz8Npcpk506GlwmfO5sh5w+JQyE1jFcNyqS/wqLIFvJNUGtp2B8+vw77cAXD9XLhlZnkaVInAVjp7zKhPxGBc+5c4W/LEHdwRxaocHGL4jkJndPS5HaQZTMOUBp1r4JTDjdKyZg7RMEV/PymdK5rAyLhy+");
+            result.Append("ZPZ0YbTysFKfVUpEmWf5r9eFJpyin2AUYYsPqWvGyXsJ90MFnaCCPlGwgeP3gj2nJhH1dUky+/NxMhOdPJBbYmuWXViTauWw61mnQsJRcR+YIyl4xJP4Tu3Acu2yW9dv6+XVe76DOxKOoEogW2m8Os53okQiYe/4l5reHEZYf7e5znUIh0JO0ub3uXgeneY6qSEcavhf");
+            result.Append("0tRZwO/Vfb5NGCGHd1rr3oO6iUATkgrhkGOnW0BHDnqlDTi7HmW7Hsjxzl7d59uMFHLYpOBK8Ly6z3X8UDjk8p9mUIm8S8EHKqkMJt3tOTN80JijcXDVpBs0sgelLbAFxyThV4tjYS557GuWGSXiZwge+jdqeEfMZ72yHovgFzmutmgme/2ArkryCHvDMdfkv8eB6cSu");
+            result.Append("fYdgodYBoFs3RoShMEhFQmdSYChyJhKLJs/EY6nhM6FIIhQdCsWiw2Ko4/b/AUEaK61CbgAA");
             return result.ToString();
         }
     }
 }
 
 /*<design>
-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
+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
 <design>*/
 

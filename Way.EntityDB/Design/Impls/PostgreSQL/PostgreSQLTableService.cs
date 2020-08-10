@@ -23,12 +23,12 @@ namespace Way.EntityDB.Design.Database.PostgreSQL
                                             "timestamp without time zone",//datetime
                                              "date",//date
                                               "time without time zone",//time
-                                            "float",
-                                            "double",
+                                            "float4",
+                                            "float8",
                                             "boolean",
-                                            "numeric",//decimal
+                                            "decimal",//decimal
                                             "numeric",
-                                            "bigint",
+                                            "int8",
                                             "bytea",//varbinary
                                             "character",
                                             "timestamp without time zone", });
@@ -187,6 +187,7 @@ alter table ""{table}"" alter column ""{column.Name.ToLower()}"" set default nex
         {
             table = table.ToLower();
             column = column.ToLower();
+
             database.ExecSqlString(string.Format("alter table \"{0}\" drop column \"{1}\"" , table , column));
         }
         void dropTableIndex(EntityDB.IDatabaseService database, string table, string indexName)
@@ -259,15 +260,24 @@ alter table ""{table}"" alter column ""{column.Name.ToLower()}"" set default nex
                     if (column.IsPKID == false)
                     {
                         //去除主键;//删除主建
-                        //var pkeyIndexName = database.ExecSqlString($"select indexname from pg_indexes where tablename='{newTableName}' and indexname='{oldTableName}_pkey'").ToSafeString();
+                        var pkeyIndexName = database.ExecSqlString(@"
+SELECT
+    pg_constraint.conname AS pk_name
+FROM
+    pg_constraint
+INNER JOIN pg_class ON pg_constraint.conrelid = pg_class.oid
+WHERE
+    pg_class.relname = '"+ newTableName.ToLower() +@"'
+AND pg_constraint.contype = 'p';
+").ToSafeString();
                         //if (pkeyIndexName.Length > 0)
                         //{
                         //    database.ExecSqlString($"ALTER TABLE {newTableName} DROP CONSTRAINT IF EXISTS {oldTableName}_pkey");
                         //    database.ExecSqlString($"DROP INDEX IF EXISTS {oldTableName}_pkey");
                         //}
 
-                        database.ExecSqlString($"ALTER TABLE \"{newTableName}\" DROP CONSTRAINT IF EXISTS {oldTableName}_pkey");
-                        database.ExecSqlString($"DROP INDEX IF EXISTS {oldTableName}_pkey");
+                        database.ExecSqlString($"ALTER TABLE \"{newTableName}\" DROP CONSTRAINT IF EXISTS {pkeyIndexName}");
+                        database.ExecSqlString($"DROP INDEX IF EXISTS {pkeyIndexName}");
                     }
                     else
                     {

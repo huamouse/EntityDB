@@ -131,6 +131,7 @@ namespace Way.EntityDB.Design
 
 
                 var dtable = dset.Tables[0];
+                int currentRowId = 0;
                 try
                 {
                     var query = dtable.Rows.Where(m => (long)m["id"] > dbconfig.LastUpdatedID).OrderBy(m => (long)m["id"]).ToList();
@@ -142,17 +143,18 @@ namespace Way.EntityDB.Design
                         db.DBContext.BeginTransaction();
                         foreach (var datarow in query)
                         {
-                            var rowid = Convert.ToInt32(datarow["id"]);
+                            currentRowId = Convert.ToInt32(datarow["id"]);
                             var actionItem = dataRowToAction(assembly, datarow);
 
-                            if(actionItem is EntityDB.Design.Actions.ChangeTableAction)
+                            if (actionItem is EntityDB.Design.Actions.ChangeTableAction)
                             {
                                 var changeAction = (EntityDB.Design.Actions.ChangeTableAction)actionItem;
+                                
                                 changeAction._getColumnsFunc = () => {
                                     List<EJ.DBColumn> allcolumns = new List<EJ.DBColumn>();
 
                                     //往上逆推，查找字段信息
-                                    var datarows = dtable.Rows.Where(m => (long)m["id"] < rowid).OrderByDescending(m => (long)m["id"]).ToList();
+                                    var datarows = dtable.Rows.Where(m => (long)m["id"] < currentRowId).OrderByDescending(m => (long)m["id"]).ToList();
                                     var curTableName = changeAction.OldTableName;
                                     List<int> deletedColumnids = new List<int>();
 
@@ -217,10 +219,10 @@ namespace Way.EntityDB.Design
                         db.DBContext.CommitTransaction();
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
                     db.DBContext.RollbackTransaction();
-                    throw;
+                    throw new Exception("发送错误，最后执行的id：" + currentRowId , ex);
                 }
             }
         }

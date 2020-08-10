@@ -22,6 +22,8 @@ namespace Way.EntityDB
         protected DatabaseFacade _database;
         DBContext _dbcontext;
 
+        protected virtual bool SupportEnum => true;
+
         public virtual void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite(this.ConnectionString);
@@ -149,10 +151,15 @@ namespace Way.EntityDB
                 var fv = fieldValues.FirstOrDefault(m => m.FieldName == tableSchema.AutoSetPropertyNameOnInsert);
                 if (fv == null)
                 {
+                    var val = tableSchema.AutoSetPropertyValueOnInsert;
+                    if( !SupportEnum && val != null && val.GetType().IsEnum)
+                    {
+                        val = Convert.ToInt32(val);//PostgreSql不支持枚举
+                    }
                     fieldValues.Add(new FieldValue()
                     {
-                        FieldName = tableSchema.AutoSetPropertyNameOnInsert,
-                        Value = tableSchema.AutoSetPropertyValueOnInsert
+                        FieldName = tableSchema.AutoSetPropertyNameOnInsert.ToLower(),
+                        Value = val
                     });
                 }
             }
@@ -177,6 +184,11 @@ namespace Way.EntityDB
                         var parameter = command.CreateParameter();
                         parameter.ParameterName = "@p" + (parameterIndex++);
                         parameter.Value = field.Value;
+                        if (!SupportEnum && field.Value != null && field.Value.GetType().IsEnum)
+                        {
+                            parameter.Value = Convert.ToInt32(field.Value);
+                        }
+
                         command.Parameters.Add(parameter);
 
                         if (str_values.Length > 0)
@@ -506,6 +518,11 @@ namespace Way.EntityDB
                        
 
                         object value = fieldValue.Value;
+                        if (!SupportEnum && value != null && value.GetType().IsEnum)
+                        {
+                            value = Convert.ToInt32(value);
+                        }
+
                         if (value == DBNull.Value || value == null)
                         {
                             str_fields.Append("null");

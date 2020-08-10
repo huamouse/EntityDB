@@ -15,7 +15,7 @@ namespace Way.EntityDB
     [Attributes.DatabaseTypeAttribute(DatabaseType.PostgreSql)]
     class PostgreSQLService :SqliteService
     {
-
+        protected override bool SupportEnum => false;
         public PostgreSQLService()
         {
         }

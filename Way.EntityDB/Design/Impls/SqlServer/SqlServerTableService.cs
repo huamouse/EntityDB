@@ -332,9 +332,11 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
         }
 
         public void ChangeTable(EntityDB.IDatabaseService database, string oldTableName, string newTableName, 
-            EJ.DBColumn[] addColumns, EJ.DBColumn[] changedColumns, EJ.DBColumn[] deletedColumns, Func<List<EJ.DBColumn>> getColumnsFunc
+            EJ.DBColumn[] addColumns, EJ.DBColumn[] changed_columns, EJ.DBColumn[] deletedColumns, Func<List<EJ.DBColumn>> getColumnsFunc
             , IndexInfo[] indexInfos)
         {
+            List<EJ.DBColumn> changedColumns = new List<EJ.DBColumn>(changed_columns);
+
             oldTableName = oldTableName.ToLower();
             newTableName = newTableName.ToLower();
 
@@ -354,6 +356,17 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
             foreach (var column in deletedColumns)
             {
                 deletecolumn(database, newTableName.ToLower(), column.Name.ToLower());
+            }
+
+            //将取消主键的列放前面处理
+            if(true)
+            {
+                var column = changedColumns.FirstOrDefault(m =>m.BackupChangedProperties["IsPKID"] != null && (bool)m.BackupChangedProperties["IsPKID"].OriginalValue == true);
+                if(column.IsPKID == false)
+                {
+                    changedColumns.Remove(column);
+                    changedColumns.Insert(0, column);
+                }
             }
 
             foreach (var column in changedColumns)

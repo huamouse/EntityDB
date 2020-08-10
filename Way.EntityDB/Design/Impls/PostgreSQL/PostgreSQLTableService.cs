@@ -196,8 +196,9 @@ alter table ""{table}"" alter column ""{column.Name.ToLower()}"" set default nex
             database.ExecSqlString("ALTER TABLE \"" + table.ToLower() + "\" DROP CONSTRAINT IF EXISTS " + indexName.ToLower() + "");
             database.ExecSqlString("DROP INDEX IF EXISTS " + indexName.ToLower() + "");
         }
-        public void ChangeTable(EntityDB.IDatabaseService database, string oldTableName, string newTableName, EJ.DBColumn[] addColumns, EJ.DBColumn[] changedColumns, EJ.DBColumn[] deletedColumns, Func<List<EJ.DBColumn>> getColumnsFunc, IndexInfo[] _indexInfos)
+        public void ChangeTable(EntityDB.IDatabaseService database, string oldTableName, string newTableName, EJ.DBColumn[] addColumns, EJ.DBColumn[] changed_columns, EJ.DBColumn[] deletedColumns, Func<List<EJ.DBColumn>> getColumnsFunc, IndexInfo[] _indexInfos)
         {
+            List<EJ.DBColumn> changedColumns = new List<EJ.DBColumn>(changed_columns);
             oldTableName = oldTableName.ToLower();
             newTableName = newTableName.ToLower();
             List<IndexInfo> indexInfos = new List<IndexInfo>(_indexInfos);
@@ -218,6 +219,17 @@ alter table ""{table}"" alter column ""{column.Name.ToLower()}"" set default nex
 
             foreach (string delIndexName in needToDels)
                 dropTableIndex(database, newTableName, delIndexName);
+
+            //将取消主键的列放前面处理
+            if (true)
+            {
+                var column = changedColumns.FirstOrDefault(m => m.BackupChangedProperties["IsPKID"] != null && (bool)m.BackupChangedProperties["IsPKID"].OriginalValue == true);
+                if (column.IsPKID == false)
+                {
+                    changedColumns.Remove(column);
+                    changedColumns.Insert(0, column);
+                }
+            }
 
             foreach (var column in changedColumns)
             {

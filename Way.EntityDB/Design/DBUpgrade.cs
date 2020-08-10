@@ -222,7 +222,7 @@ namespace Way.EntityDB.Design
                 catch(Exception ex)
                 {
                     db.DBContext.RollbackTransaction();
-                    throw new Exception("发送错误，最后执行的id：" + currentRowId , ex);
+                    throw new Exception("发生错误，最后执行的id：" + currentRowId , ex);
                 }
             }
         }

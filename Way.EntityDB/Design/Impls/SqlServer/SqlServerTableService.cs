@@ -362,7 +362,7 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
             if(true)
             {
                 var column = changedColumns.FirstOrDefault(m =>m.BackupChangedProperties["IsPKID"] != null && (bool)m.BackupChangedProperties["IsPKID"].OriginalValue == true);
-                if(column.IsPKID == false)
+                if(column != null && column.IsPKID == false)
                 {
                     changedColumns.Remove(column);
                     changedColumns.Insert(0, column);

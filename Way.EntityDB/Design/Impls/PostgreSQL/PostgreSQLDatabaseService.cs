@@ -40,11 +40,19 @@ namespace Way.EntityDB.Design.Impls.PostgreSQL
             conStrBuilder.Database = null;
 
             var db = EntityDB.DBContext.CreateDatabaseService(conStrBuilder.ToString(), EntityDB.DatabaseType.PostgreSql);
-            object flag = db.ExecSqlString("select count(*) from pg_catalog.pg_database where datname=@p0", database.Name.ToLower());
-            if (Convert.ToInt32(flag)== 0)
+            try
             {
-                db.ExecSqlString("CREATE DATABASE " + database.Name.ToLower() + " ENCODING='UTF-8'");
+                object flag = db.ExecSqlString("select count(*) from pg_catalog.pg_database where datname=@p0", database.Name.ToLower());
+                if (Convert.ToInt32(flag) == 0)
+                {
+                    db.ExecSqlString("CREATE DATABASE " + database.Name.ToLower() + " ENCODING='UTF-8'");
+                }
             }
+            catch
+            {
+
+            }
+            
 
             conStrBuilder.Database = database.Name.ToLower();
             //创建必须表

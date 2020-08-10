@@ -28,8 +28,18 @@ namespace Way.EntityDB.Design.Database.MySql
             database.Name = conStrBuilder.Database;
             conStrBuilder.Database = null;
 
-            var db = EntityDB.DBContext.CreateDatabaseService(conStrBuilder.ToString(), EntityDB.DatabaseType.MySql);
-            db.ExecSqlString("create database if not exists `" + database.Name.ToLower() + "` CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'");
+            IDatabaseService db;
+
+            try
+            {
+                db = EntityDB.DBContext.CreateDatabaseService(conStrBuilder.ToString(), EntityDB.DatabaseType.MySql);
+                db.ExecSqlString("create database if not exists `" + database.Name.ToLower() + "` CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'");
+            }
+            catch
+            {
+
+            }
+           
 
             //创建必须表
             db = EntityDB.DBContext.CreateDatabaseService(database.conStr, EntityDB.DatabaseType.MySql);

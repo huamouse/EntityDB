@@ -315,7 +315,8 @@ namespace EJClient.Forms
                 }
             }
 
-           [Category("A字段属性"), DisplayName("3:CanNull")]
+           [Category("A字段属性"), DisplayName("3:CanNull")
+                , System.ComponentModel.TypeConverter(typeof(BooleanTypeConvert))]
             public bool? CanNull
             {
                 get
@@ -429,7 +430,7 @@ namespace EJClient.Forms
             }
 
             [Category("B继承设置"), DisplayName("1:IsDiscriminator"),Description("是否用来表示数据对应的类，如果设置为True，应该同时设置Enum内容"),
-            System.ComponentModel.Editor(typeof(Editor.EnumEditor), typeof(System.Drawing.Design.UITypeEditor))]
+            System.ComponentModel.TypeConverter(typeof(BooleanTypeConvert))]
             public bool? IsDiscriminator
             {
                 get

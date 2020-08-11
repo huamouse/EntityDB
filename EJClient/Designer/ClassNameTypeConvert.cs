@@ -22,9 +22,12 @@ namespace EJClient.Designer
 
 		public override System.ComponentModel.TypeConverter.StandardValuesCollection GetStandardValues(System.ComponentModel.ITypeDescriptorContext context)
 		{
-			
 
-			StandardValuesCollection svc = new StandardValuesCollection((from m in EnumNames orderby m.Name select m.Name).ToArray());
+			List<string> list = new List<string>();
+			list.Add(null);
+			list.AddRange((from m in EnumNames orderby m.Name select m.Name).ToArray());
+			StandardValuesCollection svc = new StandardValuesCollection(list);
+			
 			return svc;
 		}
 

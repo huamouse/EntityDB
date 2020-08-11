@@ -196,6 +196,18 @@ CREATE TABLE `" + table.Name.ToLower() + @"` (
 
             foreach (var column in deletedColumns)
             {
+                if (column.BackupChangedProperties["IsPKID"] != null && (bool)column.BackupChangedProperties["IsPKID"].OriginalValue == true)
+                {
+                    //去除主键;//删除主建
+                    database.ExecSqlString(string.Format("Alter table `{0}` drop primary key", newTableName));
+                }
+                else if (column.IsPKID == true)
+                {
+                    //去除主键;//删除主建
+                    database.ExecSqlString(string.Format("Alter table `{0}` drop primary key", newTableName));
+                }
+
+
                 deletecolumn(database, newTableName, column.Name.ToLower());
             }
 
@@ -230,8 +242,8 @@ CREATE TABLE `" + table.Name.ToLower() + @"` (
                     changeColumnCount++;
 
                     #region 改名
-                   
-                    database.ExecSqlString(string.Format("alter table `{0}` change `{1}` `{2}` {3}",newTableName , changeitem.OriginalValue.ToString().ToLower() , column.Name.ToLower() , sqltype));
+
+                    database.ExecSqlString(string.Format("alter table `{0}` change `{1}` `{2}` {3}", newTableName, changeitem.OriginalValue.ToString().ToLower(), column.Name.ToLower(), sqltype));
                     #endregion
                 }
 
@@ -248,7 +260,7 @@ CREATE TABLE `" + table.Name.ToLower() + @"` (
                     }
                     else
                     {
-                        if( column.IsPKID == true && column.BackupChangedProperties["IsPKID"] != null && (bool)column.BackupChangedProperties["IsPKID"].OriginalValue == false)
+                        if (column.IsPKID == true && column.BackupChangedProperties["IsPKID"] != null && (bool)column.BackupChangedProperties["IsPKID"].OriginalValue == false)
                         {
                             //设为自增长之前，此字段必须是主键
                             //设为主键;
@@ -266,19 +278,11 @@ CREATE TABLE `" + table.Name.ToLower() + @"` (
                 if (changeitem != null)
                 {
                     changeColumnCount++;
-
-                    #region 变更主键
-                    if (column.IsPKID == false)
-                    {
-                        //去除主键;//删除主建
-                        database.ExecSqlString(string.Format("Alter table `{0}` drop primary key", newTableName));
-                    }
-                    else
-                    {
-                        //设为主键;
-                        database.ExecSqlString(string.Format("Alter table `{0}` add primary key(`{1}`)", newTableName,column.Name.ToLower()));
-                    }
-                    #endregion
+                }
+                if (changeitem != null && column.IsPKID == false)
+                {
+                    //去除主键;
+                    database.ExecSqlString(string.Format("Alter table `{0}` drop primary key", newTableName));
                 }
 
 
@@ -334,6 +338,12 @@ CREATE TABLE `" + table.Name.ToLower() + @"` (
                     database.ExecSqlString("update `" + newTableName + "` set `" + column.Name.ToLower() + "`='" + defaultValue.Replace("'", "''") + "' where `" + column.Name.ToLower() + "` is null");
                 }
                 #endregion
+
+                if (changeitem != null && column.IsPKID == true)
+                {
+                    //设为主键;
+                    database.ExecSqlString(string.Format("Alter table `{0}` add primary key(`{1}`)", newTableName, column.Name.ToLower()));
+                }
             }
 
             foreach (var column in addColumns)

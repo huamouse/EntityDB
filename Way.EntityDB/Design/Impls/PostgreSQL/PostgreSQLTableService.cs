@@ -196,6 +196,30 @@ alter table ""{table}"" alter column ""{column.Name.ToLower()}"" set default nex
             database.ExecSqlString("ALTER TABLE \"" + table.ToLower() + "\" DROP CONSTRAINT IF EXISTS " + indexName.ToLower() + "");
             database.ExecSqlString("DROP INDEX IF EXISTS " + indexName.ToLower() + "");
         }
+
+        void deletePkColumn(IDatabaseService database,string tablename)
+        {
+            tablename = tablename.ToLower();
+               //去除主键;//删除主建
+               var pkeyIndexName = database.ExecSqlString(@"
+SELECT
+    pg_constraint.conname AS pk_name
+FROM
+    pg_constraint
+INNER JOIN pg_class ON pg_constraint.conrelid = pg_class.oid
+WHERE
+    pg_class.relname = '" + tablename + @"'
+AND pg_constraint.contype = 'p';
+").ToSafeString();
+            //if (pkeyIndexName.Length > 0)
+            //{
+            //    database.ExecSqlString($"ALTER TABLE {newTableName} DROP CONSTRAINT IF EXISTS {oldTableName}_pkey");
+            //    database.ExecSqlString($"DROP INDEX IF EXISTS {oldTableName}_pkey");
+            //}
+
+            database.ExecSqlString($"ALTER TABLE \"{tablename}\" DROP CONSTRAINT IF EXISTS {pkeyIndexName}");
+            database.ExecSqlString($"DROP INDEX IF EXISTS {pkeyIndexName}");
+        }
         public void ChangeTable(EntityDB.IDatabaseService database, string oldTableName, string newTableName, EJ.DBColumn[] addColumns, EJ.DBColumn[] changed_columns, EJ.DBColumn[] deletedColumns, Func<List<EJ.DBColumn>> getColumnsFunc, IndexInfo[] _indexInfos)
         {
             List<EJ.DBColumn> changedColumns = new List<EJ.DBColumn>(changed_columns);
@@ -214,6 +238,16 @@ alter table ""{table}"" alter column ""{column.Name.ToLower()}"" set default nex
 
             foreach (var column in deletedColumns)
             {
+                if(column.BackupChangedProperties["IsAutoIncrement"] != null && (bool)column.BackupChangedProperties["IsAutoIncrement"].OriginalValue == true)
+                    setColumn_IsAutoIncrement(database, column, newTableName, false);
+                else if( column.IsAutoIncrement == true )
+                    setColumn_IsAutoIncrement(database, column, newTableName, false);
+
+                if (column.BackupChangedProperties["IsPKID"] != null && (bool)column.BackupChangedProperties["IsPKID"].OriginalValue == true)
+                    deletePkColumn(database, newTableName);
+                else if (column.IsPKID == true)
+                    deletePkColumn(database, newTableName);
+
                 deletecolumn(database, newTableName, column.Name.ToLower());
             }
 
@@ -267,36 +301,11 @@ alter table ""{table}"" alter column ""{column.Name.ToLower()}"" set default nex
                 if (changeitem != null)
                 {
                     changeColumnCount++;
-
-                    #region 变更主键
-                    if (column.IsPKID == false)
-                    {
-                        //去除主键;//删除主建
-                        var pkeyIndexName = database.ExecSqlString(@"
-SELECT
-    pg_constraint.conname AS pk_name
-FROM
-    pg_constraint
-INNER JOIN pg_class ON pg_constraint.conrelid = pg_class.oid
-WHERE
-    pg_class.relname = '"+ newTableName.ToLower() +@"'
-AND pg_constraint.contype = 'p';
-").ToSafeString();
-                        //if (pkeyIndexName.Length > 0)
-                        //{
-                        //    database.ExecSqlString($"ALTER TABLE {newTableName} DROP CONSTRAINT IF EXISTS {oldTableName}_pkey");
-                        //    database.ExecSqlString($"DROP INDEX IF EXISTS {oldTableName}_pkey");
-                        //}
-
-                        database.ExecSqlString($"ALTER TABLE \"{newTableName}\" DROP CONSTRAINT IF EXISTS {pkeyIndexName}");
-                        database.ExecSqlString($"DROP INDEX IF EXISTS {pkeyIndexName}");
-                    }
-                    else
-                    {
-                        //设为主键;
-                        database.ExecSqlString($"ALTER TABLE \"{newTableName}\" ADD PRIMARY KEY (\"{column.Name.ToLower()}\")");
-                    }
-                    #endregion
+                }
+                if (changeitem != null && column.IsPKID == false)
+                {
+                    //去除主键;
+                    deletePkColumn(database, newTableName);
                 }
 
 
@@ -357,6 +366,13 @@ AND pg_constraint.contype = 'p';
                     database.ExecSqlString($"update \"{newTableName}\" set \"{column.Name.ToLower()}\"='{defaultValue.Replace("'","''")}' where \"{column.Name.ToLower()}\" is null");
                 }
                 #endregion
+
+                changeitem = column.BackupChangedProperties["IsPKID"];
+                if (changeitem != null && column.IsPKID == true)
+                {
+                    //设为主键;
+                    database.ExecSqlString($"ALTER TABLE \"{newTableName}\" ADD PRIMARY KEY (\"{column.Name.ToLower()}\")");
+                }
             }
 
             foreach (var column in addColumns)

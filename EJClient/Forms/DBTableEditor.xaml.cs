@@ -326,7 +326,7 @@ namespace EJClient.Forms
                 {
                     if (m_column.CanNull != value)
                     {
-                        if (value == false && IsPKID == true)
+                        if (value == true && IsPKID == true)
                         {
                             MessageBox.Show(m_parentEditor, "主键不允许可以为空！");
                             return;

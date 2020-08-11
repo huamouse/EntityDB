@@ -331,6 +331,32 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
             return result;
         }
 
+        void deletePkColumn(IDatabaseService database,string tablename)
+        {
+            tablename = tablename.ToLower();
+            //去除主键
+            string sql = @"
+DECLARE @NAME SYSNAME
+DECLARE @TB_NAME SYSNAME
+SET @TB_NAME = '" + tablename + @"'
+SELECT TOP 1 @NAME = NAME FROM SYS.OBJECTS WITH(NOLOCK)
+WHERE TYPE_DESC ='PRIMARY_KEY_CONSTRAINT'
+
+AND PARENT_OBJECT_ID = (SELECT OBJECT_ID
+
+FROM SYS.OBJECTS WITH(NOLOCK)
+
+WHERE NAME = @TB_NAME )
+SELECT @NAME
+";
+            var constraintName = database.ExecSqlString(sql).ToSafeString();
+            if (constraintName.IsNullOrEmpty() == false)
+            {
+                //如果constraintName没有值，那么就是变更自增长字段的时候，原来字段被删除了
+                database.ExecSqlString($"ALTER TABLE {tablename} DROP CONSTRAINT {constraintName}");
+            }
+        }
+
         public void ChangeTable(EntityDB.IDatabaseService database, string oldTableName, string newTableName, 
             EJ.DBColumn[] addColumns, EJ.DBColumn[] changed_columns, EJ.DBColumn[] deletedColumns, Func<List<EJ.DBColumn>> getColumnsFunc
             , IndexInfo[] indexInfos)
@@ -355,11 +381,16 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
 
             foreach (var column in deletedColumns)
             {
+                if (column.BackupChangedProperties["IsPKID"] != null && (bool)column.BackupChangedProperties["IsPKID"].OriginalValue == true)
+                    deletePkColumn(database, newTableName);
+                else if (column.IsPKID == true)
+                    deletePkColumn(database, newTableName);
+
                 deletecolumn(database, newTableName.ToLower(), column.Name.ToLower());
             }
 
             //将取消主键的列放前面处理
-            if(true)
+            if (true)
             {
                 var column = changedColumns.FirstOrDefault(m =>m.BackupChangedProperties["IsPKID"] != null && (bool)m.BackupChangedProperties["IsPKID"].OriginalValue == true);
                 if(column != null && column.IsPKID == false)
@@ -430,42 +461,17 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
                 }
 
                  changeitem = column.BackupChangedProperties["IsPKID"];
-                 if (changeitem != null)
+                if(changeitem != null)
+                {
+                    changeColumnCount++;
+                }
+
+
+                 if (changeitem != null && column.IsPKID == false)
                  {
-                     changeColumnCount++;
-
-                     #region 变更主键
-                     if (column.IsPKID == false)
-                     {
-                        //去除主键
-                        string sql = @"
-DECLARE @NAME SYSNAME
-DECLARE @TB_NAME SYSNAME
-SET @TB_NAME = '" + newTableName + @"'
-SELECT TOP 1 @NAME = NAME FROM SYS.OBJECTS WITH(NOLOCK)
-WHERE TYPE_DESC ='PRIMARY_KEY_CONSTRAINT'
-
-AND PARENT_OBJECT_ID = (SELECT OBJECT_ID
-
-FROM SYS.OBJECTS WITH(NOLOCK)
-
-WHERE NAME = @TB_NAME )
-SELECT @NAME
-";
-                        var constraintName = database.ExecSqlString(sql).ToSafeString();
-                        if(constraintName.IsNullOrEmpty() == false)
-                        {
-                            //如果constraintName没有值，那么就是变更自增长字段的时候，原来字段被删除了
-                            database.ExecSqlString($"ALTER TABLE {newTableName.ToLower()} DROP CONSTRAINT {constraintName}");
-                        }
-                     }
-                     else
-                     {
-                         //设为主键
-                         database.ExecSqlString("alter table [" + newTableName.ToLower() + "] add constraint PK_" + newTableName.ToLower() + "_" + column.Name.ToLower() + " primary key ([" + column.Name.ToLower() + "])");
-                     } 
-                     #endregion
-                 }
+                    //去除主键
+                    deletePkColumn(database, newTableName);
+                }
 
 
                  bool defaultvalueChanged = false;
@@ -550,8 +556,15 @@ SELECT @NAME
                      
 
                      database.ExecSqlString("update ["+newTableName.ToLower() + "] set ["+column.Name.ToLower() + "]='" + defaultValue.Replace("'","''") + "' where ["+column.Name.ToLower() + "] is null");
-                 } 
-                 #endregion
+                 }
+                #endregion
+
+                changeitem = column.BackupChangedProperties["IsPKID"];
+                if (changeitem != null && column.IsPKID == true)
+                {
+                    //设为主键
+                    database.ExecSqlString("alter table [" + newTableName.ToLower() + "] add constraint PK_" + newTableName.ToLower() + "_" + column.Name.ToLower() + " primary key ([" + column.Name.ToLower() + "])");
+                }
             }
 
             foreach (var column in addColumns)

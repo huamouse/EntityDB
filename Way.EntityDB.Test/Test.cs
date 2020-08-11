@@ -28,7 +28,7 @@ namespace Way.EntityDB.Test
         [TestMethod]
         public void test()
         {
-            using ( var db = new FllowOrderSystem.DBModels.DB.FllowOrders("Server=192.168.40.133;Port=5432;UserId=postgres;Password=123456;Database=fllowsystem2;", DatabaseType.PostgreSql) )
+            using ( var db = new FllowOrderSystem.DBModels.DB.FllowOrders("Server=192.168.40.133;Port=5432;UserId=postgres;Password=123456;Database=fllowsystem_test;", DatabaseType.PostgreSql) )
             {
                 db.Insert(new SuccessOrder { 
                     TradeUserId = 1,

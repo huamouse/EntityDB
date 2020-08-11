@@ -4,14 +4,14 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using Way.EntityDB.Design.Impls.SqlServer.Handles;
 
 namespace Way.EntityDB.Design.Database.SqlServer
 {
     [EntityDB.Attributes.DatabaseTypeAttribute(DatabaseType.SqlServer)]
     class SqlServerTableService : Services.ITableDesignService
     {
-        string getSqlServerType(EJ.DBColumn column)
+        public static string GetSqlServerType(EJ.DBColumn column)
         {
             if (column.dbType == "double")
                 return "float";
@@ -30,7 +30,7 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
             
                 foreach (EJ.DBColumn column in columns)
                 {
-                    var dbtype = getSqlServerType(column);
+                    var dbtype = GetSqlServerType(column);
                     sqlstr += "[" + column.Name.ToLower() + "] [" + dbtype + "]";
                     if (dbtype.IndexOf("char") >= 0)
                     {
@@ -217,49 +217,7 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
                 database.ExecSqlString("drop   index " + indexName + " on [" + table + "]");
             }
         }
-        void deletecolumn(EntityDB.IDatabaseService database, string table, string column)
-        {
-            table = table.ToLower();
-            column = column.ToLower();
 
-            #region delete
-            using (var sp_helpResult = database.SelectDataSet("sp_help [" + table + "]"))
-            {
-                foreach (var dtable in sp_helpResult.Tables)
-                {
-                    if (dtable.Columns.Any(m=>m.ColumnName == "constraint_name"))
-                    {
-                        var query = dtable.Rows.Where(m=>m["constraint_keys"].ToSafeString().ToLower() == column.ToLower());
-                        if (query.Count() > 0)
-                        {
-                            database.ExecSqlString("alter  table  [" + table + "]  drop  constraint " + query.First()["constraint_name"]);
-                        }
-                        break;
-                    }
-                }
-
-                //删除默认值
-                foreach (var dtable in sp_helpResult.Tables)
-                {
-                    if (dtable.Columns.Any(m=>m.ColumnName=="constraint_name"))
-                    {
-                        var query = from m in dtable.Rows
-                                    where ((string)m["constraint_type"]).ToLower().EndsWith(" " + column.ToLower()) && ((string)m["constraint_type"]).ToLower().StartsWith("default on ")
-                                    select m;
-
-                       if (query.Count() > 0)
-                        {
-                            database.ExecSqlString("alter  table  [" + table + "]  drop  constraint " + query.First()["constraint_name"]);
-                        }
-                        break;
-                    }
-                }
-            }
-
-            #endregion
-
-            database.ExecSqlString("ALTER TABLE [" + table + "] DROP COLUMN [" + column + "]");
-        }
         /// <summary>
         /// 返回没有变化的索引
         /// </summary>
@@ -331,31 +289,6 @@ CREATE TABLE [" + table.Name.ToLower() + @"] (
             return result;
         }
 
-        void deletePkColumn(IDatabaseService database,string tablename)
-        {
-            tablename = tablename.ToLower();
-            //去除主键
-            string sql = @"
-DECLARE @NAME SYSNAME
-DECLARE @TB_NAME SYSNAME
-SET @TB_NAME = '" + tablename + @"'
-SELECT TOP 1 @NAME = NAME FROM SYS.OBJECTS WITH(NOLOCK)
-WHERE TYPE_DESC ='PRIMARY_KEY_CONSTRAINT'
-
-AND PARENT_OBJECT_ID = (SELECT OBJECT_ID
-
-FROM SYS.OBJECTS WITH(NOLOCK)
-
-WHERE NAME = @TB_NAME )
-SELECT @NAME
-";
-            var constraintName = database.ExecSqlString(sql).ToSafeString();
-            if (constraintName.IsNullOrEmpty() == false)
-            {
-                //如果constraintName没有值，那么就是变更自增长字段的时候，原来字段被删除了
-                database.ExecSqlString($"ALTER TABLE {tablename} DROP CONSTRAINT {constraintName}");
-            }
-        }
 
         public void ChangeTable(EntityDB.IDatabaseService database, string oldTableName, string newTableName, 
             EJ.DBColumn[] addColumns, EJ.DBColumn[] changed_columns, EJ.DBColumn[] deletedColumns, Func<List<EJ.DBColumn>> getColumnsFunc
@@ -381,12 +314,7 @@ SELECT @NAME
 
             foreach (var column in deletedColumns)
             {
-                if (column.BackupChangedProperties["IsPKID"] != null && (bool)column.BackupChangedProperties["IsPKID"].OriginalValue == true)
-                    deletePkColumn(database, newTableName);
-                else if (column.IsPKID == true)
-                    deletePkColumn(database, newTableName);
-
-                deletecolumn(database, newTableName.ToLower(), column.Name.ToLower());
+                ChangeColumnHandler.HandleDelete(database, newTableName, column);
             }
 
             //将取消主键的列放前面处理
@@ -402,214 +330,12 @@ SELECT @NAME
 
             foreach (var column in changedColumns)
             {
-                var dbtype = getSqlServerType(column);
-                int changeColumnCount = 0;
-                var changeitem = column.BackupChangedProperties["Name"];
-                if (changeitem != null)
-                {
-                    changeColumnCount++;
-                    #region 改名
-                    database.ExecSqlString($"EXEC sp_rename '[{newTableName.ToLower()}].[{changeitem.OriginalValue}]', '{column.Name.ToLower()}', 'COLUMN'"); 
-                    #endregion
-                }
-
-
-                changeitem = column.BackupChangedProperties["IsAutoIncrement"];
-                if (changeitem != null)
-                {
-                    changeColumnCount++;
-
-                    var flagColumnName = "_tempcolumn";
-                    while ( Convert.ToInt32( database.ExecSqlString($"Select count(*) from syscolumns Where  ID=OBJECT_ID('{newTableName}') and name='{flagColumnName}'")) > 0)
-                    {
-                        flagColumnName += "1";
-                    }
-                    #region 变更自增长
-                    if (column.IsAutoIncrement == false)
-                    {
-                        //去掉自增长
-                        database.ExecSqlString($"alter table [{newTableName.ToLower()}] add {flagColumnName.ToLower()} {dbtype}");
-                        database.ExecSqlString($"update [{newTableName.ToLower()}] set {flagColumnName.ToLower()}=[{column.Name.ToLower()}]");
-                        deletecolumn(database, newTableName.ToLower(), column.Name.ToLower());
-                        database.ExecSqlString($"EXEC sp_rename '[{newTableName.ToLower()}].{flagColumnName.ToLower()}', '{column.Name.ToLower()}', 'COLUMN'");
-                       
-                    }
-                    else
-                    {
-                        //设为自增长
-                        database.ExecSqlString($"alter table [{newTableName.ToLower()}] add {flagColumnName.ToLower()} {dbtype} IDENTITY (1, 1)");
-                        deletecolumn(database, newTableName.ToLower(), column.Name.ToLower());
-                        database.ExecSqlString($"EXEC sp_rename '[{newTableName.ToLower()}].{flagColumnName.ToLower()}', '{column.Name.ToLower()}', 'COLUMN'");
-                    }
-
-                    //去掉自增长后，由于原来的列删除了，所以如果原来是主键，必须重新设置为主键
-                    if (column.IsPKID == true)
-                    {
-                        //主键不允许为空
-                        database.ExecSqlString($"alter table [{newTableName.ToLower()}] alter column [{column.Name.ToLower()}] [{dbtype}] not null");
-                        changeitem = column.BackupChangedProperties["IsPKID"];
-                        if (changeitem == null)
-                        {
-                            //标识IsPKID发生变化
-                            column.BackupChangedProperties["IsPKID"] = new EntityDB.DataValueChangedItem()
-                            {
-                                OriginalValue = false,
-                            };
-                        }
-                    }
-                    #endregion
-                }
-
-                 changeitem = column.BackupChangedProperties["IsPKID"];
-                if(changeitem != null)
-                {
-                    changeColumnCount++;
-                }
-
-
-                 if (changeitem != null && column.IsPKID == false)
-                 {
-                    //去除主键
-                    deletePkColumn(database, newTableName);
-                }
-
-
-                 bool defaultvalueChanged = false;
-                 changeitem = column.BackupChangedProperties["defaultValue"];
-                 if (changeitem != null)
-                 {
-                     defaultvalueChanged = true;
-                     changeColumnCount++;
-
-                    #region 默认值
-                    //获取默认值的id
-                    var defaultSettingID = database.ExecSqlString($"Select cdefault from syscolumns Where  ID=OBJECT_ID('{newTableName.ToLower()}') and name='{column.Name.ToLower()}'");
-                    if (defaultSettingID != null && Convert.ToInt32(defaultSettingID) != 0)
-                    {
-                        var defaultKeyName = database.ExecSqlString($"select name from sysObjects where type='D' and id={defaultSettingID}");
-                        if (defaultKeyName != null)
-                        {
-                            //如果进到这里，那么表示原来有默认值
-                            database.ExecSqlString($"alter  table  [{newTableName}]  drop  constraint {defaultKeyName}");
-                        }
-                    }
-                   
-                     #endregion
-                 }
-
-                 if (column.BackupChangedProperties.Count > changeColumnCount)
-                 {
-                     #region 如果其他地方还有更改
-                     string sql = "alter table [" + newTableName.ToLower() + "] alter column [" + column.Name.ToLower() + "] [" + dbtype + "]";
-
-                     if (dbtype.IndexOf("char") >= 0)
-                     {
-                         if (!string.IsNullOrEmpty(column.length))
-                             sql += " (" + column.length + ")";
-                         else
-                         {
-                             sql += " (50)";
-                         }
-                     }
-                     else
-                     {
-                         if (!string.IsNullOrEmpty(column.length))
-                         {
-                             sql += " (" + column.length + ")";
-                         }
-                     }
-
-                    //先改变字段类型，下面再设置默认值，和非null
-                    if (column.IsPKID == true || column.IsAutoIncrement == true)
-                    {
-                        database.ExecSqlString(sql);
-                    }
-                    else
-                    {
-                        database.ExecSqlString(sql + " NULL");
-                    }
-                    if (column.CanNull == false && !string.IsNullOrEmpty(column.defaultValue))
-                     {
-                         string defaultValue = column.defaultValue.Trim();
-                        
-                         database.ExecSqlString("update [" + newTableName.ToLower() + "] set [" + column.Name.ToLower() + "]='" + defaultValue.Replace("'","''") + "' where [" + column.Name.ToLower() + "] is null");
-                     }
-
-
-                    if (column.CanNull == false || column.IsPKID == true || column.IsAutoIncrement == true)
-                    {
-                        database.ExecSqlString(sql + " NOT NULL");
-                    }
-                     #endregion
-                 }
-
-                 #region 设置默认值
-                 if ( defaultvalueChanged && !string.IsNullOrEmpty(column.defaultValue))
-                 {
-                     string sql = "";
-                     string defaultValue = column.defaultValue.Trim();
-                     sql += "alter  table  [" + newTableName + "]  add  constraint DF_" + newTableName.ToLower() + "_" + column.Name.ToLower() + " default '" + defaultValue.Replace("'","''") + "' for [" + column.Name.ToLower() + "]";
-                         
-                     
-                     if (sql.Length > 0)
-                         database.ExecSqlString(sql);
-                     
-
-                     database.ExecSqlString("update ["+newTableName.ToLower() + "] set ["+column.Name.ToLower() + "]='" + defaultValue.Replace("'","''") + "' where ["+column.Name.ToLower() + "] is null");
-                 }
-                #endregion
-
-                changeitem = column.BackupChangedProperties["IsPKID"];
-                if (changeitem != null && column.IsPKID == true)
-                {
-                    //设为主键
-                    database.ExecSqlString("alter table [" + newTableName.ToLower() + "] add constraint PK_" + newTableName.ToLower() + "_" + column.Name.ToLower() + " primary key ([" + column.Name.ToLower() + "])");
-                }
+                ChangeColumnHandler.HandleChange(database, newTableName, column);
             }
 
             foreach (var column in addColumns)
             {
-                var dbtype = getSqlServerType(column);
-                #region 新增字段
-                string sql = "alter table [" + newTableName.ToLower() + "] add [" + column.Name.ToLower() + "] [" + dbtype + "]";
-
-                if (dbtype.IndexOf("char") >= 0)
-                {
-                    if (!string.IsNullOrEmpty(column.length))
-                        sql += " (" + column.length + ")";
-                    else
-                    {
-                        sql += " (50)";
-                    }
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(column.length))
-                    {
-                        sql += " (" + column.length + ")";
-                    }
-                }
-
-                if (column.IsAutoIncrement == true)
-                    sql += " IDENTITY (1, 1)";
-
-                if (column.CanNull == false || column.IsPKID == true || column.IsAutoIncrement == true)
-                {
-                    sql += " NOT";
-                }
-                sql += " NULL  ";
-                if (!string.IsNullOrEmpty(column.defaultValue))
-                {
-                    string defaultValue = column.defaultValue.Trim();
-                    sql += " default '" + defaultValue.Replace("'","''") + "' with values";
-                    
-                }
-                database.ExecSqlString(sql);
-
-                if (column.IsPKID == true)
-                    database.ExecSqlString("alter table [" + newTableName.ToLower() + "] add constraint pk_" + newTableName.ToLower() + "_" + column.Name.ToLower() + " primary key ([" + column.Name.ToLower() + "])");
-                
-                #endregion
+                ChangeColumnHandler.HandleNewColumn(database, newTableName, column);
             }
 
             if (  indexInfos != null && indexInfos.Length > 0)

@@ -25,8 +25,10 @@ namespace EJClient
         {
             public string url;
             public string username;
+            public List<string> history;
         }
         public static Login instance;
+        logininfo Logininfo;
         public Login()
         {
             instance = this;
@@ -34,9 +36,17 @@ namespace EJClient
             InitializeComponent();
             try
             {
-                var logininfo = System.IO.File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "url.txt").ToJsonObject<logininfo>();
-                txtAddress.Text = logininfo.url;
-                txtUserName.Text = logininfo.username;
+                Logininfo = System.IO.File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "url.txt").ToJsonObject<logininfo>();
+                txtAddress.Text = Logininfo.url;
+                txtUserName.Text = Logininfo.username;
+                if(Logininfo.history != null)
+                {
+                    txtAddress.ItemsSource = Logininfo.history;
+                }
+                else
+                {
+                    Logininfo.history = new List<string>();
+                }
             }
             catch
             {
@@ -81,11 +91,14 @@ namespace EJClient
                        Helper.WebSite = url;
                        Helper.CurrentUserRole = (EJ.User_RoleEnum)result[0];
                        Helper.CurrentUserID = result[1];
-                       System.IO.File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "url.txt", new logininfo()
-                       {
-                           url = Helper.WebSite,
-                           username = txtUserName.Text.Trim(),
-                       }.ToJsonString());
+
+                       if(Logininfo.history.Contains(Helper.WebSite) == false)
+                             Logininfo.history.Add(Helper.WebSite);
+
+                       Logininfo.url = Helper.WebSite;
+                       Logininfo.username = txtUserName.Text.Trim();
+
+                       System.IO.File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "url.txt", Logininfo.ToJsonString());
                        if (Helper.CurrentUserRole == EJ.User_RoleEnum.客户端测试人员)
                        {
                            Application.Current.MainWindow = new Forms.BugCenter.BugRecorder();

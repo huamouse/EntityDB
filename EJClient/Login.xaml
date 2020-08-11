@@ -4,7 +4,7 @@
         Title="Welcome to Mr.E" Icon="/imgs/easy.ico" Height="249.628" Width="300" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <StackPanel>
         <Label Margin="8,3,8,0" Content="Server Url"/>
-        <TextBox x:Name="txtAddress" Margin="8,3,8,0" Height="23" TextWrapping="Wrap" Text=""/>
+        <ComboBox x:Name="txtAddress" Margin="8,3,8,0" Height="23" IsEditable="True" Text=""/>
         <Label Margin="8,3,8,0" Content="User Name"/>
         <TextBox x:Name="txtUserName" Margin="8,3,8,0" Height="23" TextWrapping="Wrap" Text=""/>
         <Label Margin="8,3,8,0" Content="Password"/>

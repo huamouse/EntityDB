@@ -17,6 +17,8 @@ using System.Linq.Expressions;
 using System.Xml;
 using FllowOrderSystem.DBModels;
 using Npgsql;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Way.EntityDB.Test
 {
@@ -28,14 +30,15 @@ namespace Way.EntityDB.Test
         [TestMethod]
         public void test()
         {
-            using ( var db = new FllowOrderSystem.DBModels.DB.FllowOrders("Server=192.168.40.133;Port=5432;UserId=postgres;Password=123456;Database=fllowsystem_test;", DatabaseType.PostgreSql) )
+
+            using (var db = new FllowOrderSystem.DBModels.DB.FllowOrders("Server=192.168.40.133;Port=5432;UserId=postgres;Password=123456;Database=fllowsystem_test;", DatabaseType.PostgreSql))
             {
-                db.Insert(new SuccessOrder { 
-                    TradeUserId = 1,
-                    UserId = 2
+                db.Delete(db.TradeUser.Where(m => m.TradeUserId == 8000044));
+                db.Insert(new TradeUser
+                {
+                    TradeUserId = 8000044
                 });
 
-                var item = db.SuccessOrder.ToArray();
             }
         }
     }

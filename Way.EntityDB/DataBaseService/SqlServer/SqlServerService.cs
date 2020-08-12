@@ -52,7 +52,7 @@ namespace Way.EntityDB
 
             var pkColumn = tableSchema.Columns.FirstOrDefault(m => m.IsKey);
             var columnname = FormatObjectName(pkColumn.Name.ToLower());
-            this.ExecSqlString($"select {FormatObjectName(columnname)} from {FormatObjectName(tableSchema.TableName.ToLower())} WITH (UPDLOCK) where {columnname}=@p0", pkValue);
+            this.ExecSqlString($"select {columnname} from {FormatObjectName(tableSchema.TableName.ToLower())} WITH (UPDLOCK) where {columnname}=@p0", pkValue);
         }
 
         public override string FormatObjectName(string name)

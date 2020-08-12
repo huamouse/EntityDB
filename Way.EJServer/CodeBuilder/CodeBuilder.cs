@@ -114,21 +114,15 @@ namespace Way.EJServer
                 var discriminatorColumn = db.DBColumn.FirstOrDefault(m => m.TableID == t.id && m.IsDiscriminator == true);
                 if(discriminatorColumn != null)
                 {
-                    var columns = db.DBColumn.Where(m => m.TableID == t.id && !string.IsNullOrEmpty(m.ClassName)).ToArray();
-                    var groups = columns.GroupBy(m => m.ClassName).ToArray();
-                    if(groups.Count() > 0)
+                    var classNames = ParseNames(discriminatorColumn.EnumDefine).ToArray();
+                    modelbuildFunc.AddString($"modelBuilder.Entity<{t.Name}>().HasDiscriminator<{t.Name}_{discriminatorColumn.Name}Enum?>(\"{discriminatorColumn.Name}\")");
+                    modelbuildFunc.AddString($".HasValue<{t.Name}>(({t.Name}_{discriminatorColumn.Name}Enum)0)");
+
+                    foreach (var classnameitem in classNames)
                     {
-                        modelbuildFunc.AddString($"modelBuilder.Entity<{t.Name}>().HasDiscriminator<{t.Name}_{discriminatorColumn.Name}Enum?>(\"{discriminatorColumn.Name}\")");
-                        modelbuildFunc.AddString($".HasValue<{t.Name}>(({t.Name}_{discriminatorColumn.Name}Enum)0)");
+                        modelbuildFunc.AddString($".HasValue<{classnameitem.Name}>({t.Name}_{discriminatorColumn.Name}Enum.{classnameitem.Name})");
                     }
-                    foreach (var g in groups)
-                    {
-                        modelbuildFunc.AddString($".HasValue<{g.Key}>({t.Name}_{discriminatorColumn.Name}Enum.{g.Key})");
-                    }
-                    if (groups.Count() > 0)
-                    {
-                        modelbuildFunc.AddString(";");
-                    }
+                    modelbuildFunc.AddString(";");
                 }
               
             }
@@ -151,21 +145,20 @@ namespace Way.EJServer
                 var discriminatorColumn = db.DBColumn.FirstOrDefault(m => m.TableID == t.id && m.IsDiscriminator == true);
                 if (discriminatorColumn != null)
                 {
-                    var columns = db.DBColumn.Where(m => m.TableID == t.id && !string.IsNullOrEmpty(m.ClassName)).ToArray();
-                    var groups = columns.GroupBy(m => m.ClassName).ToArray();
-                    foreach (var g in groups)
+                    var classNames = ParseNames(discriminatorColumn.EnumDefine).ToArray();
+                    foreach (var g in classNames)
                     {
-                        classCode.AddString($"System.Linq.IQueryable<{g.Key}> _{g.Key};");
-                        proCodeItem = new PropertyCodeItem(g.Key);
+                        classCode.AddString($"System.Linq.IQueryable<{g.Name}> _{g.Name};");
+                        proCodeItem = new PropertyCodeItem(g.Name);
                         classCode.AddItem(proCodeItem);
                         proCodeItem.Modification = "public virtual";
-                        proCodeItem.PropertyType = $"System.Linq.IQueryable<{g.Key}>";
+                        proCodeItem.PropertyType = $"System.Linq.IQueryable<{g.Name}>";
                         proCodeItem.ItemForSet = null;
-                        proCodeItem.ItemForGet.AddString($"if (_{g.Key} == null)");
+                        proCodeItem.ItemForGet.AddString($"if (_{g.Name} == null)");
                         proCodeItem.ItemForGet.AddString("{");
-                        proCodeItem.ItemForGet.AddString($"    _{g.Key} = this.Set<{g.Key}>();");
+                        proCodeItem.ItemForGet.AddString($"    _{g.Name} = this.Set<{g.Name}>();");
                         proCodeItem.ItemForGet.AddString("}");
-                        proCodeItem.ItemForGet.AddString($"return _{g.Key};");
+                        proCodeItem.ItemForGet.AddString($"return _{g.Name};");
                     }
                 }
             }
@@ -385,6 +378,16 @@ namespace Way.EJServer
             {
                 classNames = ParseNames(discriminatorColumn.EnumDefine).ToArray();
                 classCode.Attributes.Add(@"[TableConfig( AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name + @""" , AutoSetPropertyValueOnInsert=(" + table.Name + "_" + discriminatorColumn.Name + @"Enum)0)]");
+           
+                foreach( var classnameitem in classNames )
+                {
+                    var myClsCodeItem = new CodeItem($"public class {classnameitem.Name} :{((classnameitem.BaseName == null) ? table.Name : classnameitem.BaseName)}");
+                    namespaceCode.AddItem(myClsCodeItem);
+                    myClsCodeItem.Comment = table.caption;
+                    myClsCodeItem.Attributes.Add(@"[TableConfig(AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name + @""" , AutoSetPropertyValueOnInsert=" + table.Name + "_" + discriminatorColumn.Name + @"Enum." + classnameitem.Name + @")]");
+                    otherClassCode[classnameitem.Name] = myClsCodeItem;
+                    myClsCodeItem.AddString("");
+                }
             }
             else
             {
@@ -399,18 +402,9 @@ namespace Way.EJServer
 
             foreach (var column in columns)
             {
-                if (discriminatorColumn != null && classNames != null &&!string.IsNullOrEmpty(column.ClassName?.Trim()) && columns.Any(m=>m.IsDiscriminator == true))
-                {
-                    if(otherClassCode.ContainsKey(column.ClassName) == false)
-                    {
-                        var classnameitem = classNames.FirstOrDefault(m=>m.Name == column.ClassName);
-                        //[TableConfig(AutoSetPropertyNameOnInsert = "Discriminator", AutoSetPropertyValueOnInsert = UserInfo_DiscriminatorEnum.SuperUser)]
-                        var myClsCodeItem = otherClassCode[column.ClassName] = new CodeItem($"public class {column.ClassName} :{((classnameitem == null || classnameitem.BaseName == null) ? table.Name : classnameitem.BaseName)}");
-                        namespaceCode.AddItem(myClsCodeItem);
-                        myClsCodeItem.Comment = table.caption;
-                        myClsCodeItem.Attributes.Add(@"[TableConfig(AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name + @""" , AutoSetPropertyValueOnInsert=" + table.Name + "_" + discriminatorColumn.Name + @"Enum." + column.ClassName + @")]");
-
-                    }
+                if (discriminatorColumn != null && classNames != null &&!string.IsNullOrEmpty(column.ClassName?.Trim()) && columns.Any(m=>m.IsDiscriminator == true) &&
+                    otherClassCode.ContainsKey(column.ClassName))
+                {                   
                     curClassCodeItem = otherClassCode[column.ClassName];
                 }
                 else

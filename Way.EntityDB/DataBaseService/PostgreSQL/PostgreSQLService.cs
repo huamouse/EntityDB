@@ -45,7 +45,7 @@ namespace Way.EntityDB
             var tableSchema = SchemaManager.GetSchemaTable(tableType);
             var pkColumn = tableSchema.Columns.FirstOrDefault(m => m.IsKey);
             var columnname = FormatObjectName(pkColumn.Name.ToLower());
-            this.ExecSqlString($"select {FormatObjectName(columnname)} from {FormatObjectName(tableSchema.TableName.ToLower())} where {columnname}=@p0 for update", pkValue);
+            this.ExecSqlString($"select {columnname} from {FormatObjectName(tableSchema.TableName.ToLower())} where {columnname}=@p0 for update", pkValue);
         }
 
         public override string FormatObjectName(string name)
@@ -65,7 +65,7 @@ namespace Way.EntityDB
 
         protected override void ThrowSqlException(Type tableType, Exception ex)
         {
-            if (!(ex is NpgsqlException))
+            if (!(ex is PostgresException))
                 throw ex;
             PostgresException nerror = ex as PostgresException;
             if(nerror.SqlState != "23505" || nerror.Detail.Contains(" already exists") == false)

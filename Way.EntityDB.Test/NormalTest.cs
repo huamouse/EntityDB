@@ -37,7 +37,7 @@ namespace Way.EntityDB.Test
             };
 
             var data2 = new TestDB.User();
-            data1.CopyValue(data2);
+            data1.CopyValueTo(data2,false);
 
             if (data1.Birthday != data2.Birthday || data1.IntColumn1 != data2.IntColumn1 || data1.Name != data2.Name)
                 throw new Exception("error");

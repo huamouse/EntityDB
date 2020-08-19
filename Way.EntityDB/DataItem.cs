@@ -432,14 +432,26 @@ namespace Way.EntityDB
         /// 把当前的值赋给指定的目标
         /// </summary>
         /// <param name="target"></param>
-        public void CopyValue(DataItem target)
+        /// <param name="copyPkValue">是否拷贝主键值</param>
+        public void CopyValueTo(DataItem target,bool copyPkValue = true)
         {
+          
             var targetType = target.GetType();
+            string targetKeyName = null;
+            if (!copyPkValue)
+            {
+                targetKeyName = SchemaManager.GetSchemaTable(targetType).KeyColumn.PropertyName;
+            }
+
             var properties = this.TableType.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(m => m.GetCustomAttribute<System.ComponentModel.DataAnnotations.Schema.ColumnAttribute>() != null);
             foreach( var pro in properties )
             {
                 try
                 {
+                    if(copyPkValue == false && targetKeyName == pro.Name)
+                    {
+                        continue;
+                    }
                     if (targetType == this.TableType)
                     {
                         pro.SetValue(target, pro.GetValue(this));

@@ -33,12 +33,9 @@ namespace Way.EntityDB.Test
 
             using (var db = new FllowOrderSystem.DBModels.DB.FllowOrders("Server=127.0.0.1;Port=5432;UserId=postgres;Password=123456;Database=fllowsystem_test;", DatabaseType.PostgreSql))
             {
-                db.Delete(db.TradeUser.Where(m => m.TradeUserId == 8000044));
-                db.Insert(new UserFllowSetting
-                {
-                    TradeUserId = 8000044,
-                    Type = FllowOrderSetting_TypeEnum.SystemFllowSetting
-                });
+                var tradeUser = new TradeUser();
+                tradeUser.NickName = "abc";
+                db.Update(tradeUser, m => m.TradeUserId == 2);
 
             }
         }

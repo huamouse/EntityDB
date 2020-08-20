@@ -465,7 +465,7 @@ namespace Way.EntityDB
 
             string pkid = dataitem.KeyName;
             object pkvalue = dataitem.PKValue;
-            if (pkvalue == null && pkid != null)
+            if (pkvalue == null && condition == null && pkid != null )
             {
                 Insert(dataitem);
                 return 1;

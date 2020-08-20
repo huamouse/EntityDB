@@ -432,8 +432,9 @@ namespace Way.EntityDB
         /// 把当前的值赋给指定的目标
         /// </summary>
         /// <param name="target"></param>
+        /// <param name="copyNullValue">是否拷贝null值</param>
         /// <param name="copyPkValue">是否拷贝主键值</param>
-        public void CopyValueTo(DataItem target,bool copyPkValue = true)
+        public void CopyValueTo(DataItem target,bool copyNullValue, bool copyPkValue = true)
         {
           
             var targetType = target.GetType();
@@ -452,9 +453,14 @@ namespace Way.EntityDB
                     {
                         continue;
                     }
+
+                    var myval = pro.GetValue(this);
+                    if (!copyNullValue && myval == null)
+                        continue;
+
                     if (targetType == this.TableType)
                     {
-                        pro.SetValue(target, pro.GetValue(this));
+                        pro.SetValue(target, myval);
                     }
                     else
                     {
@@ -464,7 +470,7 @@ namespace Way.EntityDB
                             var att = targetPro.GetCustomAttribute<DatabaseGeneratedAttribute>();
                             if (att != null && att.DatabaseGeneratedOption != DatabaseGeneratedOption.None)
                                 continue;
-                            target.SetValue(pro.Name, pro.GetValue(this));
+                            target.SetValue(pro.Name, myval);
                         }
                     }
                 }

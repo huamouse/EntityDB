@@ -31,12 +31,13 @@ namespace Way.EntityDB.Test
         public void test()
         {
 
-            using (var db = new FllowOrderSystem.DBModels.DB.FllowOrders("Server=192.168.40.133;Port=5432;UserId=postgres;Password=123456;Database=fllowsystem_test;", DatabaseType.PostgreSql))
+            using (var db = new FllowOrderSystem.DBModels.DB.FllowOrders("Server=127.0.0.1;Port=5432;UserId=postgres;Password=123456;Database=fllowsystem_test;", DatabaseType.PostgreSql))
             {
                 db.Delete(db.TradeUser.Where(m => m.TradeUserId == 8000044));
-                db.Insert(new TradeUser
+                db.Insert(new UserFllowSetting
                 {
-                    TradeUserId = 8000044
+                    TradeUserId = 8000044,
+                    Type = FllowOrderSetting_TypeEnum.SystemFllowSetting
                 });
 
             }

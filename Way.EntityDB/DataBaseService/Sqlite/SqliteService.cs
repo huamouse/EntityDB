@@ -148,7 +148,7 @@ namespace Way.EntityDB
 
             if (tableSchema.AutoSetPropertyNameOnInsert != null)
             {
-                var fv = fieldValues.FirstOrDefault(m => m.FieldName == tableSchema.AutoSetPropertyNameOnInsert);
+                var fv = fieldValues.FirstOrDefault(m => string.Equals( m.FieldName , tableSchema.AutoSetPropertyNameOnInsert , StringComparison.OrdinalIgnoreCase));
                 if (fv == null)
                 {
                     var val = tableSchema.AutoSetPropertyValueOnInsert;

@@ -3,6 +3,7 @@ using EJClient.TreeNode;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -218,6 +219,19 @@ namespace EJClient.Forms
             }
 
             [Browsable(false)]
+            public string showCaption
+            {
+                get
+                {
+                    if (m_column.caption != null)
+                    {
+                        return m_column.caption.Split('\n')[0].Trim();
+                    }
+                    return m_column.caption;
+                }
+            }
+
+            [Browsable(false)]
             public string ShowInLeft
             {
                 get
@@ -228,6 +242,22 @@ namespace EJClient.Forms
                     }
                     else
                         return "";
+                }
+            }
+           
+
+            private double _ShowWidth;
+            [Browsable(false)]
+            public double ShowWidth
+            {
+                get => _ShowWidth;
+                set
+                {
+                    if (_ShowWidth != value)
+                    {
+                        _ShowWidth = value;
+                        this.OnPropertyChanged("ShowWidth");
+                    }
                 }
             }
 
@@ -271,7 +301,8 @@ namespace EJClient.Forms
                         m_column.Name = value;
                         OnPropertyChanged("Name");
                         OnPropertyChanged("ShowInLeft");
-                      
+                        m_parentEditor.computeColumnAreaWidth();
+                        
                     }
                 }
 
@@ -339,18 +370,7 @@ namespace EJClient.Forms
                 }
             }
 
-            [Browsable(false)]
-           public string showCaption
-           {
-               get
-               {
-                   if (m_column.caption != null)
-                   {
-                        return m_column.caption.Split('\n')[0].Trim();
-                    }
-                   return m_column.caption;
-               }
-           }
+          
 
             //
             // 摘要:
@@ -373,6 +393,8 @@ namespace EJClient.Forms
                         {
                             PropertyChanged(this, new PropertyChangedEventArgs("showCaption"));
                             PropertyChanged(this, new PropertyChangedEventArgs("caption"));
+                            m_parentEditor.computeColumnAreaWidth();
+                            
                         }
                     }
                 }
@@ -599,6 +621,8 @@ namespace EJClient.Forms
                         m_column.ClassName = value;
                         OnPropertyChanged("ClassName");
                         OnPropertyChanged("ShowInLeft");
+                        m_parentEditor.computeColumnAreaWidth();
+                        
                     }
                 }
             }
@@ -744,11 +768,32 @@ namespace EJClient.Forms
             m_deleteConfigs.CollectionChanged += m_deleteConfigs_CollectionChanged;
             listDelConfig.ItemsSource = m_deleteConfigs;
             treeColumns.ItemsSource = m_columns;
+            computeColumnAreaWidth();
             listProperties.ItemsSource = m_properties;
 
 
         }
 
+        void computeColumnAreaWidth()
+        {
+            FontFamily family = new FontFamily("微软雅黑");
+            FontStyle style = new FontStyle();
+            FontWeight weight = new FontWeight();
+            FontStretch stretch = FontStretches.Normal;
+            double fontSize = 12;
+
+            double width = 0;
+            foreach( var column in m_columns )
+            {
+                double itemWidth = Helper.MeasureText(column.ShowInLeft + column.Name + "   " + column.showCaption, family, style, weight, stretch, fontSize).Width + 50;
+                width = Math.Max(width, itemWidth);
+            }
+
+            foreach (var column in m_columns)
+            {
+                column.ShowWidth = width;
+            }
+        }
 
         void m_deleteConfigs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {

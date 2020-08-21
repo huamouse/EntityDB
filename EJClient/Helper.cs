@@ -11,6 +11,94 @@ namespace EJClient
     class Helper
     {
 
+        #region 计算文本显示
+        /// <summary>
+        /// 计算文本显示宽、高
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="fontFamily">The font family.</param>
+        /// <param name="fontStyle">The font style.</param>
+        /// <param name="fontWeight">The font weight.</param>
+        /// <param name="fontStretch">The font stretch.</param>
+        /// <param name="fontSize">Size of the font.</param>
+        /// <returns></returns>
+        public static MeasureSize MeasureTextSize(
+            string text,
+            System.Windows.Media.FontFamily fontFamily,
+            System.Windows.FontStyle fontStyle,
+            System.Windows.FontWeight fontWeight,
+            System.Windows.FontStretch fontStretch,
+            double fontSize)
+        {
+            System.Windows.Media.FormattedText ft = new System.Windows.Media.FormattedText(text,
+                                                    System.Globalization.CultureInfo.CurrentCulture,
+                                                    System.Windows.FlowDirection.LeftToRight,
+                                                    new System.Windows.Media.Typeface(fontFamily, fontStyle, fontWeight, fontStretch),
+                                                    fontSize,
+                                                    System.Windows.Media.Brushes.Black);
+            return new MeasureSize(ft.Width, ft.Height);
+        }
+        /// <summary>
+        /// 计算文本显示宽、高
+        /// </summary>
+        public static MeasureSize MeasureText(string text,
+            System.Windows.Media.FontFamily fontFamily,
+            System.Windows.FontStyle fontStyle,
+            System.Windows.FontWeight fontWeight,
+            System.Windows.FontStretch fontStretch,
+            double fontSize)
+        {
+            System.Windows.Media.Typeface typeface = new System.Windows.Media.Typeface(fontFamily, fontStyle, fontWeight, fontStretch);
+            System.Windows.Media.GlyphTypeface glyphTypeface;
+            if (!typeface.TryGetGlyphTypeface(out glyphTypeface))
+            {
+                return MeasureTextSize(text, fontFamily, fontStyle, fontWeight, fontStretch, fontSize);
+            }
+            double totalWidth = 0;
+            double height = 0;
+            for (int n = 0; n < text.Length; n++)
+            {
+                ushort glyphIndex = glyphTypeface.CharacterToGlyphMap[text[n]];
+                double width = glyphTypeface.AdvanceWidths[glyphIndex] * fontSize;
+                double glyphHeight = glyphTypeface.AdvanceHeights[glyphIndex] * fontSize;
+                if (glyphHeight > height)
+                {
+                    height = glyphHeight;
+                }
+                totalWidth += width;
+            }
+            return new MeasureSize(totalWidth, height);
+        }
+        /// <summary>
+        /// 显示文本尺寸
+        /// </summary>
+        public class MeasureSize
+        {
+            /// <summary>
+            /// 宽度
+            /// </summary>
+            public double Width { get; set; }
+            /// <summary>
+            /// 高度
+            /// </summary>
+            public double Height { get; set; }
+            /// <summary>
+            /// 构造
+            /// </summary>
+            public MeasureSize() { }
+            /// <summary>
+            /// 构造
+            /// </summary>
+            /// <param name="width"></param>
+            /// <param name="height"></param>
+            public MeasureSize(double width, double height)
+            {
+                this.Width = width;
+                this.Height = height;
+            }
+        }
+        #endregion
+
         public static string WebSite;
         public static RemotingClient Client;
         public static EJ.User_RoleEnum CurrentUserRole;

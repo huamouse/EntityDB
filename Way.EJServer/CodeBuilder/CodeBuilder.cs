@@ -262,53 +262,109 @@ namespace Way.EJServer
         /// <summary>
         /// </summary>
         /// <param name="type"></param>
-        public static string GetLinqTypeString(string type)
+        public static string GetLinqTypeString(string type,bool canNull)
         {
             switch (type)
             {
-
+                
                 case "bigint":
-                    return "System.Nullable<Int64>";
+                    if( canNull )
+                        return "System.Nullable<Int64>";
+                    else
+                        return "Int64";
                 case "binary":
                     return "Byte[]";
                 case "bit":
-                    return "System.Nullable<Boolean>";
+                    if (canNull)
+                        return "System.Nullable<Boolean>";
+                    else
+                        return "Boolean";                   
                 case "char":
                     return "String";
                 case "datetime":
-                    return "System.Nullable<DateTime>";
+                    if (canNull)
+                        return "System.Nullable<DateTime>";
+                    else
+                        return "DateTime";
+                   
                 case "date":
-                    return "System.Nullable<DateTime>";
+                    if (canNull)
+                        return "System.Nullable<DateTime>";
+                    else
+                        return "DateTime";
                 case "time":
-                    return "System.Nullable<TimeSpan>";
+                    if (canNull)
+                        return "System.Nullable<TimeSpan>";
+                    else
+                        return "TimeSpan";
+
+                    
                 case "decimal":
-                    return "System.Nullable<Decimal>";
+                    if (canNull)
+                        return "System.Nullable<Decimal>";
+                    else
+                        return "Decimal";
+
+                   
                 case "float":
-                    return "System.Nullable<float>";
+                    if (canNull)
+                        return "System.Nullable<float>";
+                    else
+                        return "float";
+
+                    
                 case "double":
-                    return "System.Nullable<double>";
+                    if (canNull)
+                        return "System.Nullable<double>";
+                    else
+                        return "double";
+
                 case "image":
                     return "Byte[]";
                 case "int":
-                    return "System.Nullable<Int32>";
+                    if (canNull)
+                        return "System.Nullable<Int32>";
+                    else
+                        return "Int32";
+
                 case "money":
-                    return "System.Nullable<Decimal>";
+                    if (canNull)
+                        return "System.Nullable<Decimal>";
+                    else
+                        return "Decimal";
                 case "nchar":
                     return "String";
                 case "ntext":
                     return "String";
                 case "numeric":
-                    return "System.Nullable<Decimal>";
+                    if (canNull)
+                        return "System.Nullable<Decimal>";
+                    else
+                        return "Decimal";
                 case "nvarchar":
                     return "String";
                 case "real":
-                    return "System.Nullable<float>";
+                    if (canNull)
+                        return "System.Nullable<float>";
+                    else
+                        return "float";
                 case "smalldatetime":
-                    return "System.Nullable<DateTime>";
+                    if (canNull)
+                        return "System.Nullable<DateTime>";
+                    else
+                        return "DateTime";
                 case "smallint":
-                    return "System.Nullable<Int16>";
+                    if (canNull)
+                        return "System.Nullable<Int16>";
+                    else
+                        return "Int16";
+
                 case "smallmoney":
-                    return "System.Nullable<Decimal>";
+                    if (canNull)
+                        return "System.Nullable<Decimal>";
+                    else
+                        return "Decimal";
+
                 case "text":
                     return "String";
                 case "timestamp":
@@ -425,7 +481,7 @@ namespace Way.EJServer
                     caption = caption.Substring(0, caption.IndexOf("，"));
                 }
 
-                string dataType = GetLinqTypeString(column.dbType);
+                string dataType = GetLinqTypeString(column.dbType,column.CanNull.GetValueOrDefault() || column.IsAutoIncrement == true);
 
 
                 string eqString = "";
@@ -434,7 +490,10 @@ namespace Way.EJServer
                     if (column.EnumDefine.Trim().StartsWith("$"))
                     {
                         var target = column.EnumDefine.Trim().Substring(1).Split('.');
-                        dataType = "System.Nullable<" + target[0] + "_" + target[1] + "Enum>";
+                        if(column.CanNull == true)
+                            dataType = target[0] + "_" + target[1] + "Enum?";
+                        else
+                            dataType = target[0] + "_" + target[1] + "Enum";
                     }
                     else
                     {
@@ -484,15 +543,15 @@ namespace Way.EJServer
                                 eqString = eqString.Substring(1, eqString.Length - 2);
                             eqString = "\"" + eqString + "\"";
                         }
-                        else if(dataType == "System.Nullable<Decimal>")
+                        else if(dataType == "System.Nullable<Decimal>" || dataType == "Decimal")
                         {
                             eqString = eqString + "m";
                         }
-                        else if (dataType == "System.Nullable<float>")
+                        else if (dataType == "System.Nullable<float>" || dataType == "float")
                         {
                             eqString = eqString + "f";
                         }
-                        else if (dataType == "System.Nullable<Boolean>")
+                        else if (dataType == "System.Nullable<Boolean>" || dataType == "Boolean")
                         {
                             if (eqString == "1")
                                 eqString = "true";
@@ -704,7 +763,7 @@ namespace Way.EJServer
                 proCodeItem.Comment = column.caption;
 
 
-                string dataType = GetLinqTypeString(column.dbType);
+                string dataType = GetLinqTypeString(column.dbType, column.CanNull.GetValueOrDefault() || column.IsAutoIncrement == true);
                
                 string eqString = "";
                 if (!string.IsNullOrEmpty(column.EnumDefine) && column.dbType == "int")
@@ -712,7 +771,10 @@ namespace Way.EJServer
                     if (column.EnumDefine.Trim().StartsWith("$"))
                     {
                         var target = column.EnumDefine.Trim().Substring(1).Split('.');
-                        dataType = target[0] + "_" + target[1] + "Enum?";
+                        if(column.CanNull == true)
+                            dataType = target[0] + "_" + target[1] + "Enum?";
+                        else
+                            dataType = target[0] + "_" + target[1] + "Enum";
                     }
                     else
                     {
@@ -762,15 +824,15 @@ namespace Way.EJServer
                                 eqString = eqString.Substring(1, eqString.Length - 2);
                             eqString = "\"" + eqString + "\"";
                         }
-                        else if (dataType == "System.Nullable<Decimal>")
+                        else if (dataType == "System.Nullable<Decimal>" || dataType == "Decimal")
                         {
                             eqString = eqString + "m";
                         }
-                        else if (dataType == "System.Nullable<float>")
+                        else if (dataType == "System.Nullable<float>" || dataType == "float")
                         {
                             eqString = eqString + "f";
                         }
-                        else if (dataType == "System.Nullable<Boolean>")
+                        else if (dataType == "System.Nullable<Boolean>" || dataType == "Boolean")
                         {
                             if (eqString == "1")
                                 eqString = "true";

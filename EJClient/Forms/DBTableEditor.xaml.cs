@@ -829,6 +829,7 @@ namespace EJClient.Forms
                 m_columns.Add(item);
             }
             item.IsSelected = true;
+            this.computeColumnAreaWidth();
         }
 
         private void treeColumns_SelectedItemChanged_1(object sender, RoutedPropertyChangedEventArgs<object> e)

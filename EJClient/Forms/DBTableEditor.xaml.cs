@@ -35,7 +35,7 @@ namespace EJClient.Forms
             public MyClassProperty(DBTableEditor editor)
             {
                 _editor = editor;
-                this.ForeignKeys = new System.Collections.ObjectModel.ObservableCollection<ColumnBaseInfo>();
+                this.ForeignKeys = new System.Collections.ObjectModel.ObservableCollection<ColumnViewModel>();
             }
             public override int? foreignkey_tableid {
                 get => base.foreignkey_tableid;
@@ -49,7 +49,7 @@ namespace EJClient.Forms
                         var columns = Helper.Client.InvokeSync<EJ.DBColumn[]>("GetColumnList", (this.iscollection == false) ? _editor.m_modifyingTable.id.GetValueOrDefault() : value.GetValueOrDefault());
                         foreach (var c in columns)
                         {
-                            this.ForeignKeys.Add(new ColumnBaseInfo(c, _editor));
+                            this.ForeignKeys.Add(new ColumnViewModel(c, _editor));
                         }
                     }
                 }
@@ -69,23 +69,26 @@ namespace EJClient.Forms
                         var columns = Helper.Client.InvokeSync<EJ.DBColumn[]>("GetColumnList", (this.iscollection == false) ? _editor.m_modifyingTable.id.GetValueOrDefault() : foreignkey_tableid.GetValueOrDefault());
                         foreach (var c in columns)
                         {
-                            this.ForeignKeys.Add(new ColumnBaseInfo(c, _editor));
+                            this.ForeignKeys.Add(new ColumnViewModel(c, _editor));
                         }
                     }
                 }
             }
            
 
-            public System.Collections.ObjectModel.ObservableCollection<ColumnBaseInfo> ForeignKeys { get; set; }
+            public System.Collections.ObjectModel.ObservableCollection<ColumnViewModel> ForeignKeys { get; set; }
         }
 
-        internal class TableIndex : INotifyPropertyChanged
+        /// <summary>
+        /// 索引
+        /// </summary>
+        internal class IndexModel : INotifyPropertyChanged
         {
-            public System.Collections.ObjectModel.ObservableCollection<ColumnBaseInfo> Columns;
+            public System.Collections.ObjectModel.ObservableCollection<ColumnViewModel> Columns;
             public bool IsUnique;
             public bool IsClustered;
 
-            public TableIndex(System.Collections.ObjectModel.ObservableCollection<ColumnBaseInfo> columns, bool isUnique, bool isClustered)
+            public IndexModel(System.Collections.ObjectModel.ObservableCollection<ColumnViewModel> columns, bool isUnique, bool isClustered)
             {
                 IsUnique = isUnique;
                 IsClustered = isClustered;
@@ -106,10 +109,13 @@ namespace EJClient.Forms
 
             public event PropertyChangingEventHandler PropertyChanging;
         }
-        class CascadingDeletion
+        /// <summary>
+        /// 级联删除
+        /// </summary>
+        class CascadingDeletionViewModel
         {
             int m_databaseid;
-            public CascadingDeletion(int databaseid,string tableName)
+            public CascadingDeletionViewModel(int databaseid,string tableName)
             {
                 m_databaseid = databaseid;
                 this.TableName = tableName;
@@ -154,7 +160,7 @@ namespace EJClient.Forms
         
            
         }
-        class TableBaseInfo
+        class TableViewModel
         {
             [DisplayName("2:注释")]
             public string Comment
@@ -182,18 +188,18 @@ namespace EJClient.Forms
                 }
             }
             EJ.DBTable table;
-            public TableBaseInfo(EJ.DBTable table)
+            public TableViewModel(EJ.DBTable table)
             {
                 this.table = table;
             }
         }
 
-        internal class ColumnBaseInfo : INotifyPropertyChanged
+        internal class ColumnViewModel : INotifyPropertyChanged
         {
             internal EJ.DBColumn m_column;
             System.Windows.Forms.PropertyGrid m_pgGrid;
             DBTableEditor m_parentEditor;
-            public ColumnBaseInfo(EJ.DBColumn column, DBTableEditor parentEditor)
+            public ColumnViewModel(EJ.DBColumn column, DBTableEditor parentEditor)
             {
                 m_parentEditor = parentEditor;
                 m_pgGrid = parentEditor.pgridForColumn;
@@ -670,10 +676,10 @@ namespace EJClient.Forms
         
         bool m_relationChanged = false;
         bool m_IsModify = false;
-        System.Collections.ObjectModel.ObservableCollection<CascadingDeletion> m_deleteConfigs = new System.Collections.ObjectModel.ObservableCollection<CascadingDeletion>();
+        System.Collections.ObjectModel.ObservableCollection<CascadingDeletionViewModel> m_deleteConfigs = new System.Collections.ObjectModel.ObservableCollection<CascadingDeletionViewModel>();
 
-        System.Collections.ObjectModel.ObservableCollection<TableIndex> m_IDXConfigs = new System.Collections.ObjectModel.ObservableCollection<TableIndex>();
-        System.Collections.ObjectModel.ObservableCollection<ColumnBaseInfo> m_columns = new System.Collections.ObjectModel.ObservableCollection<ColumnBaseInfo>();
+        System.Collections.ObjectModel.ObservableCollection<IndexModel> m_IDXConfigs = new System.Collections.ObjectModel.ObservableCollection<IndexModel>();
+        System.Collections.ObjectModel.ObservableCollection<ColumnViewModel> m_columns = new System.Collections.ObjectModel.ObservableCollection<ColumnViewModel>();
         System.Collections.ObjectModel.ObservableCollection<MyClassProperty> m_properties = new System.Collections.ObjectModel.ObservableCollection<MyClassProperty>();
         internal DBTableEditor(DatabaseItemNode dbnode , EJ.DBTable currentTable)
         {
@@ -705,7 +711,7 @@ namespace EJClient.Forms
                 m_table = new EJ.DBTable();
                 m_table.DatabaseID = dbnode.Database.id;
 
-                ColumnBaseInfo item = new ColumnBaseInfo(new EJ.DBColumn()
+                ColumnViewModel item = new ColumnViewModel(new EJ.DBColumn()
                 {
                     Name = "id",
                     CanNull = false,
@@ -725,7 +731,7 @@ namespace EJClient.Forms
                 var columns = Helper.Client.InvokeSync<EJ.DBColumn[]>("GetColumnList", currentTable.id.Value);
                 foreach (var c in columns)
                 {
-                    m_columns.Add(new ColumnBaseInfo(c, this));
+                    m_columns.Add(new ColumnViewModel(c, this));
                 }
 
                 var existProperties = Helper.Client.InvokeSync<EJ.classproperty[]>("GetClassPropertyList", currentTable.id.Value);
@@ -747,7 +753,7 @@ namespace EJClient.Forms
                 var delconfigs = Helper.Client.InvokeSync<EJ.DBDeleteConfig[]>("GetTableDeleteConfigList", currentTable.id.Value);
                 foreach (var delitem in delconfigs)
                 {
-                    m_deleteConfigs.Add(new CascadingDeletion(currentTable.DatabaseID.Value, delitem.RelaTable_Desc)
+                    m_deleteConfigs.Add(new CascadingDeletionViewModel(currentTable.DatabaseID.Value, delitem.RelaTable_Desc)
                     {
                         ColumnName = delitem.RelaColumn_Desc
                     });
@@ -756,7 +762,7 @@ namespace EJClient.Forms
                 var idxConfig = Helper.Client.InvokeSync<EJ.IDXIndex[]>("GetTableIDXIndexList", currentTable.id.Value);
                 foreach (var config in idxConfig)
                 {
-                    m_IDXConfigs.Add(new TableIndex(m_columns, config.IsUnique.Value, config.IsClustered.Value)
+                    m_IDXConfigs.Add(new IndexModel(m_columns, config.IsUnique.Value, config.IsClustered.Value)
                     {
                         ColumnNames = config.Keys.Split(',')
                     });
@@ -765,7 +771,7 @@ namespace EJClient.Forms
 
             Tables = Helper.Client.InvokeSync<string[]>("GetTableNames", dbnode.Database.id.Value).OrderBy(m => m).ToArray();
 
-            pgridForTable.SelectedObject = new TableBaseInfo(m_table);
+            pgridForTable.SelectedObject = new TableViewModel(m_table);
 
 
             m_deleteConfigs.CollectionChanged += m_deleteConfigs_CollectionChanged;
@@ -812,7 +818,7 @@ namespace EJClient.Forms
                 index++;
                 columnName = "column" + index;
             }
-            ColumnBaseInfo item = new ColumnBaseInfo(new EJ.DBColumn()
+            ColumnViewModel item = new ColumnViewModel(new EJ.DBColumn()
                 {
                     Name = columnName,
                     CanNull = true,
@@ -862,7 +868,7 @@ namespace EJClient.Forms
             }
            
             List<object> idsConfigs = new List<object>();
-            foreach (TableIndex c in m_IDXConfigs)
+            foreach (IndexModel c in m_IDXConfigs)
             {
                 //如果索引包含已经删除的字段，则忽略
                 if (c.ColumnNames.Any(m => m_columns.Any(o=>o.Name == m) == false))
@@ -966,7 +972,7 @@ namespace EJClient.Forms
 
         private void btnDeleteColumn_Click_1(object sender, RoutedEventArgs e)
         {
-            ColumnBaseInfo column = treeColumns.SelectedItem as ColumnBaseInfo;
+            ColumnViewModel column = treeColumns.SelectedItem as ColumnViewModel;
             if (column == null)
                 return;
             int index = m_columns.IndexOf(column);
@@ -992,19 +998,19 @@ namespace EJClient.Forms
         {
             m_relationChanged = true;
             ComboBox selTableName = (ComboBox)sender;
-            ((CascadingDeletion)selTableName.Tag).reBindColumns();
+            ((CascadingDeletionViewModel)selTableName.Tag).reBindColumns();
         }
 
         private void addDeleteRela_Click_1(object sender, RoutedEventArgs e)
         {
-            m_deleteConfigs.Add(new CascadingDeletion(m_table.DatabaseID.Value, null));
+            m_deleteConfigs.Add(new CascadingDeletionViewModel(m_table.DatabaseID.Value, null));
         }
 
         private void delDeleteRela_Click_1(object sender, RoutedEventArgs e)
         {
             if (listDelConfig.SelectedItem != null)
             {
-                m_deleteConfigs.Remove( (CascadingDeletion)listDelConfig.SelectedItem );
+                m_deleteConfigs.Remove( (CascadingDeletionViewModel)listDelConfig.SelectedItem );
             }
         }
         private void addProperty_Click(object sender, RoutedEventArgs e)
@@ -1022,7 +1028,7 @@ namespace EJClient.Forms
 
         private void btnMoveUp_Click_1(object sender, RoutedEventArgs e)
         {
-            ColumnBaseInfo column = treeColumns.SelectedItem as ColumnBaseInfo;
+            ColumnViewModel column = treeColumns.SelectedItem as ColumnViewModel;
             if (column == null || column == m_columns[0])
                 return;
 
@@ -1035,7 +1041,7 @@ namespace EJClient.Forms
 
         private void btnMoveDown_Click_1(object sender, RoutedEventArgs e)
         {
-            ColumnBaseInfo column = treeColumns.SelectedItem as ColumnBaseInfo;
+            ColumnViewModel column = treeColumns.SelectedItem as ColumnViewModel;
             if (column == null || column == m_columns.Last())
                 return;
 
@@ -1048,7 +1054,7 @@ namespace EJClient.Forms
 
         private void addUniqueIndex_Click_1(object sender, RoutedEventArgs e)
         {
-            m_IDXConfigs.Add(new TableIndex(this.m_columns,false , false )
+            m_IDXConfigs.Add(new IndexModel(this.m_columns,false , false )
                 {
                     ColumnNames = new string[0],
                 });
@@ -1056,7 +1062,7 @@ namespace EJClient.Forms
 
         private void delUniqueIndex_Click_1(object sender, RoutedEventArgs e)
         {
-            TableIndex item = listUniqueIndex.SelectedItem as TableIndex;
+            IndexModel item = listUniqueIndex.SelectedItem as IndexModel;
             if (item != null)
             {
                 m_IDXConfigs.Remove(item);
@@ -1088,7 +1094,7 @@ namespace EJClient.Forms
                         continue;
                     sourceColumns[i].id = null;
 
-                    ColumnBaseInfo item = new ColumnBaseInfo(sourceColumns[i], this);
+                    ColumnViewModel item = new ColumnViewModel(sourceColumns[i], this);
                     m_columns.Add(item);
                 }
             }
@@ -1114,7 +1120,7 @@ namespace EJClient.Forms
                 this.Children.Clear();
                 if (value != null)
                 {
-                    EJClient.Forms.DBTableEditor.TableIndex dataContext = (EJClient.Forms.DBTableEditor.TableIndex)this.DataContext;
+                    EJClient.Forms.DBTableEditor.IndexModel dataContext = (EJClient.Forms.DBTableEditor.IndexModel)this.DataContext;
                     if (true)
                     {
                         ComboBox comboBox = new ComboBox();
@@ -1161,13 +1167,13 @@ namespace EJClient.Forms
         }
         void 唯一值_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            EJClient.Forms.DBTableEditor.TableIndex dataContext = (EJClient.Forms.DBTableEditor.TableIndex)this.DataContext;
+            EJClient.Forms.DBTableEditor.IndexModel dataContext = (EJClient.Forms.DBTableEditor.IndexModel)this.DataContext;
             ComboBox comboBox = sender as ComboBox;
             dataContext.IsUnique = comboBox.SelectedIndex == 0;
         }
         void 聚焦_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            EJClient.Forms.DBTableEditor.TableIndex dataContext = (EJClient.Forms.DBTableEditor.TableIndex)this.DataContext;
+            EJClient.Forms.DBTableEditor.IndexModel dataContext = (EJClient.Forms.DBTableEditor.IndexModel)this.DataContext;
             ComboBox comboBox = sender as ComboBox;
             dataContext.IsClustered = comboBox.SelectedIndex == 1;
         }
@@ -1195,7 +1201,7 @@ namespace EJClient.Forms
                 }
             }
 
-            EJClient.Forms.DBTableEditor.TableIndex dataContext = (EJClient.Forms.DBTableEditor.TableIndex)this.DataContext;
+            EJClient.Forms.DBTableEditor.IndexModel dataContext = (EJClient.Forms.DBTableEditor.IndexModel)this.DataContext;
             List<string> columns = new List<string>();
             for (int i = 2; i < this.Children.Count; i ++ )
             {
@@ -1210,11 +1216,11 @@ namespace EJClient.Forms
         void comboBox_DropDownOpened(object sender, EventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
-            EJClient.Forms.DBTableEditor.TableIndex dataContext = (EJClient.Forms.DBTableEditor.TableIndex)this.DataContext;
+            EJClient.Forms.DBTableEditor.IndexModel dataContext = (EJClient.Forms.DBTableEditor.IndexModel)this.DataContext;
             var oldselected = comboBox.SelectedItem ;
             comboBox.Items.Clear();
             comboBox.Items.Add("");
-            foreach (EJClient.Forms.DBTableEditor.ColumnBaseInfo column in dataContext.Columns)
+            foreach (EJClient.Forms.DBTableEditor.ColumnViewModel column in dataContext.Columns)
             {
                 comboBox.Items.Add(column.m_column.Name);
             }

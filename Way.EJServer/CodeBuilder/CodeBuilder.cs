@@ -526,8 +526,10 @@ namespace Way.EJServer
                             }
 
                         }
-
-                        dataType = table.Name + "_" + column.Name + "Enum?";
+                        if (column.CanNull == true)
+                            dataType = table.Name + "_" + column.Name + "Enum?";
+                        else
+                            dataType = table.Name + "_" + column.Name + "Enum";
                     }
                 }
 
@@ -807,8 +809,10 @@ namespace Way.EJServer
                             }
 
                         }
-
-                        dataType = table.Name + "_" + column.Name + "Enum?";
+                        if (column.CanNull == true)
+                            dataType = table.Name + "_" + column.Name + "Enum?";
+                        else
+                            dataType = table.Name + "_" + column.Name + "Enum";
                     }
                 }
 

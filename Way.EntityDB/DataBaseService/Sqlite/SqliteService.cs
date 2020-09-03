@@ -471,6 +471,9 @@ namespace Way.EntityDB
                 return 1;
             }
 
+            if (dataitem.ChangedProperties.Count == 0 && dataitem.UpdateExpression == null)
+                return 0;
+
             var changedHistory = dataitem.ChangedProperties[dataitem.KeyName];
             if (changedHistory != null && changedHistory.OriginalValue != null)
                 pkvalue = changedHistory.OriginalValue;

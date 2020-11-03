@@ -47,6 +47,7 @@ namespace Way.EJServer
 
                 server.RegisterHandler(new DownLoadCodeHandler());
                 server.RegisterHandler(new DownLoadSimpleCodeHandler());
+                server.RegisterHandler(new DownLoadVerySimpleCodeHandler());
                 server.RegisterHandler(new DownloadTableDataHandler());
                 server.RegisterHandler(new ImportDataHandler());
                 server.RegisterHandler(new ImportCSFileHandler());

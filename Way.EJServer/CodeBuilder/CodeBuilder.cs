@@ -896,6 +896,162 @@ namespace Way.EJServer
 
             }
         }
+
+
+        public void BuildVerySimpleTable(EJDB db, NamespaceCode namespaceCode, EJ.DBTable table)
+        {
+            var columns = db.DBColumn.Where(m => m.TableID == table.id).ToList();
+            BuildVerySimpleTable(db, namespaceCode, table, columns);
+        }
+
+        static void BuildVerySimpleTable(EJDB db, NamespaceCode namespaceCode, EJ.DBTable table, List<EJ.DBColumn> columns)
+        {
+            var pkcolumn = columns.FirstOrDefault(m => m.IsPKID == true);
+
+
+            CodeItem classCode = new CodeItem($"public class {table.Name}");
+            namespaceCode.AddItem(classCode);
+            classCode.Comment = table.caption;
+
+
+            foreach (var column in columns)
+            {
+                FieldCodeItem fieldCodeItem = new FieldCodeItem($"_{column.Name}");
+                classCode.AddItem(fieldCodeItem);
+                PropertyCodeItem proCodeItem = new PropertyCodeItem(column.Name);
+                classCode.AddItem(proCodeItem);
+                proCodeItem.Comment = column.caption;
+
+
+                string dataType = GetLinqTypeString(column.dbType, column.CanNull.GetValueOrDefault() || column.IsAutoIncrement == true);
+
+                string eqString = "";
+                if (!string.IsNullOrEmpty(column.EnumDefine) && column.dbType == "int")
+                {
+                    if (column.EnumDefine.Trim().StartsWith("$"))
+                    {
+                        var target = column.EnumDefine.Trim().Substring(1).Split('.');
+                        if (column.CanNull == true)
+                            dataType = target[0] + "_" + target[1] + "Enum?";
+                        else
+                            dataType = target[0] + "_" + target[1] + "Enum";
+                    }
+                    else
+                    {
+                        string[] enumitems = column.EnumDefine.Replace("\r", "").Split('\n');
+
+                        CodeItem codeEnum = new CodeItem($"public enum {table.Name}_{column.Name}Enum:int");
+                        namespaceCode.AddItem(codeEnum);
+
+                        CodeItem codeEnumField = new CodeItem();
+                        for (int i = 0; i < enumitems.Length; i++)
+                        {
+                            var code = enumitems[i].Trim();
+                            if (code.Length == 0)
+                                continue;
+                            if (code.StartsWith("//"))
+                            {
+                                if (code.Length > 2)
+                                {
+                                    if (codeEnumField.Comment.Length > 0)
+                                        codeEnumField.Comment += "\r\n";
+                                    codeEnumField.Comment += code.Substring(2);
+                                }
+
+                            }
+                            else
+                            {
+                                codeEnumField.Body = code;
+                                codeEnum.AddItem(codeEnumField);
+                                codeEnumField = new CodeItem();
+                            }
+
+                        }
+                        if (column.CanNull == true)
+                            dataType = table.Name + "_" + column.Name + "Enum?";
+                        else
+                            dataType = table.Name + "_" + column.Name + "Enum";
+                    }
+                }
+
+
+                if (!string.IsNullOrEmpty(column.defaultValue))
+                {
+                    if (column.defaultValue.Trim().Length > 0)
+                    {
+                        eqString = column.defaultValue.Trim();
+                        if (dataType == "String")
+                        {
+                            if (eqString.StartsWith("'") && eqString.EndsWith("'") && eqString.Length > 1)
+                                eqString = eqString.Substring(1, eqString.Length - 2);
+                            eqString = "\"" + eqString + "\"";
+                        }
+                        else if (dataType == "System.Nullable<Decimal>" || dataType == "Decimal")
+                        {
+                            eqString = eqString + "m";
+                        }
+                        else if (dataType == "System.Nullable<float>" || dataType == "float")
+                        {
+                            eqString = eqString + "f";
+                        }
+                        else if (dataType == "System.Nullable<Boolean>" || dataType == "Boolean")
+                        {
+                            if (eqString == "1")
+                                eqString = "true";
+                            else if (eqString == "0")
+                                eqString = "false";
+                        }
+                        else if (!string.IsNullOrEmpty(column.EnumDefine) && column.dbType == "int")
+                        {
+                            eqString = "(" + dataType + ")(" + eqString + ")";
+                        }
+                        eqString = "=" + eqString;
+                    }
+                }
+
+                fieldCodeItem.FieldType = dataType;
+                proCodeItem.PropertyType = dataType;
+                proCodeItem.Modification = "public virtual";
+                proCodeItem.ItemForGet.AddString($"return _{column.Name};");
+                proCodeItem.ItemForSet.AddItem(new CodeItem($"if ((_{column.Name} != value))")
+                    .AddString($"_{column.Name} = value;")
+                    );
+
+            }
+
+
+            var classProperties = db.classproperty.Where(m => m.tableid == table.id).ToArray();
+            foreach (var pro in classProperties)
+            {
+                try
+                {
+                    var foreign_table = db.DBTable.FirstOrDefault(m => m.id == pro.foreignkey_tableid);
+                    if (pro.iscollection == false)
+                    {
+
+                        var column = db.DBColumn.FirstOrDefault(m => m.id == pro.foreignkey_columnid);
+                        classCode.AddItem(new PropertyCodeItem(pro.name)
+                        {
+                            PropertyType = foreign_table.Name,
+                            Modification = "public virtual"
+                        });
+                    }
+                    else
+                    {
+                        //与其他表多对一
+                        classCode.AddItem(new PropertyCodeItem(pro.name)
+                        {
+                            PropertyType = $"ICollection<{foreign_table.Name}>",
+                            Modification = "public virtual"
+                        });
+                    }
+                }
+                catch
+                {
+                }
+
+            }
+        }
     }
 
     public class DesignData

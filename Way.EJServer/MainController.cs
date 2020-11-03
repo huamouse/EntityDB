@@ -1500,8 +1500,8 @@ namespace Way.EJServer
                         }
                         else if (dataitem.Name.ToLower() != oldData.Name.ToLower())
                         {
-                            IDatabaseDesignService dbservice = Way.EntityDB.Design.DBHelper.CreateDatabaseDesignService((Way.EntityDB.DatabaseType)(int)oldData.dbType);
-                            dbservice.ChangeName(oldData, dataitem.Name, dataitem.conStr);
+                            //IDatabaseDesignService dbservice = Way.EntityDB.Design.DBHelper.CreateDatabaseDesignService((Way.EntityDB.DatabaseType)(int)oldData.dbType);
+                            //dbservice.ChangeName(oldData, dataitem.Name, dataitem.conStr);
                         }
 
                         db.Update(dataitem);

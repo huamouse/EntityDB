@@ -717,7 +717,7 @@ namespace EJClient.Forms
                     CanNull = false,
                     IsPKID = true,
                     IsAutoIncrement = true,
-                    dbType = "int",
+                    dbType = "bigint",
 
                 }, this);
                 m_columns.Add(item);

@@ -113,6 +113,7 @@ namespace Way.EntityDB
 
         #endregion
 
+        bool _disposed = false;
         static DBContext()
         {
             //在DBContext 静态构造函数中调用一下，进行初始化，防止多线程同时运行这里来，造成冲突
@@ -1074,23 +1075,37 @@ namespace Way.EntityDB
                 ((Microsoft.EntityFrameworkCore.DbContext)this).Database.RollbackTransaction();
         }
 
+        /// <summary>
+        /// DBContext是否已经释放
+        /// </summary>
+        public bool IsDisposed
+        {
+            get
+            {
+                return _disposed;
+            }
+        }
+
         public override void Dispose()
         {
-            try
+            if (!_disposed)
             {
-                this.RollbackTransaction();
+                _disposed = true;
+                try
+                {
+                    this.RollbackTransaction();
+                }
+                catch
+                {
+                }
+                try
+                {
+                    base.Dispose();
+                }
+                catch
+                {
+                }
             }
-            catch
-            {
-            }
-            try
-            {
-                base.Dispose();
-            }
-            catch
-            {
-            }
-            
         }
     }
 }

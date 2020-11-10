@@ -430,7 +430,7 @@ namespace Way.EJServer
             var discriminatorColumn = columns.FirstOrDefault(m => m.IsDiscriminator == true && !string.IsNullOrEmpty(m.EnumDefine?.Trim()));
 
             ClassName[] classNames = null;
-            if(discriminatorColumn != null && columns.Any(m=>!string.IsNullOrEmpty(m.ClassName?.Trim())))
+            if(discriminatorColumn != null)
             {
                 classNames = ParseNames(discriminatorColumn.EnumDefine).ToArray();
                 classCode.Attributes.Add(@"[TableConfig( AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name + @""" , AutoSetPropertyValueOnInsert=(" + table.Name + "_" + discriminatorColumn.Name + @"Enum)0)]");

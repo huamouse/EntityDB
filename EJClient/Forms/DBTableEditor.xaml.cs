@@ -1097,6 +1097,7 @@ namespace EJClient.Forms
                     ColumnViewModel item = new ColumnViewModel(sourceColumns[i], this);
                     m_columns.Add(item);
                 }
+                this.computeColumnAreaWidth();
             }
         }
 

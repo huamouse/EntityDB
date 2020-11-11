@@ -150,12 +150,12 @@ namespace Way.EntityDB.Design.Actions
                         DefaultValue = column.defaultValue,
                         IsNullable = column.CanNull.GetValueOrDefault(),
                         Name = column.Name.ToLower(),
-                        OldColumn = new ColumnOperation() {
-                            ClrType = EF_CreateTable_Action.GetCSharpType(olddbtype),
-                            ColumnType = olddbtype,
-                            DefaultValue = oldDefaultValue,
-                            ComputedColumnSql = oldComputedColumnSql,
-                        },
+                        //OldColumn = new ColumnOperation() {
+                        //    ClrType = EF_CreateTable_Action.GetCSharpType(olddbtype),
+                        //    ColumnType = olddbtype,
+                        //    DefaultValue = oldDefaultValue,
+                        //    ComputedColumnSql = oldComputedColumnSql,
+                        //},
                     };
                     if (!string.IsNullOrEmpty(column.length))
                     {

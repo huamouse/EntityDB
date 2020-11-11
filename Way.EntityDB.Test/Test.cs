@@ -31,11 +31,16 @@ namespace Way.EntityDB.Test
         public void test()
         {
 
-            using (var db = new FllowOrderSystem.DBModels.DB.FllowOrders("Server=127.0.0.1;Port=5432;UserId=postgres;Password=123456;Database=fllowsystem_test;", DatabaseType.PostgreSql))
+            using (var db = new FllowOrderSystem.DBModels.DB.FllowOrders("server=192.168.0.128\\sqlexpress;uid=sa;pwd=123456;Database=fllowsystem_test;", DatabaseType.SqlServer))
             {
+                db.Delete(db.TradeUser.Where(m => m.TradeUserId == 2 && m.Status == TradeUser_StatusEnum.Reviewing));
+                db.Insert(new TradeUser { 
+                    TradeUserId = 2,
+                    Status = TradeUser_StatusEnum.Reviewing
+                });
                 var tradeUser = new TradeUser();
                 tradeUser.NickName = "abc";
-                db.Update(tradeUser, m => m.TradeUserId == 2);
+                var ret = db.Update(tradeUser, m => m.TradeUserId == 2 && m.Status == TradeUser_StatusEnum.Reviewing);
 
             }
         }

@@ -248,6 +248,16 @@ namespace Way.EntityDB
 
         string getMember(Expression exp)
         {
+            while(exp is UnaryExpression)
+            {
+                UnaryExpression uexp = (UnaryExpression)exp;
+                if (uexp.NodeType == ExpressionType.Convert)
+                {
+                    exp = uexp.Operand;
+                }
+                else
+                    break;
+            }
             var left = exp as System.Linq.Expressions.MemberExpression;
             if (left == null)
                 throw new ParseUpdateExpressionException("左侧必须是成员表达式");

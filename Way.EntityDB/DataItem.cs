@@ -143,7 +143,7 @@ namespace Way.EntityDB
                 if (p.GetCustomAttribute(typeof(NotMappedAttribute)) != null)
                     continue;
                 object pvalue = p.GetValue(dataitem);
-                if (pvalue == null)
+                if (pvalue == null && serializer.NullValueHandling.HasFlag(NullValueHandling.Ignore))
                     continue;
                 writer.WritePropertyName(p.Name);
                 serializer.Serialize(writer, pvalue);

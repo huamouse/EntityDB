@@ -31,7 +31,6 @@ namespace Way.EntityDB.Test
         {
             var option = new System.Text.Json.JsonSerializerOptions();
             option.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
-            option.Converters.Add(new DataItemTextJsonConverter());
 
             var dataitem = new TradeUser
             {
@@ -41,9 +40,15 @@ namespace Way.EntityDB.Test
             };
             dataitem.ChangedProperties.Clear();
 
-            var str = System.Text.Json.JsonSerializer.Serialize(dataitem);
+            var str = System.Text.Json.JsonSerializer.Serialize(dataitem, option);
 
             var item = System.Text.Json.JsonSerializer.Deserialize<TradeUser>(str);
+
+            str = Newtonsoft.Json.JsonConvert.SerializeObject(dataitem, new Newtonsoft.Json.JsonSerializerSettings() { 
+                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore
+            });
+
+            str = Newtonsoft.Json.JsonConvert.SerializeObject(dataitem);
         }
 
         

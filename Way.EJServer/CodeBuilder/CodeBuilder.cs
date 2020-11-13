@@ -451,7 +451,7 @@ namespace Way.EJServer
             }
 
             classCode.Attributes.Add($"[Table(\"{table.Name.ToLower()}\")]");
-
+            classCode.Attributes.Add("[System.Text.Json.Serialization.JsonConverter(typeof(Way.EntityDB.DataItemTextJsonConverter))]");
 
 
             CodeItem curClassCodeItem = null;

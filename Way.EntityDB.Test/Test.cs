@@ -26,6 +26,26 @@ namespace Way.EntityDB.Test
     [TestClass]
     public class Test
     {
+        [TestMethod]
+        public void JsonTest()
+        {
+            var option = new System.Text.Json.JsonSerializerOptions();
+            option.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+            option.Converters.Add(new DataItemTextJsonConverter());
+
+            var dataitem = new TradeUser
+            {
+                TradeUserId = 2,
+                Status = TradeUser_StatusEnum.Approved,
+                NickName = "bac"
+            };
+            dataitem.ChangedProperties.Clear();
+
+            var str = System.Text.Json.JsonSerializer.Serialize(dataitem);
+
+            var item = System.Text.Json.JsonSerializer.Deserialize<TradeUser>(str);
+        }
+
         
         [TestMethod]
         public void test()

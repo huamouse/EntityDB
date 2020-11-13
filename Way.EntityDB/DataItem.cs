@@ -80,6 +80,8 @@ namespace Way.EntityDB
         }
     }
 
+   
+
     class DataItemConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
@@ -161,7 +163,7 @@ namespace Way.EntityDB
         }
     }
 
-
+    [System.Text.Json.Serialization.JsonConverter(typeof(Way.EntityDB.DataItemTextJsonConverter))]
     [Newtonsoft.Json.JsonConverter(typeof(DataItemConverter))]
     public abstract class DataItem : IDataItem, INotifyPropertyChanging, INotifyPropertyChanged, IDataValueChanged
     {

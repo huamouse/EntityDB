@@ -12,6 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FllowOrderSystem.DBModels
 {
+    [System.Text.Json.Serialization.JsonConverter(typeof(Way.EntityDB.DataItemTextJsonConverter))]
     [TableConfig]
     [Table("tradeuser")]
     public class TradeUser : Way.EntityDB.DataItem

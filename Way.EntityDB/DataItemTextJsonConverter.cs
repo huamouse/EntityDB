@@ -7,15 +7,39 @@ using System.Reflection;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Way.EntityDB
-{
-    public class DataItemTextJsonConverter : JsonConverter<DataItem>
+{    
+    public class DataItemJsonConverterAttribute : JsonConverterAttribute
     {
-        static Type baseType = typeof(DataItem);
+        static Type GenericType = typeof(DataItemTextJsonConverter<>);
+        static Type BaseType = typeof(DataItem);
+        public DataItemJsonConverterAttribute():base(null)
+        {
+
+        }
+        public override JsonConverter CreateConverter(Type typeToConvert)
+        {
+            if (typeToConvert.IsSubclassOf(BaseType))
+            {
+                Type[] templateTypeSet = new[] { typeToConvert };
+
+                Type implementType = GenericType.MakeGenericType(templateTypeSet);
+                return (JsonConverter)Activator.CreateInstance(implementType);
+            }
+            else
+            {
+                return base.CreateConverter(typeToConvert);
+            }
+        }
+    }
+
+    class DataItemTextJsonConverter<T> : JsonConverter<T> where T : DataItem
+    {
+        static Type BaseType = typeof(DataItem);
         public override bool CanConvert(Type typeToConvert)
         {
-            return typeToConvert.IsSubclassOf(baseType);
+            return typeToConvert.IsSubclassOf(BaseType);
         }
-        public override DataItem Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if(reader.TokenType == JsonTokenType.StartObject)
             {
@@ -38,12 +62,12 @@ namespace Way.EntityDB
                     reader.Read();
                 }
                 dataitem.m_notSendPropertyChanged = false;
-                return dataitem;
+                return (T)dataitem;
             }
             return null;
         }
 
-        public override void Write(Utf8JsonWriter writer, DataItem dataitem, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, T dataitem, JsonSerializerOptions options)
         {
             var properties = dataitem.GetType().GetTypeInfo().GetProperties();
             writer.WriteStartObject();

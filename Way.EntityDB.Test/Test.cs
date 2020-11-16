@@ -40,9 +40,11 @@ namespace Way.EntityDB.Test
             };
             dataitem.ChangedProperties.Clear();
 
-            var str = System.Text.Json.JsonSerializer.Serialize(dataitem, option);
+            var str0 = System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, TradeUser> { { "a", dataitem } }, option);
 
-            var item = System.Text.Json.JsonSerializer.Deserialize<TradeUser>(str);
+            var str = System.Text.Json.JsonSerializer.Serialize(new[] { dataitem }, option);
+
+            var item = System.Text.Json.JsonSerializer.Deserialize<TradeUser[]>(str);
 
             str = Newtonsoft.Json.JsonConvert.SerializeObject(dataitem, new Newtonsoft.Json.JsonSerializerSettings() { 
                 NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore

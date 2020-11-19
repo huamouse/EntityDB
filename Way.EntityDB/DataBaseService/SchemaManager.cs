@@ -21,7 +21,12 @@ namespace Way.EntityDB.DataBaseService
             {
                 ret = new SchemaTable();
                 var wayAttr = tableType.GetCustomAttribute<Way.EntityDB.Attributes.TableConfigAttribute>();
+                if (wayAttr == null)
+                    return null;
+
                 var tableAttr = tableType.GetCustomAttribute<TableAttribute>();
+                if (tableAttr == null)
+                    return null;
                 ret.TableName = tableAttr.Name;
                 ret.AutoSetPropertyNameOnInsert = wayAttr.AutoSetPropertyNameOnInsert;
                 ret.AutoSetPropertyValueOnInsert = wayAttr.AutoSetPropertyValueOnInsert;

@@ -140,13 +140,17 @@ namespace Way.EntityDB
             }
 
             var tableSchema = SchemaManager.GetSchemaTable(dataitem.GetType());
-
-            string pkid = tableSchema.KeyColumn.PropertyName;
+            string pkid = null;
+            if (tableSchema != null)
+            {
+                pkid = tableSchema.KeyColumn.PropertyName;
+            }
+           
             var fieldValues = dataitem.GetFieldValues(true);
             if (fieldValues.Count == 0)
                 return;
 
-            if (tableSchema.AutoSetPropertyNameOnInsert != null)
+            if (tableSchema != null && tableSchema.AutoSetPropertyNameOnInsert != null)
             {
                 var fv = fieldValues.FirstOrDefault(m => string.Equals( m.FieldName , tableSchema.AutoSetPropertyNameOnInsert , StringComparison.OrdinalIgnoreCase));
                 if (fv == null)

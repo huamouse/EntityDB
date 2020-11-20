@@ -476,11 +476,17 @@ namespace EJClient.Forms
                         {
                             throw new Exception("请先定义当前列的Enum内容");
                         }
-                        var other = this.m_parentEditor.m_columns.FirstOrDefault(m => m.IsDiscriminator == true);
-                        if (other != null)
+                        if(value == true)
                         {
-                            throw new Exception("列“" + other.Name + "”已经被设置为IsDiscriminator，不能设置多列");
+                            this.CanNull = false;
+
+                            var other = this.m_parentEditor.m_columns.FirstOrDefault(m => m != this && m.IsDiscriminator == true);
+                            if (other != null)
+                            {
+                                throw new Exception("列“" + other.Name + "”已经被设置为IsDiscriminator，不能设置多列");
+                            }
                         }
+                        
                         m_column.IsDiscriminator = value;
 
                         if (!string.IsNullOrEmpty(EnumDefine) && value == true)

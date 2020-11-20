@@ -115,7 +115,14 @@ namespace Way.EJServer
                 if(discriminatorColumn != null)
                 {
                     var classNames = ParseNames(discriminatorColumn.EnumDefine).ToArray();
-                    modelbuildFunc.AddString($"modelBuilder.Entity<{t.Name}>().HasDiscriminator<{t.Name}_{discriminatorColumn.Name}Enum?>(\"{discriminatorColumn.Name}\")");
+                    if (discriminatorColumn.CanNull == true)
+                    {
+                        modelbuildFunc.AddString($"modelBuilder.Entity<{t.Name}>().HasDiscriminator<{t.Name}_{discriminatorColumn.Name}Enum?>(\"{discriminatorColumn.Name}\")");
+                    }
+                    else
+                    {
+                        modelbuildFunc.AddString($"modelBuilder.Entity<{t.Name}>().HasDiscriminator<{t.Name}_{discriminatorColumn.Name}Enum>(\"{discriminatorColumn.Name}\")");
+                    }
                     modelbuildFunc.AddString($".HasValue<{t.Name}>(({t.Name}_{discriminatorColumn.Name}Enum)0)");
 
                     foreach (var classnameitem in classNames)

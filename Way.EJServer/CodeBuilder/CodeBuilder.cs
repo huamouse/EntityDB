@@ -388,25 +388,51 @@ namespace Way.EJServer
         {
             public string Name;
             public string BaseName;
+            public string Comment;
         }
         static List<ClassName> ParseNames(string value)
         {
-            var ms = Regex.Matches(value, @"(?<name>\w+)[ ]?=(?<value>[ 0-9\w\<\>\(\)\|]+)");
             List<ClassName> names = new List<ClassName>();
-            foreach (Match m in ms)
+            string[] lines = value.Split('\n');
+            StringBuilder comment = new StringBuilder();
+            foreach( var line in lines )
             {
-                names.Add(new ClassName() { Name = m.Groups["name"].Value });
+                if(line.Trim().StartsWith("//"))
+                {
+                    if (comment.Length > 0)
+                        comment.Append("\r\n");
+                    try
+                    {
+                        comment.Append(line.Trim().Substring(2));
+
+                    }
+                    catch (Exception)
+                    {
+                    }                   
+                }
+                else
+                {
+                    var match = Regex.Match(line, @"(?<name>\w+)[ ]?=(?<value>[ 0-9\w\<\>\(\)\|\+\-]+)");
+                    if(match.Length > 0)
+                    {
+                        names.Add(new ClassName() { Name = match.Groups["name"].Value,Comment = comment.ToString() });
+                        comment = new StringBuilder();
+                    }
+                }
             }
+
+            var ms = Regex.Matches(value, @"(?<name>\w+)[ ]?=(?<value>[ 0-9\w\<\>\(\)\|\+\-]+)");
             foreach (Match m in ms)
             {
                 var name = m.Groups["name"].Value;
                 var currentClass = names.FirstOrDefault(m => m.Name == name);
-                var arr = m.Groups["value"].Value.Split('|');
+                var arr = Regex.Split(m.Groups["value"].Value , @"\||\+|\-");
                 foreach( var item in arr )
                 {
-                    if( names.Any(m=>m.Name == item) )
+                    var itemstr = item.Trim();
+                    if( names.Any(m=>m.Name == itemstr) )
                     {
-                        currentClass.BaseName = item;
+                        currentClass.BaseName = itemstr;
                         break;
                     }
                 }
@@ -434,7 +460,7 @@ namespace Way.EJServer
                 {
                     var myClsCodeItem = new CodeItem($"public class {classnameitem.Name} :{((classnameitem.BaseName == null) ? table.Name : classnameitem.BaseName)}");
                     namespaceCode.AddItem(myClsCodeItem);
-                    myClsCodeItem.Comment = table.caption;
+                    myClsCodeItem.Comment = classnameitem.Comment;
                     myClsCodeItem.Attributes.Add(@"[TableConfig(AutoSetPropertyNameOnInsert = """ + discriminatorColumn.Name + @""" , AutoSetPropertyValueOnInsert=" + table.Name + "_" + discriminatorColumn.Name + @"Enum." + classnameitem.Name + @")]");
                     otherClassCode[classnameitem.Name] = myClsCodeItem;
                     myClsCodeItem.AddString("");

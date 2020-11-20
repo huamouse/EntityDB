@@ -399,20 +399,15 @@ namespace Way.EJServer
             }
             foreach (Match m in ms)
             {
-                var content = m.Groups["value"].Value;
-                var othernameMatch = Regex.Match(content, @"\w+");
-                if (othernameMatch != null && othernameMatch.Length > 0 && Regex.Match(othernameMatch.Value, @"[0-9]+").Length != othernameMatch.Length)
+                var name = m.Groups["name"].Value;
+                var currentClass = names.FirstOrDefault(m => m.Name == name);
+                var arr = m.Groups["value"].Value.Split('|');
+                foreach( var item in arr )
                 {
-                    var othername = othernameMatch.Value;
-                    var item = names.FirstOrDefault(c => c.Name == othername);
-                    if (item == null)
+                    if( names.Any(m=>m.Name == item) )
                     {
-                        throw new Exception("无法识别" + othername);
-                    }
-                    else
-                    {
-                        var myitem = names.FirstOrDefault(c => c.Name == m.Groups["name"].Value);
-                        myitem.BaseName = othername;
+                        currentClass.BaseName = item;
+                        break;
                     }
                 }
             }

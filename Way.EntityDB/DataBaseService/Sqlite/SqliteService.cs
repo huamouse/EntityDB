@@ -152,19 +152,27 @@ namespace Way.EntityDB
 
             if (tableSchema != null && tableSchema.AutoSetPropertyNameOnInsert != null)
             {
-                var fv = fieldValues.FirstOrDefault(m => string.Equals( m.FieldName , tableSchema.AutoSetPropertyNameOnInsert , StringComparison.OrdinalIgnoreCase));
-                if (fv == null)
+                if (dataitem.ChangedProperties.Any(m=>m.Key == tableSchema.AutoSetPropertyNameOnInsert) == false)
                 {
                     var val = tableSchema.AutoSetPropertyValueOnInsert;
                     if( !SupportEnum && val != null && val.GetType().IsEnum)
                     {
                         val = Convert.ToInt32(val);//PostgreSql不支持枚举
                     }
-                    fieldValues.Add(new FieldValue()
+
+                    var fieldname = tableSchema.AutoSetPropertyNameOnInsert.ToLower();
+                    var fv = fieldValues.FirstOrDefault(m => m.FieldName == fieldname);
+                    if (fv != null)
+                        fv.Value = val;
+                    else
                     {
-                        FieldName = tableSchema.AutoSetPropertyNameOnInsert.ToLower(),
-                        Value = val
-                    });
+                        fieldValues.Add(new FieldValue()
+                        {
+                            FieldName = tableSchema.AutoSetPropertyNameOnInsert.ToLower(),
+                            Value = val
+                        });
+                    }
+                    
                 }
             }
 

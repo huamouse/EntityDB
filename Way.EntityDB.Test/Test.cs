@@ -58,17 +58,16 @@ namespace Way.EntityDB.Test
         public void test()
         {
 
-            using (var db = new FllowOrderSystem.DBModels.DB.FllowOrders("server=192.168.0.128\\sqlexpress;uid=sa;pwd=123456;Database=fllowsystem_test;", DatabaseType.SqlServer))
+            using (var db = new TradeSystemDB("server=192.168.0.128\\sqlexpress;uid=sa;pwd=123456;Database=tradesystem", DatabaseType.SqlServer))
             {
-                db.Delete(db.TradeUser.Where(m => m.TradeUserId == 2 && m.Status == TradeUser_StatusEnum.Reviewing));
-                db.Insert(new TradeUser { 
-                    TradeUserId = 2,
-                    Status = TradeUser_StatusEnum.Reviewing
+                db.Insert(new AddOrderMarginHistory
+                {
+                    Amount = 100,
+                    Balance = 3,
+                    CreateTime = DateTime.Now,
+                    MoneyAccountId = 2,
+                    UserId = 11
                 });
-                var tradeUser = new TradeUser();
-                tradeUser.NickName = "abc";
-                var ret = db.Update(tradeUser, m => m.TradeUserId == 2 && m.Status == TradeUser_StatusEnum.Reviewing);
-
             }
         }
     }

@@ -173,14 +173,14 @@ namespace Way.EntityDB.Design.Database.SqlServer
                             {
                                 //去除空格
                                 string flag = existColumnString.Split(',').ToSplitString();
-                                string dbname = flag.Split(',').OrderBy(m => m).ToArray().ToSplitString();
+                                var cnames = flag.Split(',').OrderBy(m => m).ToArray();
                                 //再排序，不要在去除空格之前排序
                                 existKeys.Add(new IndexInfo
                                 {
                                     Name = indexName,
                                     IsUnique = index_description.Contains("unique"),
                                     IsClustered = index_description.Contains("clustered") && !index_description.Contains("nonclustered"),
-                                    ColumnNames = new string[] { dbname },
+                                    ColumnNames = cnames,
                                 });
                             }
                         }
